@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { COLORS, RADIUS, SPACING, FONTS } from '../theme';
+import { RADIUS, SPACING, FONTS } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export default function Button({
   title,
@@ -10,24 +11,30 @@ export default function Button({
   style,
   textStyle,
 }) {
+  const { colors } = useTheme();
   const isPrimary = variant === 'primary';
   const isOutline = variant === 'outline';
 
   return (
     <TouchableOpacity
-      style={[styles.button, isPrimary && styles.primaryBtn, isOutline && styles.outlineBtn, style]}
+      style={[
+        styles.button,
+        isPrimary && { backgroundColor: colors.ink },
+        isOutline && { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.ink },
+        style,
+      ]}
       onPress={onPress}
       disabled={loading}
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? COLORS.white : COLORS.ink} />
+        <ActivityIndicator color={isPrimary ? colors.inkContrast : colors.ink} />
       ) : (
         <Text
           style={[
             styles.text,
-            isPrimary && styles.primaryText,
-            isOutline && styles.outlineText,
+            isPrimary && { color: colors.inkContrast },
+            isOutline && { color: colors.ink },
             textStyle,
           ]}
         >
@@ -46,22 +53,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primaryBtn: {
-    backgroundColor: COLORS.ink,
-  },
-  outlineBtn: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: COLORS.ink,
-  },
   text: {
     fontFamily: FONTS.heading,
     fontSize: 15,
-  },
-  primaryText: {
-    color: COLORS.white,
-  },
-  outlineText: {
-    color: COLORS.ink,
   },
 });

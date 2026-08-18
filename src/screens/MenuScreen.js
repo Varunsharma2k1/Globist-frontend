@@ -4,9 +4,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Film, Compass, Briefcase, Video, Phone, Lock, ChevronRight } from 'lucide-react-native';
 import Header from '../components/Header';
 import Card from '../components/Card';
-import { COLORS, SPACING, TYPOGRAPHY, FONTS, LAYOUT } from '../theme';
+import { SPACING, FONTS, LAYOUT } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export default function MenuScreen({ navigation }) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
   const menuItems = [
     { icon: Film, title: 'Explore Reels Feed', action: () => navigation.navigate('Reels') },
@@ -21,17 +24,17 @@ export default function MenuScreen({ navigation }) {
     <View style={styles.container}>
       <Header title="Settings & Menu" onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + insets.bottom }]}>
-        <Text style={[TYPOGRAPHY.h3, { marginBottom: SPACING.md }]}>App Navigation</Text>
+        <Text style={[typography.h3, { marginBottom: SPACING.md }]}>App Navigation</Text>
 
         {menuItems.map((item, index) => {
           const Icon = item.icon;
           return (
             <Card key={index} style={styles.menuRow} onPress={item.action}>
               <View style={styles.menuLeft}>
-                <Icon size={18} color={COLORS.ink} strokeWidth={1.75} />
+                <Icon size={18} color={colors.ink} strokeWidth={1.75} />
                 <Text style={styles.itemTitle}>{item.title}</Text>
               </View>
-              <ChevronRight size={18} color={COLORS.textMuted} />
+              <ChevronRight size={18} color={colors.textMuted} />
             </Card>
           );
         })}
@@ -45,10 +48,11 @@ export default function MenuScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+function getStyles(colors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   content: {
     padding: SPACING.lg,
@@ -67,25 +71,24 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   itemTitle: {
-    fontFamily: FONTS.body,
+    fontFamily: FONTS.semibold,
     fontSize: 15,
-    fontWeight: '600',
-    color: COLORS.ink,
+    color: colors.ink,
   },
   footer: {
     marginTop: SPACING.xl,
     alignItems: 'center',
   },
   versionText: {
-    fontFamily: FONTS.body,
+    fontFamily: FONTS.semibold,
     fontSize: 12,
-    color: COLORS.textMuted,
-    fontWeight: '600',
+    color: colors.textMuted,
   },
   platformText: {
     fontFamily: FONTS.body,
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
-});
+  });
+}

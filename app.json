@@ -10,21 +10,16 @@
       "bundleIdentifier": "com.globist.app"
     },
     "android": {
-      "package": "com.globist.app",
-      "config": {
-        "googleMaps": {
-          "apiKey": "REPLACE_WITH_YOUR_ANDROID_MAPS_API_KEY"
-        }
-      }
+      "package": "com.globist.app"
     },
     "plugins": [
       "expo-font",
       "expo-video",
-      "expo-dev-client",
       [
-        "expo-location",
+        "expo-image-picker",
         {
-          "locationAlwaysAndWhenInUsePermission": "Globist uses your location to point you toward trending destinations on the Explore radar."
+          "photosPermission": "Globist needs access to your photos so you can post a travel reel.",
+          "videoPermission": "Globist needs access to your videos so you can post a travel reel."
         }
       ]
     ]

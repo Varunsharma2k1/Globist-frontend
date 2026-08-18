@@ -1,38 +1,40 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Globe } from 'lucide-react-native';
-import Button from '../components/Button';
-import { COLORS, SPACING, FONTS, LAYOUT } from '../theme';
+import { SPACING, FONTS } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
-export default function SplashScreen({ navigation }) {
+/**
+ * SplashScreen Component
+ *
+ * Shown only while AuthContext is resolving the stored session on launch.
+ * Purely a loading state — where the user lands next (MainTabs vs Auth) is
+ * decided by AppNavigator once that check resolves, not by anything here.
+ */
+export default function SplashScreen() {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   return (
     <View
       style={[
         styles.container,
-        { paddingTop: SPACING.xl + insets.top, paddingBottom: SPACING.xl + insets.bottom },
+        {
+          backgroundColor: colors.background,
+          paddingTop: SPACING.xl + insets.top,
+          paddingBottom: SPACING.xl + insets.bottom,
+        },
       ]}
     >
       <View style={styles.logoContainer}>
-        <View style={styles.iconCircle}>
-          <Globe size={44} color={COLORS.pastel.peach.fg} strokeWidth={1.5} />
+        <View style={[styles.iconCircle, { backgroundColor: colors.pastel.peach.bg }]}>
+          <Globe size={44} color={colors.pastel.peach.fg} strokeWidth={1.5} />
         </View>
-        <Text style={styles.wordmark}>GLOBIST</Text>
-        <Text style={styles.subtitle}>Curated Travel & Community Reels</Text>
-      </View>
-
-      <View style={styles.actions}>
-        <Button
-          title="Explore Destinations"
-          onPress={() => navigation.navigate('MainTabs')}
-          style={{ marginBottom: SPACING.md }}
-        />
-        <Button
-          title="Sign In / Register"
-          variant="outline"
-          onPress={() => navigation.navigate('Auth')}
-        />
+        <Text style={[styles.wordmark, { color: colors.ink }]}>GLOBIST</Text>
+        <Text style={[styles.subtitle, { color: colors.textMuted }]}>
+          Curated Travel & Community Reels
+        </Text>
+        <ActivityIndicator color={colors.ink} style={{ marginTop: SPACING.xl }} />
       </View>
     </View>
   );
@@ -41,20 +43,16 @@ export default function SplashScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: SPACING.xl,
   },
   logoContainer: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
   },
   iconCircle: {
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: COLORS.pastel.peach.bg,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.lg,
@@ -63,19 +61,11 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.heading,
     fontSize: 30,
     letterSpacing: 2,
-    color: COLORS.ink,
   },
   subtitle: {
     fontFamily: FONTS.body,
     fontSize: 14,
-    color: COLORS.textMuted,
     marginTop: SPACING.sm,
     textAlign: 'center',
-  },
-  actions: {
-    width: '100%',
-    maxWidth: LAYOUT.contentMaxWidth,
-    alignSelf: 'center',
-    marginBottom: SPACING.lg,
   },
 });

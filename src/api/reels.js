@@ -25,17 +25,36 @@ export const getReels = async () => {
 
 /**
  * Submits a new travel reel.
- * @param {Object} reelData - ({ caption, location, mediaUrl, imageType, tags })
+ * @param {Object} reelData - ({ caption, location, mediaUrl, imageType, tags, agencyId, isAffiliate })
  * @returns {Promise<Object>}
  */
 export const createReel = async (reelData) => {
   const payload = {
     ...reelData,
     mediaUrl: reelData.mediaUrl || CONFIG.DEFAULT_DEMO_VIDEO,
-    tags: reelData.tags || ['Travel', 'Exploration'],
+    tags: reelData.tags?.length ? reelData.tags : ['Travel', 'Exploration'],
   };
   const response = await client.post('/reels', payload);
   return response.data;
+};
+
+/**
+ * Uploads a picked video/photo file for a reel and returns its absolute URL.
+ * @param {{ uri: string, name: string, type: string }} file
+ * @returns {Promise<string>} absolute mediaUrl
+ */
+export const uploadReelMedia = async (file) => {
+  const form = new FormData();
+  form.append('file', file);
+
+  const response = await client.post('/reels/upload', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
+  // Server returns a relative path (e.g. /uploads/reels/xyz.mp4); resolve it
+  // against the API's origin so the video player gets a playable absolute URL.
+  const origin = CONFIG.API_BASE_URL.replace(/\/api\/?$/, '');
+  return `${origin}${response.data.url}`;
 };
 
 /**

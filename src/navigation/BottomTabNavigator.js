@@ -3,14 +3,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
-import { Home, Compass, Film, Briefcase, User } from 'lucide-react-native';
+import { Home, Compass, Film, Inbox, User } from 'lucide-react-native';
 
 import HomeScreen from '../screens/HomeScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ReelsScreen from '../screens/ReelsScreen';
-import MyTripsScreen from '../screens/MyTripsScreen';
+import InboxScreen from '../screens/InboxScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { COLORS } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,27 +18,39 @@ const TAB_ICONS = {
   HomeTab: Home,
   ExploreTab: Compass,
   ReelsTab: Film,
-  MyTripsTab: Briefcase,
+  InboxTab: Inbox,
   ProfileTab: User,
 };
 
 export default function BottomTabNavigator() {
   const insets = useSafeAreaInsets();
+  const { colors, resolvedScheme } = useTheme();
+  const isDark = resolvedScheme === 'dark';
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: [
           styles.tabBar,
-          { height: 56 + insets.bottom, paddingBottom: insets.bottom + 6 },
+          {
+            backgroundColor: isDark ? 'rgba(28,26,24,0.94)' : 'rgba(255,255,255,0.94)',
+            borderTopColor: colors.divider,
+            height: 56 + insets.bottom,
+            paddingBottom: insets.bottom + 6,
+          },
         ],
         tabBarBackground: () => (
-          <BlurView intensity={100} tint="light" style={StyleSheet.absoluteFill}>
-            <View style={styles.tabBarTint} />
+          <BlurView intensity={100} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
+            <View
+              style={[
+                styles.tabBarTint,
+                { backgroundColor: isDark ? 'rgba(28,26,24,0.85)' : 'rgba(255,255,255,0.85)' },
+              ]}
+            />
           </BlurView>
         ),
-        tabBarActiveTintColor: COLORS.ink,
-        tabBarInactiveTintColor: COLORS.textMuted,
+        tabBarActiveTintColor: colors.ink,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarIcon: ({ focused, color }) => {
           const Icon = TAB_ICONS[route.name] || Home;
           return <Icon size={focused ? 22 : 20} color={color} strokeWidth={focused ? 2.25 : 1.75} />;
@@ -52,11 +64,7 @@ export default function BottomTabNavigator() {
         options={{ tabBarLabel: 'Explore' }}
       />
       <Tab.Screen name="ReelsTab" component={ReelsScreen} options={{ tabBarLabel: 'Reels' }} />
-      <Tab.Screen
-        name="MyTripsTab"
-        component={MyTripsScreen}
-        options={{ tabBarLabel: 'My Trips' }}
-      />
+      <Tab.Screen name="InboxTab" component={InboxScreen} options={{ tabBarLabel: 'Inbox' }} />
       <Tab.Screen
         name="ProfileTab"
         component={ProfileScreen}
@@ -68,9 +76,7 @@ export default function BottomTabNavigator() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: 'rgba(255,255,255,0.94)',
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(0,0,0,0.1)',
     height: 60,
     paddingBottom: 8,
     paddingTop: 6,

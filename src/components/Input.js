@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS, RADIUS, SPACING, FONTS } from '../theme';
+import { RADIUS, SPACING, FONTS } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export default function Input({
   label,
@@ -13,16 +14,20 @@ export default function Input({
   leftIcon,
   rightIcon,
   onRightIconPress,
+  onSubmitEditing,
+  returnKeyType,
   style,
 }) {
+  const { colors } = useTheme();
   return (
     <View style={[styles.container, style]}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && <Text style={[styles.label, { color: colors.text }]}>{label}</Text>}
       <View style={styles.inputWrap}>
         {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
         <TextInput
           style={[
             styles.input,
+            { backgroundColor: colors.surfaceMuted, color: colors.text },
             leftIcon && styles.inputWithLeftIcon,
             rightIcon && styles.inputWithRightIcon,
             multiline && styles.multiline,
@@ -30,10 +35,12 @@ export default function Input({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={COLORS.textMuted}
+          placeholderTextColor={colors.textMuted}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           multiline={multiline}
+          onSubmitEditing={onSubmitEditing}
+          returnKeyType={returnKeyType}
         />
         {rightIcon && (
           <TouchableOpacity
@@ -54,18 +61,14 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   label: {
-    fontFamily: FONTS.body,
+    fontFamily: FONTS.semibold,
     fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.text,
     marginBottom: SPACING.xs,
   },
   inputWrap: {
     justifyContent: 'center',
   },
   input: {
-    backgroundColor: COLORS.surfaceMuted,
-    color: COLORS.ink,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.md,

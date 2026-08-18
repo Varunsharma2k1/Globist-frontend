@@ -2,20 +2,32 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
-import { COLORS, SPACING, FONTS } from '../theme';
+import { SPACING, FONTS } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 export default function Header({ title, onBack, rightElement }) {
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme();
   return (
-    <View style={[styles.header, { height: 56 + insets.top, paddingTop: insets.top }]}>
+    <View
+      style={[
+        styles.header,
+        {
+          height: 56 + insets.top,
+          paddingTop: insets.top,
+          backgroundColor: colors.background,
+          borderBottomColor: colors.divider,
+        },
+      ]}
+    >
       {onBack ? (
         <TouchableOpacity onPress={onBack} style={styles.backBtn}>
-          <ArrowLeft size={22} color={COLORS.ink} />
+          <ArrowLeft size={22} color={colors.ink} />
         </TouchableOpacity>
       ) : (
         <View style={styles.placeholder} />
       )}
-      <Text style={styles.title} numberOfLines={1}>
+      <Text style={[styles.title, { color: colors.ink }]} numberOfLines={1}>
         {title}
       </Text>
       <View style={styles.rightContainer}>
@@ -32,9 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
-    backgroundColor: COLORS.background,
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.divider,
   },
   backBtn: {
     width: 40,
@@ -45,7 +55,6 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONTS.heading,
     fontSize: 16,
-    color: COLORS.ink,
     flex: 1,
     textAlign: 'center',
   },

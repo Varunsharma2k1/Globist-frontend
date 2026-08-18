@@ -5,7 +5,8 @@ import Header from '../components/Header';
 import Card from '../components/Card';
 import Tag from '../components/Tag';
 import Button from '../components/Button';
-import { COLORS, SPACING, TYPOGRAPHY, FONTS, LAYOUT } from '../theme';
+import { SPACING, FONTS, LAYOUT } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 /**
  * CreatorProfileScreen Component
@@ -15,6 +16,8 @@ import { COLORS, SPACING, TYPOGRAPHY, FONTS, LAYOUT } from '../theme';
  * endpoint exists yet) — passed in via route params from ReelItem.
  */
 export default function CreatorProfileScreen({ route, navigation }) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors);
   const { creator } = route.params || {};
   const [following, setFollowing] = useState(false);
 
@@ -29,8 +32,8 @@ export default function CreatorProfileScreen({ route, navigation }) {
             <Text style={styles.avatarInitial}>{initial}</Text>
           </View>
           <View style={styles.nameRow}>
-            <Text style={TYPOGRAPHY.h2}>{creator?.name || creator?.creatorHandle || 'Explorer'}</Text>
-            <BadgeCheck size={18} color={COLORS.success} />
+            <Text style={typography.h2}>{creator?.name || creator?.creatorHandle || 'Explorer'}</Text>
+            <BadgeCheck size={18} color={colors.success} />
           </View>
           <Text style={styles.handleText}>{creator?.creatorHandle || '@explorer'}</Text>
           <View style={{ marginTop: SPACING.xs }}>
@@ -68,10 +71,11 @@ export default function CreatorProfileScreen({ route, navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+function getStyles(colors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   content: {
     padding: SPACING.lg,
@@ -87,7 +91,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: COLORS.pastel.peach.bg,
+    backgroundColor: colors.pastel.peach.bg,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.sm,
@@ -95,7 +99,7 @@ const styles = StyleSheet.create({
   avatarInitial: {
     fontFamily: FONTS.heading,
     fontSize: 34,
-    color: COLORS.pastel.peach.fg,
+    color: colors.pastel.peach.fg,
   },
   nameRow: {
     flexDirection: 'row',
@@ -105,7 +109,7 @@ const styles = StyleSheet.create({
   handleText: {
     fontFamily: FONTS.body,
     fontSize: 13,
-    color: COLORS.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
   statsCard: {
@@ -121,12 +125,13 @@ const styles = StyleSheet.create({
   statVal: {
     fontFamily: FONTS.heading,
     fontSize: 18,
-    color: COLORS.ink,
+    color: colors.ink,
   },
   statLabel: {
     fontFamily: FONTS.body,
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: colors.textMuted,
     marginTop: 2,
   },
-});
+  });
+}

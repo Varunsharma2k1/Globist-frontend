@@ -6,7 +6,8 @@ import Card from '../components/Card';
 import Tag from '../components/Tag';
 import Button from '../components/Button';
 import { getMyBookings } from '../api';
-import { COLORS, SPACING, TYPOGRAPHY, FONTS, LAYOUT } from '../theme';
+import { SPACING, FONTS, LAYOUT } from '../theme';
+import { useTheme } from '../hooks/useTheme';
 
 /**
  * MyTripsScreen Component
@@ -15,6 +16,8 @@ import { COLORS, SPACING, TYPOGRAPHY, FONTS, LAYOUT } from '../theme';
  * Uses `getMyBookings` API service.
  */
 export default function MyTripsScreen({ navigation }) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,18 +48,18 @@ export default function MyTripsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Header title="My Bookings" />
+      <Header title="My Bookings" onBack={() => navigation.goBack()} />
       {loading ? (
-        <ActivityIndicator color={COLORS.ink} style={{ flex: 1 }} />
+        <ActivityIndicator color={colors.ink} style={{ flex: 1 }} />
       ) : (
         <ScrollView contentContainerStyle={styles.content}>
           {bookings.length === 0 ? (
             <View style={styles.emptyContainer}>
               <View style={styles.emptyIconTile}>
-                <Briefcase size={32} color={COLORS.textMuted} strokeWidth={1.5} />
+                <Briefcase size={32} color={colors.textMuted} strokeWidth={1.5} />
               </View>
-              <Text style={TYPOGRAPHY.h3}>No Active Bookings</Text>
-              <Text style={[TYPOGRAPHY.body, { textAlign: 'center', marginVertical: SPACING.sm }]}>
+              <Text style={typography.h3}>No Active Bookings</Text>
+              <Text style={[typography.body, { textAlign: 'center', marginVertical: SPACING.sm }]}>
                 Explore handcrafted itineraries and book your next adventure.
               </Text>
               <Button
@@ -76,13 +79,13 @@ export default function MyTripsScreen({ navigation }) {
                 </View>
 
                 <View style={styles.metaRow}>
-                  <MapPin size={12} color={COLORS.textMuted} />
+                  <MapPin size={12} color={colors.textMuted} />
                   <Text style={styles.metaText}>{booking.trip?.location || 'India'}</Text>
-                  <Calendar size={12} color={COLORS.textMuted} style={{ marginLeft: SPACING.sm }} />
+                  <Calendar size={12} color={colors.textMuted} style={{ marginLeft: SPACING.sm }} />
                   <Text style={styles.metaText}>{booking.startDate || 'Upcoming'}</Text>
                 </View>
                 <View style={styles.metaRow}>
-                  <Users size={12} color={COLORS.textMuted} />
+                  <Users size={12} color={colors.textMuted} />
                   <Text style={styles.metaText}>Travelers: {booking.travelersCount || 1}</Text>
                 </View>
 
@@ -101,10 +104,11 @@ export default function MyTripsScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+function getStyles(colors) {
+  return StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: colors.background,
   },
   content: {
     padding: SPACING.lg,
@@ -121,7 +125,7 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
-    backgroundColor: COLORS.surfaceMuted,
+    backgroundColor: colors.surfaceMuted,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: SPACING.md,
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
   bookingTitle: {
     fontFamily: FONTS.heading,
     fontSize: 16,
-    color: COLORS.ink,
+    color: colors.ink,
     flex: 1,
     marginRight: SPACING.xs,
   },
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
   metaText: {
     fontFamily: FONTS.body,
     fontSize: 13,
-    color: COLORS.textMuted,
+    color: colors.textMuted,
   },
   priceRow: {
     flexDirection: 'row',
@@ -157,16 +161,17 @@ const styles = StyleSheet.create({
     marginTop: SPACING.md,
     paddingTop: SPACING.sm,
     borderTopWidth: 1,
-    borderTopColor: COLORS.divider,
+    borderTopColor: colors.divider,
   },
   priceLabel: {
     fontFamily: FONTS.body,
     fontSize: 12,
-    color: COLORS.textMuted,
+    color: colors.textMuted,
   },
   priceVal: {
     fontFamily: FONTS.heading,
     fontSize: 16,
-    color: COLORS.ink,
+    color: colors.ink,
   },
-});
+  });
+}
