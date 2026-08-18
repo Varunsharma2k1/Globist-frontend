@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Globist",
+    "slug": "globist",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.globist.app"
+    },
+    "android": {
+      "package": "com.globist.app",
+      "config": {
+        "googleMaps": {
+          "apiKey": "REPLACE_WITH_YOUR_ANDROID_MAPS_API_KEY"
+        }
+      }
+    },
+    "plugins": [
+      "expo-font",
+      "expo-video",
+      "expo-dev-client",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Globist uses your location to point you toward trending destinations on the Explore radar."
+        }
+      ]
+    ]
+  }
+}
