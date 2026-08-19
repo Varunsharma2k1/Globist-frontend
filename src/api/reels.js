@@ -20,8 +20,21 @@ import { CONFIG } from '../config';
 export const getReels = async () => {
   const response = await client.get('/reels', { params: { limit: 30 } });
   const reels = response.data.reels || response.data || [];
-  return reels.filter((r) => Boolean(r.mediaUrl));
+  return reels.filter((r) => Boolean(r.mediaUrl)).map((r) => ({ ...r, mediaUrl: resolveMediaUrl(r.mediaUrl) }));
 };
+
+/**
+ * The server may return either a relative path (e.g. /uploads/reels/x.mp4)
+ * or an already-absolute URL. The video player needs an absolute URL, so
+ * relative paths are resolved against the API's own origin.
+ * @param {string} mediaUrl
+ * @returns {string}
+ */
+function resolveMediaUrl(mediaUrl) {
+  if (!mediaUrl || !mediaUrl.startsWith('/')) return mediaUrl;
+  const origin = CONFIG.API_BASE_URL.replace(/\/api\/?$/, '');
+  return `${origin}${mediaUrl}`;
+}
 
 /**
  * Submits a new travel reel.
@@ -51,10 +64,7 @@ export const uploadReelMedia = async (file) => {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 
-  // Server returns a relative path (e.g. /uploads/reels/xyz.mp4); resolve it
-  // against the API's origin so the video player gets a playable absolute URL.
-  const origin = CONFIG.API_BASE_URL.replace(/\/api\/?$/, '');
-  return `${origin}${response.data.url}`;
+  return resolveMediaUrl(response.data.url);
 };
 
 /**
