@@ -21,7 +21,8 @@
           "photosPermission": "Globist needs access to your photos so you can post a travel reel.",
           "videoPermission": "Globist needs access to your videos so you can post a travel reel."
         }
-      ]
+      ],
+      "expo-status-bar"
     ]
   }
 }
