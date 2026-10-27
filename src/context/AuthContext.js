@@ -4,7 +4,6 @@ import { STORAGE_KEYS } from '../config';
 import {
   loginUser,
   signupUser,
-  googleLoginUser,
   setAccountType,
   getCurrentUser,
 } from '../api/auth';
@@ -13,7 +12,7 @@ import {
  * Global Authentication Context & State Provider
  *
  * Manages the active user session (JWT + cached user in AsyncStorage) and the
- * auth actions: email login/signup, Google sign-in, one-time account type
+ * auth actions: email login/signup, one-time account type
  * selection and logout. Screens never touch tokens directly.
  */
 export const AuthContext = createContext();
@@ -89,8 +88,6 @@ export const AuthProvider = ({ children }) => {
   const signup = async ({ name, email, password }) =>
     persistSession(await signupUser({ name, email, password }));
 
-  const loginWithGoogle = async (idToken) => persistSession(await googleLoginUser(idToken));
-
   /**
    * Saves the traveller / creator / agency choice for a brand-new account,
    * which also dismisses the account-type prompt.
@@ -112,7 +109,6 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         signup,
-        loginWithGoogle,
         selectAccountType,
         logout,
         setUser,
