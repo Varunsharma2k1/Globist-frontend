@@ -1,22 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, LAYOUT } from '../../../theme';
+import { OCCUPANCY_LABELS, defaultOccupancy, priceForOccupancy } from '../../../data/occupancy';
 import { useTripDetail } from '../hooks/useTripDetail';
-import TripHero from '../components/TripHero';
-import TripMetaCard from '../components/TripMetaCard';
+import TripDetailHero from '../components/TripDetailHero';
+import TripOverview from '../components/TripOverview';
+import TripOccupancyPicker from '../components/TripOccupancyPicker';
+import TripItinerary from '../components/TripItinerary';
 import TripInclusionsList from '../components/TripInclusionsList';
 import TripBottomBar from '../components/TripBottomBar';
 
 /**
  * TripDetailScreen Component
  *
- * Displays itinerary, inclusions, agency verification badge, and booking
- * action bar for a specific package. Data fetching lives in useTripDetail;
- * each visual section is its own component (see ../components) — this file
- * is just the layout.
+ * Cover photo, overview (agency with verified tick + rating), room-sharing
+ * picker, day-wise itinerary, inclusions/exclusions, and a booking bar
+ * priced for the selected room sharing. Data fetching lives in
+ * useTripDetail; each visual section is its own component (see
+ * ../components) — this file is just the layout.
  */
 export default function TripDetailScreen({ route, navigation }) {
   const { colors } = useTheme();
@@ -26,6 +30,7 @@ export default function TripDetailScreen({ route, navigation }) {
   // button; it's passed through untouched so Booking can attribute it.
   const { tripId, referral } = route.params || {};
   const { trip: item, loading } = useTripDetail(tripId);
+  const [pickedOccupancy, setPickedOccupancy] = useState(null);
 
   if (loading) {
     return (
@@ -36,18 +41,32 @@ export default function TripDetailScreen({ route, navigation }) {
     );
   }
 
+  const occupancy = pickedOccupancy || defaultOccupancy(item);
+
   return (
     <View style={styles.container}>
-      <Header title={item.title} onBack={() => navigation.goBack()} />
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 100 + insets.bottom }]}>
-        <TripHero item={item} />
-        <TripMetaCard item={item} />
-        <TripInclusionsList description={item.description} inclusions={item.inclusions} />
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
+        showsVerticalScrollIndicator={false}
+      >
+        <TripDetailHero trip={item} onBack={() => navigation.goBack()} />
+        <View style={styles.content}>
+          <TripOverview trip={item} />
+          <TripOccupancyPicker
+            options={item.occupancyPricing}
+            value={occupancy}
+            onChange={setPickedOccupancy}
+          />
+          <TripInclusionsList description={item.description} highlights={item.highlights} />
+          <TripItinerary itinerary={item.itinerary} />
+          <TripInclusionsList inclusions={item.inclusions} exclusions={item.exclusions} />
+        </View>
       </ScrollView>
 
       <TripBottomBar
-        price={item.price}
-        onBookPress={() => navigation.navigate('Booking', { trip: item, referral })}
+        price={priceForOccupancy(item, occupancy)}
+        priceNote={occupancy ? OCCUPANCY_LABELS[occupancy] : null}
+        onBookPress={() => navigation.navigate('Booking', { trip: item, referral, occupancy })}
       />
     </View>
   );
@@ -61,7 +80,6 @@ function getStyles(colors) {
     },
     content: {
       padding: SPACING.lg,
-      paddingBottom: 100,
       width: '100%',
       maxWidth: LAYOUT.contentMaxWidth,
       alignSelf: 'center',

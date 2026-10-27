@@ -13,6 +13,8 @@ import PaymentMethodPicker from '../components/PaymentMethodPicker';
 import PriceBreakdownCard from '../components/PriceBreakdownCard';
 import BookingBottomBar from '../components/BookingBottomBar';
 import BookingConfirmedView from '../components/BookingConfirmedView';
+import TripOccupancyPicker from '../../tripDetail/components/TripOccupancyPicker';
+import { OCCUPANCY_LABELS } from '../../../data/occupancy';
 
 /**
  * BookingScreen Component
@@ -26,9 +28,9 @@ export default function BookingScreen({ route, navigation }) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
-  const { trip, referral } = route.params || {};
+  const { trip, referral, occupancy } = route.params || {};
 
-  const form = useBookingForm(trip, referral);
+  const form = useBookingForm(trip, referral, occupancy);
 
   if (form.confirmed) {
     return (
@@ -48,6 +50,13 @@ export default function BookingScreen({ route, navigation }) {
           trip={trip}
           pricePerPerson={form.pricePerPerson}
           referralHandle={referral?.creatorHandle}
+        />
+
+        <TripOccupancyPicker
+          options={trip?.occupancyPricing}
+          value={form.occupancy}
+          onChange={form.setOccupancy}
+          compact
         />
 
         <Text style={typography.h3}>Booking Details</Text>
@@ -82,6 +91,7 @@ export default function BookingScreen({ route, navigation }) {
         <PriceBreakdownCard
           travelers={form.travelers}
           pricePerPerson={form.pricePerPerson}
+          occupancyLabel={form.occupancy ? OCCUPANCY_LABELS[form.occupancy] : null}
           subtotal={form.subtotal}
           serviceFee={form.serviceFee}
           totalPrice={form.totalPrice}

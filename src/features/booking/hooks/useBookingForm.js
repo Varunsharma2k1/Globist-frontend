@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createBooking } from '../../../api';
 import { useAuth } from '../../../hooks/useAuth';
+import { defaultOccupancy, priceForOccupancy } from '../../../data/occupancy';
 
 const SERVICE_FEE_RATE = 0.03;
 const MIN_TRAVELERS = 1;
@@ -12,18 +13,20 @@ const MAX_TRAVELERS = 8;
  * @param {Object} trip - the trip being booked (from route params)
  * @param {Object} [referral] - reel attribution from route params (see
  *   buildReferral in features/reels/utils); absent for direct bookings
+ * @param {string} [initialOccupancy] - room sharing picked on the trip page
  */
-export function useBookingForm(trip, referral) {
+export function useBookingForm(trip, referral, initialOccupancy) {
   const { user } = useAuth();
 
   const [travelers, setTravelers] = useState(1);
+  const [occupancy, setOccupancy] = useState(initialOccupancy || defaultOccupancy(trip));
   const [date, setDate] = useState('2026-10-15');
   const [phone, setPhone] = useState(user?.phone || '');
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [loading, setLoading] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
-  const pricePerPerson = trip?.price || 18000;
+  const pricePerPerson = priceForOccupancy(trip, occupancy) || 18000;
   const subtotal = pricePerPerson * travelers;
   const serviceFee = Math.round(subtotal * SERVICE_FEE_RATE);
   const totalPrice = subtotal + serviceFee;
@@ -42,6 +45,7 @@ export function useBookingForm(trip, referral) {
       await createBooking({
         tripId: trip?._id,
         travelersCount: travelers,
+        occupancy: occupancy || undefined,
         startDate: date,
         paymentMethod: backendPaymentMethod,
         referredBy: referral?.referredBy,
@@ -57,6 +61,8 @@ export function useBookingForm(trip, referral) {
   return {
     travelers,
     adjustTravelers,
+    occupancy,
+    setOccupancy,
     date,
     setDate,
     phone,

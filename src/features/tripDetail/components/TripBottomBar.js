@@ -5,7 +5,7 @@ import Button from '../../../components/Button';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS, LAYOUT } from '../../../theme';
 
-export default function TripBottomBar({ price, onBookPress }) {
+export default function TripBottomBar({ price, priceNote, onBookPress }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
@@ -14,10 +14,15 @@ export default function TripBottomBar({ price, onBookPress }) {
     <View style={[styles.bottomBar, { height: 84 + insets.bottom, paddingBottom: insets.bottom }]}>
       <View style={styles.bottomBarInner}>
         <View>
-          <Text style={styles.priceLabel}>Total Price</Text>
-          <Text style={styles.priceVal}>₹{(price || 18000).toLocaleString()}</Text>
+          {Number.isFinite(price) ? (
+            <Text style={styles.priceVal}>
+              ₹{price.toLocaleString()}
+              <Text style={styles.priceUnit}> / person</Text>
+            </Text>
+          ) : null}
+          {priceNote ? <Text style={styles.priceLabel}>{priceNote}</Text> : null}
         </View>
-        <Button title="Proceed to Book" onPress={onBookPress} style={{ width: 170 }} />
+        <Button title="Book now" onPress={onBookPress} style={{ width: 150 }} />
       </View>
     </View>
   );
@@ -32,7 +37,7 @@ function getStyles(colors) {
       right: 0,
       height: 84,
       backgroundColor: colors.surface,
-      borderTopWidth: 2,
+      borderTopWidth: StyleSheet.hairlineWidth,
       borderTopColor: colors.divider,
       paddingHorizontal: SPACING.lg,
     },
@@ -47,13 +52,19 @@ function getStyles(colors) {
     },
     priceLabel: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
+      marginTop: 2,
     },
     priceVal: {
       fontFamily: FONTS.heading,
       fontSize: 20,
       color: colors.ink,
+    },
+    priceUnit: {
+      fontFamily: FONTS.body,
+      fontSize: 13,
+      color: colors.textMuted,
     },
   });
 }

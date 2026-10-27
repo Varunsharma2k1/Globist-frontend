@@ -8,15 +8,25 @@
  * of being duplicated (or missed) across screens.
  */
 
-export function normalizeTrip(trip) {
-  if (!trip) return trip;
+import { withTripExtras } from '../data/trips';
+
+export function normalizeTrip(rawTrip) {
+  if (!rawTrip) return rawTrip;
+  // Frontend-only detail (room-sharing prices, richer itinerary, ...) — see
+  // src/data/trips.
+  const trip = withTripExtras(rawTrip);
+  // Cheapest room-sharing option first; `price` is the "starting from" rate.
+  const occupancyPricing = [...(trip.occupancyPricing || [])].sort(
+    (a, b) => a.pricePerPerson - b.pricePerPerson
+  );
   return {
     ...trip,
     title: trip.name,
-    price: trip.pricePerPerson,
+    price: occupancyPricing.length ? occupancyPricing[0].pricePerPerson : trip.pricePerPerson,
+    occupancyPricing,
     duration: typeof trip.duration === 'number' ? `${trip.duration} Days` : trip.duration,
     rating: trip.agency?.rating,
-    inclusions: trip.itinerary?.length ? trip.itinerary.map((i) => i.title) : undefined,
+    reviewCount: trip.agency?.reviewCount,
     location: trip.region?.name || trip.location,
   };
 }

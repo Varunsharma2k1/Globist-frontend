@@ -16,6 +16,8 @@ export default function Input({
   onRightIconPress,
   onSubmitEditing,
   returnKeyType,
+  onFocus,
+  onBlur,
   style,
 }) {
   const { colors } = useTheme();
@@ -41,6 +43,8 @@ export default function Input({
           multiline={multiline}
           onSubmitEditing={onSubmitEditing}
           returnKeyType={returnKeyType}
+          onFocus={onFocus}
+          onBlur={onBlur}
         />
         {rightIcon && (
           <TouchableOpacity

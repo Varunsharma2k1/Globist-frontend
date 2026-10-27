@@ -12,6 +12,7 @@ const SHARED = {
   successBg: 'rgba(29, 158, 117, 0.12)',
   error: '#E24B4A',
   errorBg: 'rgba(226, 75, 74, 0.12)',
+  verified: '#1D9BF0', // blue tick for verified agencies
   pastel: {
     mountain: { bg: '#DFE9DA', fg: '#3F5C3A' },
     beach: { bg: '#DBE6F2', fg: '#2F4D6E' },

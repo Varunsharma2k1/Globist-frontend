@@ -1,5 +1,6 @@
 import client from './client';
 import { normalizeTrip, normalizeBooking } from './normalize';
+import { mergeLocalTrips, getLocalTrip } from '../data/trips';
 
 /**
  * Trips & Bookings API Service
@@ -13,8 +14,11 @@ import { normalizeTrip, normalizeBooking } from './normalize';
  * @returns {Promise<{trips: Array}>}
  */
 export const getExploreTrips = async () => {
-  const response = await client.get('/trips');
-  return { trips: (response.data || []).map(normalizeTrip) };
+  // The API defaults to 20 trips; Explore filters client-side, so ask for
+  // the whole catalogue.
+  const response = await client.get('/trips', { params: { limit: 100 } });
+  // Plus the app's frontend-only reference packages (see src/data/trips).
+  return { trips: mergeLocalTrips(response.data || []).map(normalizeTrip) };
 };
 
 /**
@@ -25,6 +29,10 @@ export const getExploreTrips = async () => {
  * @returns {Promise<Object>}
  */
 export const getTripById = async (tripId) => {
+  // Frontend-only reference packages aren't in the backend.
+  const localTrip = getLocalTrip(tripId);
+  if (localTrip) return { ...normalizeTrip(localTrip), relatedTrips: [] };
+
   const response = await client.get(`/trips/${tripId}`);
   return {
     ...normalizeTrip(response.data.trip),
@@ -56,6 +64,7 @@ export const createBooking = async (bookingData) => {
     checkIn,
     checkOut,
     adults: bookingData.travelersCount,
+    occupancy: bookingData.occupancy,
     paymentMethod: bookingData.paymentMethod,
     referredBy: bookingData.referredBy,
   });

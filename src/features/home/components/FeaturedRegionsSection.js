@@ -12,7 +12,7 @@ export default function FeaturedRegionsSection({ regions, loading, navigation })
   return (
     <>
       <SectionHeader title="Featured Regions">
-        <TouchableOpacity onPress={() => navigation.navigate('Explore')}>
+        <TouchableOpacity onPress={() => navigation.navigate('ExploreTab')}>
           <Text style={styles.seeAll}>See All</Text>
         </TouchableOpacity>
       </SectionHeader>
