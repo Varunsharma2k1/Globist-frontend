@@ -23,7 +23,7 @@ const ACCOUNT_TYPES = [
 
 /**
  * One-time prompt shown over the home screen right after a brand-new account
- * signs up (email or Google). It can't be dismissed: the chosen type is saved
+ * signs up. It can't be dismissed: the chosen type is saved
  * on the user and shown as the badge on their profile.
  */
 export default function AccountTypeModal() {

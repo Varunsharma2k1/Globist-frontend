@@ -30,16 +30,6 @@ export const signupUser = async (userData) => {
 };
 
 /**
- * Exchanges a Google ID token for a Triptape session (creates the account on
- * first use).
- * @param {string} idToken
- */
-export const googleLoginUser = async (idToken) => {
-  const response = await client.post('/auth/google', { idToken });
-  return toSession(response.data);
-};
-
-/**
  * Saves the one-time account type choice for a newly created account.
  * @param {'traveler'|'creator'|'agency'} role
  * @returns {Promise<Object>} Updated user
