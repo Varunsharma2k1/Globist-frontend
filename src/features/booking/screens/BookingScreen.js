@@ -26,9 +26,9 @@ export default function BookingScreen({ route, navigation }) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
-  const { trip } = route.params || {};
+  const { trip, referral } = route.params || {};
 
-  const form = useBookingForm(trip);
+  const form = useBookingForm(trip, referral);
 
   if (form.confirmed) {
     return (
@@ -44,7 +44,11 @@ export default function BookingScreen({ route, navigation }) {
     <View style={styles.container}>
       <Header title="Confirm Booking" onBack={() => navigation.goBack()} />
       <ScrollView contentContainerStyle={[styles.content, { paddingBottom: 100 + insets.bottom }]}>
-        <BookingSummaryCard trip={trip} pricePerPerson={form.pricePerPerson} />
+        <BookingSummaryCard
+          trip={trip}
+          pricePerPerson={form.pricePerPerson}
+          referralHandle={referral?.creatorHandle}
+        />
 
         <Text style={typography.h3}>Booking Details</Text>
         <View style={{ marginTop: SPACING.sm }}>

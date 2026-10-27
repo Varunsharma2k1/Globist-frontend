@@ -1,32 +1,37 @@
-import { useState } from 'react';
-import { likeReel } from '../../../api';
+import { useCallback, useState } from 'react';
+import { useReelEngagement } from '../context/ReelEngagementContext';
 
 /**
- * Owns like/unlike state for a single reel and the optimistic-update +
- * best-effort API call that goes with it. Only hits the network for reels
- * that actually exist server-side (have an `_id`) — local-only preview
- * reels (e.g. Post Reel's template preview) just update UI state.
+ * Like/unlike state for a single reel — demo only for now, no API call.
+ *
+ * The displayed count is derived (`reel.likes` + 1 while liked) rather than
+ * incremented, so rapid repeated taps can only flip the liked flag and can
+ * never double-count. Saved reels share state through ReelEngagementContext;
+ * unsaved preview reels (no `_id`) just keep it locally.
  *
  * @param {{ _id?: string, likes?: number }} reel
  */
 export function useReelLike(reel) {
-  const [likes, setLikes] = useState(reel.likes || 0);
-  const [liked, setLiked] = useState(false);
+  const engagement = useReelEngagement();
+  const [localLiked, setLocalLiked] = useState(false);
+  const reelId = reel._id;
+  const shared = Boolean(engagement && reelId);
 
-  const handleLike = async () => {
-    try {
-      const newLiked = !liked;
-      setLiked(newLiked);
-      setLikes((prev) => (newLiked ? prev + 1 : Math.max(0, prev - 1)));
-      if (reel._id) {
-        await likeReel(reel._id);
-      }
-    } catch (error) {
-      console.warn('[useReelLike] Error liking reel:', error);
-    }
-  };
+  const liked = shared ? Boolean(engagement.likedById[reelId]) : localLiked;
+  const likes = (reel.likes || 0) + (liked ? 1 : 0);
 
-  return { likes, liked, handleLike };
+  const handleLike = useCallback(() => {
+    if (shared) engagement.toggleLiked(reelId);
+    else setLocalLiked((v) => !v);
+  }, [shared, engagement, reelId]);
+
+  // Double-tap only ever likes (never unlikes), matching Instagram.
+  const likeOnce = useCallback(() => {
+    if (shared) engagement.setLiked(reelId, true);
+    else setLocalLiked(true);
+  }, [shared, engagement, reelId]);
+
+  return { likes, liked, handleLike, likeOnce };
 }
 
 export default useReelLike;

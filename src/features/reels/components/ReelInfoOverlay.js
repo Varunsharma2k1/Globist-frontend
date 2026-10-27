@@ -1,31 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { User, Music2, BadgeCheck } from 'lucide-react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { Music2, MapPin } from 'lucide-react-native';
 import Tag from '../../../components/Tag';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
+import { formatCreatorTier, initialsOf } from '../utils/reelFormat';
 
 /**
- * Bottom-left overlay: creator row (avatar, handle, tier, follow), caption,
- * music attribution, and an optional "verified agency" badge.
+ * Bottom-left caption block: creator row (avatar, handle, tier, follow),
+ * an expandable caption, location, and music attribution. Sits in normal
+ * flow beside the actions rail; the agency/booking info lives in
+ * ReelBookingBar underneath.
  */
-export default function ReelInfoOverlay({ reel, onCreatorPress, onAgencyPress }) {
+export default function ReelInfoOverlay({ reel, onCreatorPress }) {
   const [following, setFollowing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const handle = reel.creatorHandle || '@explorer';
+  const avatarUri = reel.user?.avatar;
 
   return (
-    <View style={styles.infoOverlay}>
-      <TouchableOpacity
-        style={styles.creatorRow}
-        onPress={() => onCreatorPress && onCreatorPress(reel)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.avatar}>
-          <User size={16} color="#FFFFFF" />
-        </View>
-        <Text style={styles.creatorName} numberOfLines={1}>
-          {reel.creatorHandle || '@explorer'}
-        </Text>
+    <View style={styles.info} pointerEvents="box-none">
+      <View style={styles.creatorRow}>
+        <TouchableOpacity
+          style={styles.creatorTap}
+          onPress={() => onCreatorPress && onCreatorPress(reel)}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${handle}'s profile`}
+        >
+          {avatarUri ? (
+            <Image source={{ uri: avatarUri }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{initialsOf(handle)}</Text>
+            </View>
+          )}
+          <Text style={styles.creatorName} numberOfLines={1}>
+            {handle}
+          </Text>
+        </TouchableOpacity>
         <View style={styles.tierTagWrap}>
-          <Tag label={reel.creatorTier || 'Gold Creator'} variant="primary" />
+          <Tag label={formatCreatorTier(reel.creatorTier)} variant="primary" />
         </View>
         <TouchableOpacity
           style={[styles.followBtn, following && styles.followingBtn]}
@@ -36,68 +50,84 @@ export default function ReelInfoOverlay({ reel, onCreatorPress, onAgencyPress })
             {following ? 'Following' : 'Follow'}
           </Text>
         </TouchableOpacity>
-      </TouchableOpacity>
-
-      <Text style={styles.caption} numberOfLines={2}>
-        {reel.caption || 'Exploring majestic mountain views.'}
-      </Text>
-      <View style={styles.musicRow}>
-        <Music2 size={13} color="rgba(255,255,255,0.75)" />
-        <Text style={styles.musicTitle} numberOfLines={1}>
-          {reel.musicTitle || 'Original Travel Sound'}
-        </Text>
       </View>
 
-      {reel.agency && (
-        <TouchableOpacity
-          style={styles.agencyBadge}
-          onPress={() => onAgencyPress && onAgencyPress(reel.agency)}
-          activeOpacity={0.7}
-        >
-          <BadgeCheck size={13} color="#FFFFFF" />
-          <Text style={styles.agencyText}>
-            Verified Agency: {reel.agency.name || 'Himalayan Treks'} →
+      <TouchableOpacity activeOpacity={0.9} onPress={() => setExpanded((v) => !v)}>
+        <Text style={styles.caption} numberOfLines={expanded ? 6 : 2}>
+          {reel.caption || 'Exploring majestic mountain views.'}
+        </Text>
+      </TouchableOpacity>
+
+      <View style={styles.metaRow}>
+        {reel.location ? (
+          <View style={styles.metaItem}>
+            <MapPin size={12} color="rgba(255,255,255,0.8)" />
+            <Text style={styles.metaText} numberOfLines={1}>
+              {reel.location}
+            </Text>
+          </View>
+        ) : null}
+        <View style={[styles.metaItem, styles.musicItem]}>
+          <Music2 size={12} color="rgba(255,255,255,0.75)" />
+          <Text style={styles.metaText} numberOfLines={1}>
+            {reel.musicTitle || 'Original Travel Sound'}
           </Text>
-        </TouchableOpacity>
-      )}
+        </View>
+      </View>
     </View>
   );
 }
 
+const TEXT_SHADOW = {
+  textShadowColor: 'rgba(0,0,0,0.45)',
+  textShadowOffset: { width: 0, height: 1 },
+  textShadowRadius: 3,
+};
+
 const styles = StyleSheet.create({
-  infoOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 80,
-    bottom: SPACING.md,
-    paddingLeft: SPACING.sm,
-    paddingRight: SPACING.lg,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xs,
+  info: {
+    flex: 1,
+    minWidth: 0,
+    paddingLeft: SPACING.md,
+    paddingRight: SPACING.sm,
   },
   creatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     marginBottom: SPACING.sm,
   },
+  creatorTap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+    marginRight: SPACING.xs,
+  },
   avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
     backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: SPACING.xs,
+    marginRight: SPACING.sm,
+  },
+  avatarText: {
+    fontFamily: FONTS.bold,
+    fontSize: 13,
+    color: '#FFFFFF',
   },
   creatorName: {
     fontFamily: FONTS.heading,
     fontSize: 14,
     color: '#FFFFFF',
-    marginRight: SPACING.xs,
     flexShrink: 1,
+    ...TEXT_SHADOW,
   },
   tierTagWrap: {
-    marginRight: SPACING.xs,
+    marginTop: SPACING.xs,
   },
   followBtn: {
     paddingHorizontal: SPACING.sm + 2,
@@ -122,33 +152,29 @@ const styles = StyleSheet.create({
     fontFamily: FONTS.body,
     fontSize: 14,
     color: '#FFFFFF',
-    marginBottom: SPACING.xs,
+    marginBottom: SPACING.sm,
     lineHeight: 20,
+    ...TEXT_SHADOW,
   },
-  musicRow: {
+  metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: SPACING.sm,
+    gap: SPACING.md,
   },
-  musicTitle: {
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flexShrink: 1,
+  },
+  musicItem: {
+    flex: 1,
+  },
+  metaText: {
     fontFamily: FONTS.body,
     fontSize: 12,
-    color: 'rgba(255,255,255,0.75)',
-  },
-  agencyBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: RADIUS.pill,
-    alignSelf: 'flex-start',
-  },
-  agencyText: {
-    fontFamily: FONTS.bold,
-    fontSize: 12,
-    color: '#FFFFFF',
+    color: 'rgba(255,255,255,0.8)',
+    flexShrink: 1,
+    ...TEXT_SHADOW,
   },
 });

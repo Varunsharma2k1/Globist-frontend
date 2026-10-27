@@ -1,25 +1,27 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Text,
   Modal,
+  FlatList,
   TouchableOpacity,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
-  ScrollView,
   TextInput,
   Platform,
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { User, Send, X } from 'lucide-react-native';
+import { Send, X } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
+import ReelCommentRow, { CommentAvatar } from './ReelCommentRow';
 
 /**
  * Comments bottom sheet — a real Modal (not part of the reel's own overlay
  * stack) since it needs to sit on the app's normal light/dark surface, not
- * the reel's always-dark video backdrop.
+ * the reel's always-dark video backdrop. Comments are demo data, local to
+ * this session.
  */
 export default function ReelCommentsSheet({
   visible,
@@ -28,45 +30,68 @@ export default function ReelCommentsSheet({
   onChangeText,
   onPostComment,
   onClose,
+  currentUserName,
 }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
+  const listRef = useRef(null);
+  const canPost = commentText.trim().length > 0;
+
+  const handlePost = () => {
+    // New comments go on top, so bring the list back up to show it.
+    if (onPostComment()) listRef.current?.scrollToOffset({ offset: 0, animated: true });
+  };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      transparent
+      statusBarTranslucent
+      onRequestClose={onClose}
+    >
       <KeyboardAvoidingView
         style={styles.modalRoot}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <TouchableWithoutFeedback onPress={onClose}>
+        <TouchableWithoutFeedback onPress={onClose} accessibilityLabel="Close comments">
           <View style={styles.modalBackdrop} />
         </TouchableWithoutFeedback>
 
         <View style={styles.commentsSheet}>
           <View style={styles.sheetHandle} />
           <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>Comments · {comments.length}</Text>
-            <TouchableOpacity onPress={onClose}>
+            <View style={{ width: 20 }} />
+            <Text style={styles.sheetTitle}>Comments</Text>
+            <TouchableOpacity
+              onPress={onClose}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityRole="button"
+              accessibilityLabel="Close comments"
+            >
               <X size={20} color={colors.text} />
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.commentsList} keyboardShouldPersistTaps="handled">
-            {comments.map((c) => (
-              <View key={c.id} style={styles.commentRow}>
-                <View style={styles.commentAvatar}>
-                  <User size={14} color={colors.ink} />
-                </View>
-                <View style={styles.commentBody}>
-                  <Text style={styles.commentAuthor}>{c.author}</Text>
-                  <Text style={styles.commentText}>{c.text}</Text>
-                </View>
+          <FlatList
+            ref={listRef}
+            data={comments}
+            keyExtractor={(c) => c.id}
+            renderItem={({ item }) => <ReelCommentRow comment={item} />}
+            style={styles.commentsList}
+            contentContainerStyle={styles.commentsContent}
+            keyboardShouldPersistTaps="handled"
+            ListEmptyComponent={
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyTitle}>No comments yet</Text>
+                <Text style={styles.emptyText}>Start the conversation.</Text>
               </View>
-            ))}
-          </ScrollView>
+            }
+          />
 
           <View style={[styles.commentInputRow, { paddingBottom: SPACING.sm + insets.bottom }]}>
+            <CommentAvatar name={currentUserName || 'You'} />
             <TextInput
               style={styles.commentInput}
               value={commentText}
@@ -74,15 +99,19 @@ export default function ReelCommentsSheet({
               placeholder="Add a comment..."
               placeholderTextColor={colors.textMuted}
               returnKeyType="send"
-              onSubmitEditing={onPostComment}
+              onSubmitEditing={handlePost}
+              submitBehavior="submit"
+              maxLength={500}
             />
             <TouchableOpacity
-              style={styles.commentPostBtn}
-              onPress={onPostComment}
-              disabled={!commentText.trim()}
+              style={[styles.commentPostBtn, canPost && { backgroundColor: colors.ink }]}
+              onPress={handlePost}
+              disabled={!canPost}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel="Post comment"
             >
-              <Send size={18} color={commentText.trim() ? colors.ink : colors.textMuted} />
+              <Send size={16} color={canPost ? colors.inkContrast : colors.textMuted} />
             </TouchableOpacity>
           </View>
         </View>
@@ -105,7 +134,8 @@ function getStyles(colors) {
       backgroundColor: colors.background,
       borderTopLeftRadius: RADIUS.lg,
       borderTopRightRadius: RADIUS.lg,
-      maxHeight: '70%',
+      maxHeight: '75%',
+      minHeight: '45%',
       paddingTop: SPACING.sm,
     },
     sheetHandle: {
@@ -122,7 +152,7 @@ function getStyles(colors) {
       alignItems: 'center',
       paddingHorizontal: SPACING.lg,
       paddingBottom: SPACING.sm,
-      borderBottomWidth: 1,
+      borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: colors.divider,
     },
     sheetTitle: {
@@ -131,44 +161,36 @@ function getStyles(colors) {
       color: colors.ink,
     },
     commentsList: {
+      flexGrow: 1,
+    },
+    commentsContent: {
       paddingHorizontal: SPACING.lg,
-    },
-    commentRow: {
-      flexDirection: 'row',
       paddingVertical: SPACING.sm,
-      gap: SPACING.sm,
     },
-    commentAvatar: {
-      width: 30,
-      height: 30,
-      borderRadius: 15,
-      backgroundColor: colors.surfaceMuted,
-      justifyContent: 'center',
+    emptyState: {
       alignItems: 'center',
+      paddingVertical: SPACING.xl,
     },
-    commentBody: {
-      flex: 1,
-    },
-    commentAuthor: {
+    emptyTitle: {
       fontFamily: FONTS.heading,
-      fontSize: 12,
+      fontSize: 15,
       color: colors.ink,
-      marginBottom: 2,
     },
-    commentText: {
+    emptyText: {
       fontFamily: FONTS.body,
       fontSize: 13,
-      color: colors.text,
-      lineHeight: 18,
+      color: colors.textMuted,
+      marginTop: SPACING.xs,
     },
     commentInputRow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: SPACING.sm,
-      paddingHorizontal: SPACING.lg,
+      paddingHorizontal: SPACING.md,
       paddingTop: SPACING.sm,
-      borderTopWidth: 1,
+      borderTopWidth: StyleSheet.hairlineWidth,
       borderTopColor: colors.divider,
+      backgroundColor: colors.background,
     },
     commentInput: {
       flex: 1,
@@ -181,9 +203,9 @@ function getStyles(colors) {
       color: colors.ink,
     },
     commentPostBtn: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 38,
+      height: 38,
+      borderRadius: 19,
       justifyContent: 'center',
       alignItems: 'center',
     },

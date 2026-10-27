@@ -10,8 +10,10 @@ const MAX_TRAVELERS = 8;
  * Owns the booking checkout form's state, derived pricing, and submission.
  *
  * @param {Object} trip - the trip being booked (from route params)
+ * @param {Object} [referral] - reel attribution from route params (see
+ *   buildReferral in features/reels/utils); absent for direct bookings
  */
-export function useBookingForm(trip) {
+export function useBookingForm(trip, referral) {
   const { user } = useAuth();
 
   const [travelers, setTravelers] = useState(1);
@@ -42,6 +44,7 @@ export function useBookingForm(trip) {
         travelersCount: travelers,
         startDate: date,
         paymentMethod: backendPaymentMethod,
+        referredBy: referral?.referredBy,
       });
     } catch (error) {
       console.warn('[useBookingForm] Booking submission error:', error);

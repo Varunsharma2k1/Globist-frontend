@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { MapPin } from 'lucide-react-native';
+import { MapPin, Film } from 'lucide-react-native';
 import Card from '../../../components/Card';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
 
-export default function BookingSummaryCard({ trip, pricePerPerson }) {
+export default function BookingSummaryCard({ trip, pricePerPerson, referralHandle }) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors);
 
@@ -17,6 +17,12 @@ export default function BookingSummaryCard({ trip, pricePerPerson }) {
         <Text style={styles.summaryLoc}>{trip?.location || 'Himachal Pradesh'}</Text>
       </View>
       <Text style={styles.summaryPrice}>₹{pricePerPerson.toLocaleString()} / person</Text>
+      {referralHandle ? (
+        <View style={styles.referralRow}>
+          <Film size={12} color={colors.textMuted} />
+          <Text style={styles.referralText}>Booking via {referralHandle}&apos;s reel</Text>
+        </View>
+      ) : null}
     </Card>
   );
 }
@@ -42,6 +48,17 @@ function getStyles(colors) {
       fontFamily: FONTS.heading,
       fontSize: 15,
       color: colors.ink,
+    },
+    referralRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      marginTop: SPACING.sm,
+    },
+    referralText: {
+      fontFamily: FONTS.body,
+      fontSize: 12,
+      color: colors.textMuted,
     },
   });
 }

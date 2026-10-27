@@ -22,7 +22,9 @@ export default function TripDetailScreen({ route, navigation }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
-  const { tripId } = route.params || {};
+  // `referral` is only present when the user arrived from a reel's Book
+  // button; it's passed through untouched so Booking can attribute it.
+  const { tripId, referral } = route.params || {};
   const { trip: item, loading } = useTripDetail(tripId);
 
   if (loading) {
@@ -45,7 +47,7 @@ export default function TripDetailScreen({ route, navigation }) {
 
       <TripBottomBar
         price={item.price}
-        onBookPress={() => navigation.navigate('Booking', { trip: item })}
+        onBookPress={() => navigation.navigate('Booking', { trip: item, referral })}
       />
     </View>
   );
