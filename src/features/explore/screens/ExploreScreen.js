@@ -120,7 +120,12 @@ export default function ExploreScreen({ navigation, route }) {
         data={filteredTrips}
         keyExtractor={(trip) => trip._id || trip.title}
         renderItem={({ item, index }) => (
-          <ExploreTripCard trip={item} index={index} onPress={() => openTrip(item)} />
+          <ExploreTripCard
+            trip={item}
+            index={index}
+            onPress={() => openTrip(item)}
+            onAgencyPress={(agency) => navigation.navigate('AgencyProfile', { agency })}
+          />
         )}
         ListHeaderComponent={listHeader}
         ListFooterComponent={

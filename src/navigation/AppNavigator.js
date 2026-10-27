@@ -10,6 +10,7 @@ import BookingScreen from '../screens/BookingScreen';
 import PostReelScreen from '../screens/PostReelScreen';
 import MenuScreen from '../screens/MenuScreen';
 import CreatorProfileScreen from '../screens/CreatorProfileScreen';
+import AgencyProfileScreen from '../screens/AgencyProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import MyTripsScreen from '../screens/MyTripsScreen';
 import { useAuth } from '../hooks/useAuth';
@@ -43,6 +44,7 @@ export default function AppNavigator() {
           <Stack.Screen name="PostReel" component={PostReelScreen} />
           <Stack.Screen name="Menu" component={MenuScreen} />
           <Stack.Screen name="CreatorProfile" component={CreatorProfileScreen} />
+          <Stack.Screen name="AgencyProfile" component={AgencyProfileScreen} />
           <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="MyTrips" component={MyTripsScreen} />
         </Stack.Group>

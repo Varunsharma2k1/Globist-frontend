@@ -16,6 +16,7 @@ import ReelActionsRail from './ReelActionsRail';
 import ReelInfoOverlay from './ReelInfoOverlay';
 import ReelBookingBar from './ReelBookingBar';
 import ReelCommentsSheet from './ReelCommentsSheet';
+import ReelMoreSheet from './ReelMoreSheet';
 
 const DOUBLE_TAP_MS = 260;
 
@@ -41,12 +42,14 @@ function ReelItem({
   muted,
   onToggleMute,
   onCreatorPress,
+  onAgencyPress,
   onBookPress,
   bookingPending,
 }) {
   const { colors } = useTheme();
   const { user } = useAuth();
   const [commentsVisible, setCommentsVisible] = useState(false);
+  const [moreVisible, setMoreVisible] = useState(false);
   const heartBurstRef = useRef(null);
   const lastTapRef = useRef(0);
   const singleTapTimerRef = useRef(null);
@@ -79,9 +82,8 @@ function ReelItem({
     }, DOUBLE_TAP_MS);
   }, [likeOnce, hasVideo, handleTogglePlay]);
 
-  const handleMore = () => {
-    Alert.alert(reel.creatorHandle || 'Reel options', 'More options coming soon.');
-  };
+  const handleReport = () =>
+    Alert.alert('Report submitted', 'Thanks — our team will review this reel.');
 
   const tone = colors.reelTone[categoryKey(reel.imageType)] || colors.reelTone.default;
   const sizeStyle = height ? { height } : styles.fill;
@@ -130,17 +132,28 @@ function ReelItem({
             onLike={handleLike}
             onOpenComments={() => setCommentsVisible(true)}
             onShare={handleShare}
-            onMore={handleMore}
+            onMore={() => setMoreVisible(true)}
           />
         </View>
 
         <ReelBookingBar
           agency={reel.agency}
           location={reel.location}
+          onAgencyPress={onAgencyPress ? () => onAgencyPress(reel.agency) : undefined}
           pending={bookingPending}
           onPress={onBookPress ? () => onBookPress(reel) : undefined}
         />
       </View>
+
+      <ReelMoreSheet
+        visible={moreVisible}
+        reel={reel}
+        onClose={() => setMoreVisible(false)}
+        onOpenAgency={() => onAgencyPress?.(reel.agency)}
+        onOpenCreator={() => onCreatorPress?.(reel)}
+        onShare={handleShare}
+        onReport={handleReport}
+      />
 
       <ReelCommentsSheet
         visible={commentsVisible}

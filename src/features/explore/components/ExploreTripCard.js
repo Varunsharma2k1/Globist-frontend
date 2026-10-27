@@ -7,7 +7,7 @@ import VerifiedBadge from '../../../components/VerifiedBadge';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 
-export default function ExploreTripCard({ trip, onPress, index = 0 }) {
+export default function ExploreTripCard({ trip, onPress, onAgencyPress, index = 0 }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -79,12 +79,18 @@ export default function ExploreTripCard({ trip, onPress, index = 0 }) {
           <View style={styles.footerRow}>
             <View style={styles.agency}>
               {trip.agency?.name ? (
-                <>
+                <Pressable
+                  style={styles.agencyTap}
+                  onPress={onAgencyPress ? () => onAgencyPress(trip.agency) : onPress}
+                  hitSlop={6}
+                  accessibilityRole="link"
+                  accessibilityLabel={`Open ${trip.agency.name} profile`}
+                >
                   <Text style={styles.agencyName} numberOfLines={1}>
                     {trip.agency.name}
                   </Text>
                   {trip.agency.isVerified ? <VerifiedBadge size={14} /> : null}
-                </>
+                </Pressable>
               ) : null}
             </View>
             {hasPrice ? (
@@ -161,6 +167,12 @@ function getStyles(colors) {
     },
     agency: {
       flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    agencyTap: {
+      flexShrink: 1,
       flexDirection: 'row',
       alignItems: 'center',
       gap: 4,
