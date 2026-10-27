@@ -15,7 +15,7 @@ import ReelPreviewModal from '../components/ReelPreviewModal';
 /**
  * PostReelScreen Component
  *
- * Form for travelers and agencies to post new travel clips. Only video is
+ * Form for travellers and agencies to post new travel clips. Only video is
  * accepted (no photos), picked from the device library, with an inline
  * Instagram-style preview once selected. Form state/submission lives in
  * usePostReelForm; each visual section is its own component (see

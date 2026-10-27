@@ -1,29 +1,22 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../config';
+import {
+  loginUser,
+  signupUser,
+  googleLoginUser,
+  setAccountType,
+  getCurrentUser,
+} from '../api/auth';
 
 /**
  * Global Authentication Context & State Provider
  *
- * Manages active user session, token storage, and authentication actions (login, signup, logout).
- *
- * NOTE: `login`/`signup`/`loginWithGoogle` are placeholders — they don't call
- * the real backend yet, just build a local dummy user from whatever was
- * entered and persist it, so the rest of the app (route guarding, Profile
- * screen, etc.) can be built against a real session shape now. Swap these
- * for real `loginUser`/`signupUser`/Google OAuth calls once that's wired up.
+ * Manages the active user session (JWT + cached user in AsyncStorage) and the
+ * auth actions: email login/signup, Google sign-in, one-time account type
+ * selection and logout. Screens never touch tokens directly.
  */
 export const AuthContext = createContext();
-
-const buildDummyUser = (overrides = {}) => ({
-  _id: `dummy-${Date.now()}`,
-  name: 'Varun Sharma',
-  role: 'traveler',
-  explorerTier: 'Gold',
-  avatar: '',
-  stats: { reelsPosted: 3, tripsBooked: 2, earnings: 1450 },
-  ...overrides,
-});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -33,8 +26,19 @@ export const AuthProvider = ({ children }) => {
     loadUserSession();
   }, []);
 
+  const clearSession = async () => {
+    await AsyncStorage.multiRemove([
+      STORAGE_KEYS.AUTH_TOKEN,
+      STORAGE_KEYS.REFRESH_TOKEN,
+      STORAGE_KEYS.USER_INFO,
+    ]);
+    setUser(null);
+  };
+
   /**
-   * Restores the dummy session cached in AsyncStorage on app launch.
+   * Restores the cached session on app launch, then re-validates it against
+   * the backend in the background so a deleted account / expired token
+   * signs the user out instead of leaving a stale session.
    */
   const loadUserSession = async () => {
     try {
@@ -44,57 +48,75 @@ export const AuthProvider = ({ children }) => {
       ]);
       if (token && cachedUser) {
         setUser(JSON.parse(cachedUser));
+        refreshUser();
       }
     } catch (error) {
       console.warn('[AuthContext] Session restore failed, clearing session:', error?.message);
-      await AsyncStorage.multiRemove([STORAGE_KEYS.AUTH_TOKEN, STORAGE_KEYS.USER_INFO]);
+      await clearSession();
     } finally {
       setLoading(false);
     }
   };
 
-  const persistSession = async (userData) => {
-    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, `dummy-token-${userData._id}`);
-    await AsyncStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(userData));
+  const refreshUser = async () => {
+    try {
+      const fresh = await getCurrentUser();
+      // Keep the lightweight login-shaped user (wishlist as ids, not populated).
+      const { wishlist, ...rest } = fresh;
+      setUser((prev) => {
+        const next = { ...prev, ...rest };
+        AsyncStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(next)).catch(() => {});
+        return next;
+      });
+    } catch (error) {
+      if (error.response?.status === 401) await clearSession();
+      // Network errors: keep the cached session so the app still opens offline.
+    }
+  };
+
+  const persistSession = async ({ token, refreshToken, user: userData }) => {
+    await AsyncStorage.multiSet([
+      [STORAGE_KEYS.AUTH_TOKEN, token],
+      [STORAGE_KEYS.REFRESH_TOKEN, refreshToken || ''],
+      [STORAGE_KEYS.USER_INFO, JSON.stringify(userData)],
+    ]);
     setUser(userData);
     return userData;
   };
 
-  /**
-   * Dummy sign-in: accepts any non-empty phone/password and starts a
-   * session. Params are intentionally unused for now — kept in the
-   * signature so call sites don't need to change once this calls a real
-   * login API.
-   */
-  const login = async (_phone, _password) => {
-    return persistSession(buildDummyUser());
-  };
+  const login = async (email, password) => persistSession(await loginUser(email, password));
+
+  const signup = async ({ name, email, password }) =>
+    persistSession(await signupUser({ name, email, password }));
+
+  const loginWithGoogle = async (idToken) => persistSession(await googleLoginUser(idToken));
 
   /**
-   * Dummy sign-up: accepts any non-empty fields and starts a session.
+   * Saves the traveller / creator / agency choice for a brand-new account,
+   * which also dismisses the account-type prompt.
    */
-  const signup = async ({ name, role }) => {
-    return persistSession(buildDummyUser({ name, role: role || 'traveler' }));
+  const selectAccountType = async (role) => {
+    const updated = await setAccountType(role);
+    const next = { ...user, ...updated };
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(next));
+    setUser(next);
+    return next;
   };
 
-  /**
-   * Dummy Google sign-in: no OAuth yet, just starts a session immediately.
-   */
-  const loginWithGoogle = async () => {
-    return persistSession(buildDummyUser());
-  };
-
-  /**
-   * Logs out current user and clears session state.
-   */
-  const logout = async () => {
-    await AsyncStorage.multiRemove([STORAGE_KEYS.AUTH_TOKEN, STORAGE_KEYS.USER_INFO]);
-    setUser(null);
-  };
+  const logout = clearSession;
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, signup, loginWithGoogle, logout, setUser }}
+      value={{
+        user,
+        loading,
+        login,
+        signup,
+        loginWithGoogle,
+        selectAccountType,
+        logout,
+        setUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,78 +1,97 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
 import { useAuth } from '../../../hooks/useAuth';
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 6;
+
 /**
- * Owns the Sign In / Sign Up form's state and submission, for both the
- * phone+password flow and the (dummy, for now) Google sign-in flow.
+ * Owns the Sign In / Sign Up form's state and submission (email + password).
  */
 export function useAuthForm() {
-  const { login, signup, loginWithGoogle } = useAuth();
+  const { login, signup } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState('traveler');
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
+  // Inline banner shown above the form: { type: 'info' | 'error', text }
+  const [notice, setNotice] = useState(null);
+
+  const toggleMode = () => {
+    setIsLogin((v) => !v);
+    setNotice(null);
+  };
+
+  const validate = () => {
+    if (!isLogin && !name.trim()) return 'Please enter your full name';
+    if (!email.trim() || !password) return 'Please enter your email and password';
+    if (!EMAIL_RE.test(email.trim())) return 'Please enter a valid email address';
+    if (!isLogin && password.length < MIN_PASSWORD_LENGTH) {
+      return `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
+    }
+    return null;
+  };
 
   const handleSubmit = async () => {
-    if (!phone || !password) {
-      Alert.alert('Required Fields', 'Please enter phone number and password');
+    const problem = validate();
+    if (problem) {
+      setNotice({ type: 'error', text: problem });
       return;
     }
 
+    setNotice(null);
     setLoading(true);
     try {
       if (isLogin) {
-        await login(phone, password);
+        await login(email.trim(), password);
       } else {
-        if (!name) {
-          Alert.alert('Required Field', 'Please enter your name');
-          setLoading(false);
-          return;
-        }
-        await signup({ name, phone, password, role });
+        await signup({ name: name.trim(), email: email.trim(), password });
       }
       // No explicit navigation: AppNavigator swaps to the authenticated
       // stack automatically once AuthContext's `user` is set.
     } catch (err) {
-      Alert.alert('Authentication Error', err.response?.data?.message || 'Failed to authenticate');
+      const code = err.response?.data?.code;
+      if (code === 'USER_NOT_FOUND') {
+        // First-time user: move to sign up, keeping the email they typed.
+        setIsLogin(false);
+        setNotice({
+          type: 'info',
+          text: "We couldn't find an account for this email. Add your name to create one.",
+        });
+      } else if (code === 'EMAIL_EXISTS') {
+        setIsLogin(true);
+        setNotice({ type: 'info', text: 'You already have an account. Sign in to continue.' });
+      } else {
+        setNotice({
+          type: 'error',
+          text:
+            err.response?.data?.message ||
+            (err.response
+              ? 'Something went wrong. Please try again.'
+              : 'Could not reach the server. Check your connection.'),
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setGoogleLoading(true);
-    try {
-      await loginWithGoogle();
-    } catch (err) {
-      Alert.alert('Authentication Error', 'Failed to sign in with Google');
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
   return {
     isLogin,
-    setIsLogin,
+    toggleMode,
+    notice,
     name,
     setName,
-    phone,
-    setPhone,
+    email,
+    setEmail,
     password,
     setPassword,
     showPassword,
     setShowPassword,
-    role,
-    setRole,
     loading,
-    googleLoading,
     handleSubmit,
-    handleGoogleSignIn,
   };
 }
 

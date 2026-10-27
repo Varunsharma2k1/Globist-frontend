@@ -1,6 +1,6 @@
-# Globist Mobile App 🌐📱
+# Triptape Mobile App 🌐📱
 
-The **Globist Mobile Application** — a React Native (Expo) app for discovering travel packages, watching creator reels, and booking trips. This README covers everything a new developer needs to clone the repo and get the app running end-to-end.
+The **Triptape Mobile Application** — a React Native (Expo) app for discovering travel packages, watching creator reels, and booking trips. This README covers everything a new developer needs to clone the repo and get the app running end-to-end.
 
 ---
 
@@ -41,7 +41,7 @@ npm start
 
 You should see:
 ```
-🚀 Globist API running on http://localhost:5001
+🚀 Triptape API running on http://localhost:5001
    Health: http://localhost:5001/api/health
 ```
 

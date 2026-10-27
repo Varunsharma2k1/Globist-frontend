@@ -16,7 +16,7 @@ export default function ReelBookingBar({ agency, location, pending, onPress, onA
     : null;
   const meta = hasAgency
     ? [agency.location || location, price].filter(Boolean).join(' · ')
-    : 'Browse handpicked packages on Globist';
+    : 'Browse handpicked packages on Triptape';
   const Icon = hasAgency ? Plane : Compass;
 
   return (

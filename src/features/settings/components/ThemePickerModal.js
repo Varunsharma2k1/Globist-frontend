@@ -22,7 +22,7 @@ export default function ThemePickerModal({ visible, onClose }) {
       <TouchableOpacity style={modalStyles.modalBackdrop} activeOpacity={1} onPress={onClose}>
         <TouchableOpacity activeOpacity={1} style={modalStyles.modalCard}>
           <Text style={modalStyles.modalTitle}>App Theme</Text>
-          <Text style={modalStyles.modalBody}>Choose how Globist looks on this device.</Text>
+          <Text style={modalStyles.modalBody}>Choose how Triptape looks on this device.</Text>
           <View style={{ gap: SPACING.xs, marginTop: SPACING.sm }}>
             {MODES.map((m) => {
               const active = mode === m;

@@ -13,7 +13,7 @@ export default function PriceBreakdownCard({ travelers, pricePerPerson, occupanc
       <Text style={styles.breakdownTitle}>Price Summary</Text>
       <View style={styles.breakdownRow}>
         <Text style={styles.breakdownLabel}>
-          {travelers} traveler{travelers > 1 ? 's' : ''} × ₹{pricePerPerson.toLocaleString()}
+          {travelers} traveller{travelers > 1 ? 's' : ''} × ₹{pricePerPerson.toLocaleString()}
           {occupancyLabel ? ` (${occupancyLabel.toLowerCase()})` : ''}
         </Text>
         <Text style={styles.breakdownVal}>₹{subtotal.toLocaleString()}</Text>

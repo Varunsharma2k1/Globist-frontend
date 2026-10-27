@@ -40,7 +40,11 @@ export default function BottomTabNavigator() {
           },
         ],
         tabBarBackground: () => (
-          <BlurView intensity={100} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill}>
+          <BlurView
+            intensity={100}
+            tint={isDark ? 'dark' : 'light'}
+            style={StyleSheet.absoluteFill}
+          >
             <View
               style={[
                 styles.tabBarTint,
@@ -53,7 +57,9 @@ export default function BottomTabNavigator() {
         tabBarInactiveTintColor: colors.textMuted,
         tabBarIcon: ({ focused, color }) => {
           const Icon = TAB_ICONS[route.name] || Home;
-          return <Icon size={focused ? 22 : 20} color={color} strokeWidth={focused ? 2.25 : 1.75} />;
+          return (
+            <Icon size={focused ? 22 : 20} color={color} strokeWidth={focused ? 2.25 : 1.75} />
+          );
         },
       })}
     >

@@ -26,7 +26,7 @@ export function useReelShare(reel) {
     sharingRef.current = true;
     try {
       const result = await Share.share({
-        title: reel.location ? `Travel reel — ${reel.location}` : 'Globist travel reel',
+        title: reel.location ? `Travel reel — ${reel.location}` : 'Triptape travel reel',
         message: buildShareMessage(reel),
       });
       if (result.action === Share.sharedAction) {

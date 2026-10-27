@@ -1,9 +1,14 @@
 {
   "expo": {
-    "name": "Globist",
-    "slug": "globist",
+    "name": "Triptape",
+    "slug": "triptape",
     "version": "1.0.0",
     "orientation": "portrait",
+    "scheme": [
+      "triptape",
+      "com.globist.app",
+      "com.googleusercontent.apps.597217757119-9glqh8jv9jv32qtt2uu43rgpr1brss2f"
+    ],
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
@@ -18,11 +23,12 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Globist needs access to your photos so you can post a travel reel.",
-          "videoPermission": "Globist needs access to your videos so you can post a travel reel."
+          "photosPermission": "Triptape needs access to your photos so you can post a travel reel.",
+          "videoPermission": "Triptape needs access to your videos so you can post a travel reel."
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-web-browser"
     ]
   }
 }

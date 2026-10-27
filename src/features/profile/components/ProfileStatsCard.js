@@ -2,10 +2,49 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
+// Same number as the My Trips row, so the two always agree.
+import { demoCounts } from '../utils/demoCounts';
 
-export default function ProfileStatsCard({ stats }) {
+// Placeholder audience numbers until followers are real: derived from the
+// user's id so they look random but stay the same across renders/launches.
+function demoAudience(seed = '') {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+  h = Math.abs(h);
+  return { followers: 1200 + (h % 8300), following: 60 + (Math.floor(h / 7) % 340) };
+}
+
+// Placeholder referral bonus (₹500–₹4,500, in steps of 50) until real earnings
+// exist: derived from the user's id so it looks random but never changes.
+function demoReferralBonus(seed = '') {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+  return 500 + (Math.abs(h >> 3) % 81) * 50;
+}
+
+export default function ProfileStatsCard({ stats, role, userId }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
+
+  // Agencies show only their audience, not reels / trips / referral earnings.
+  if (role === 'agency') {
+    const audience = demoAudience(userId);
+    const followers = stats?.followers || audience.followers;
+    const following = stats?.following || audience.following;
+    return (
+      <View style={styles.statsCard}>
+        <View style={styles.statCol}>
+          <Text style={styles.statVal}>{followers.toLocaleString('en-IN')}</Text>
+          <Text style={styles.statLabel}>Followers</Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statCol}>
+          <Text style={styles.statVal}>{following.toLocaleString('en-IN')}</Text>
+          <Text style={styles.statLabel}>Following</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.statsCard}>
@@ -15,12 +54,14 @@ export default function ProfileStatsCard({ stats }) {
       </View>
       <View style={styles.statDivider} />
       <View style={styles.statCol}>
-        <Text style={styles.statVal}>{stats?.tripsBooked ?? 2}</Text>
+        <Text style={styles.statVal}>{demoCounts(userId).trips}</Text>
         <Text style={styles.statLabel}>Trips Booked</Text>
       </View>
       <View style={styles.statDivider} />
       <View style={styles.statCol}>
-        <Text style={styles.statVal}>₹{(stats?.earnings ?? 1450).toLocaleString()}</Text>
+        <Text style={styles.statVal}>
+          ₹{(stats?.earnings || demoReferralBonus(userId)).toLocaleString('en-IN')}
+        </Text>
         <Text style={styles.statLabel}>Referral Bonus</Text>
       </View>
     </View>

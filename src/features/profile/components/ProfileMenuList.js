@@ -19,6 +19,7 @@ export default function ProfileMenuList({ items }) {
         >
           <item.icon size={21} color={colors.pastel.peach.fg} strokeWidth={1.8} />
           <Text style={styles.menuLabel}>{item.label}</Text>
+          {item.count != null && <Text style={styles.menuCount}>{item.count}</Text>}
           <ChevronRight size={18} color={colors.textMuted} />
         </TouchableOpacity>
       ))}
@@ -48,6 +49,11 @@ function getStyles(colors) {
     menuRowDivider: {
       borderBottomWidth: 1,
       borderBottomColor: colors.divider,
+    },
+    menuCount: {
+      fontFamily: FONTS.semibold,
+      fontSize: 15,
+      color: colors.textMuted,
     },
     menuLabel: {
       flex: 1,

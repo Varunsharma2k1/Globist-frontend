@@ -6,7 +6,7 @@ const FALLBACK_TRIP = {
   duration: '7 Days / 6 Nights',
   price: 24500,
   location: 'Spiti, Himachal Pradesh',
-  agency: { name: 'Highland Travelers', rating: 4.9 },
+  agency: { name: 'Highland Travellers', rating: 4.9 },
   description:
     'Experience sub-zero temperatures, frozen waterfalls, and ancient monasteries in high altitude Spiti.',
   inclusions: ['4x4 Vehicle Transfers', 'Stays in Homestays', 'Permits & Taxes', 'All Meals'],

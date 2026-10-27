@@ -12,7 +12,7 @@ export default function HomeHeader() {
   return (
     <View style={[styles.header, { paddingTop: insets.top + SPACING.md }]}>
       <View style={styles.headerTextWrap}>
-        <Text style={styles.appName}>GLOBIST</Text>
+        <Text style={styles.appName}>TRIPTAPE</Text>
         <Text style={styles.subHeader}>Discover Authentic Travel</Text>
       </View>
     </View>
