@@ -10,7 +10,7 @@ export default function TravelerStepper({ value, onAdjust, min, max }) {
 
   return (
     <View style={styles.stepperContainer}>
-      <Text style={styles.stepperLabel}>Number of Travelers</Text>
+      <Text style={styles.stepperLabel}>Number of Travellers</Text>
       <View style={styles.stepperRow}>
         <TouchableOpacity style={styles.stepperBtn} onPress={() => onAdjust(-1)} disabled={value <= min}>
           <Minus size={16} color={value <= min ? colors.textMuted : colors.ink} />

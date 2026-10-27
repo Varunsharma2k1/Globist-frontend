@@ -16,7 +16,7 @@ import DeleteAccountModal from '../components/DeleteAccountModal';
 /**
  * SettingsScreen Component
  *
- * Full Settings screen recreated from the "Globist Profile & Settings"
+ * Full Settings screen recreated from the "Triptape Profile & Settings"
  * design handoff: grouped rows (nav + toggle), a Feed Preferences segmented
  * card, Storage/Cache usage, and Account Actions with a Delete Account
  * confirmation modal. Each section below is its own component (see

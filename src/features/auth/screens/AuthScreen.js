@@ -8,10 +8,8 @@ import Button from '../../../components/Button';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, LAYOUT } from '../../../theme';
 import { useAuthForm } from '../hooks/useAuthForm';
-import GoogleSignInButton from '../components/GoogleSignInButton';
-import OrDivider from '../components/OrDivider';
-import RoleSelector from '../components/RoleSelector';
 import AuthModeSwitch from '../components/AuthModeSwitch';
+import FormNotice from '../components/FormNotice';
 
 /**
  * AuthScreen Component
@@ -29,27 +27,37 @@ export default function AuthScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Header title={form.isLogin ? 'Sign In' : 'Create Account'} />
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + insets.bottom }]}>
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + insets.bottom }]}
+      >
         <Text style={typography.h2}>{form.isLogin ? 'Welcome Back' : 'Create Your Account'}</Text>
         <Text style={[typography.body, { marginTop: SPACING.xs, marginBottom: SPACING.lg }]}>
           {form.isLogin
-            ? 'Sign in to access your booked trips & reels'
-            : 'Book authentic travel packages & post reels'}
+            ? 'Sign in with your email to access your trips & reels'
+            : 'Sign up with your email to book trips & post reels'}
         </Text>
 
-        <GoogleSignInButton loading={form.googleLoading} onPress={form.handleGoogleSignIn} />
-        <OrDivider />
+        <FormNotice notice={form.notice} />
 
         {!form.isLogin && (
-          <Input label="Full Name" value={form.name} onChangeText={form.setName} placeholder="e.g. Alex Rivera" />
+          <Input
+            label="Full Name"
+            value={form.name}
+            onChangeText={form.setName}
+            placeholder="e.g. Alex Rivera"
+          />
         )}
 
         <Input
-          label="Phone Number"
-          value={form.phone}
-          onChangeText={form.setPhone}
-          placeholder="+91 98765 43210"
-          keyboardType="phone-pad"
+          label="Email"
+          value={form.email}
+          onChangeText={form.setEmail}
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
         />
 
         <Input
@@ -58,6 +66,10 @@ export default function AuthScreen() {
           onChangeText={form.setPassword}
           placeholder="••••••••"
           secureTextEntry={!form.showPassword}
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete={form.isLogin ? 'current-password' : 'new-password'}
+          textContentType={form.isLogin ? 'password' : 'newPassword'}
           rightIcon={
             form.showPassword ? (
               <EyeOff size={18} color={colors.textMuted} />
@@ -68,16 +80,14 @@ export default function AuthScreen() {
           onRightIconPress={() => form.setShowPassword((v) => !v)}
         />
 
-        {!form.isLogin && <RoleSelector value={form.role} onChange={form.setRole} />}
-
         <Button
-          title={form.isLogin ? 'Sign In' : 'Register Account'}
+          title={form.isLogin ? 'Sign In' : 'Create Account'}
           onPress={form.handleSubmit}
           loading={form.loading}
           style={{ marginTop: SPACING.md }}
         />
 
-        <AuthModeSwitch isLogin={form.isLogin} onToggle={() => form.setIsLogin(!form.isLogin)} />
+        <AuthModeSwitch isLogin={form.isLogin} onToggle={form.toggleMode} />
       </ScrollView>
     </View>
   );

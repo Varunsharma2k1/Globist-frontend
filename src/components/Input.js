@@ -18,6 +18,10 @@ export default function Input({
   returnKeyType,
   onFocus,
   onBlur,
+  autoCapitalize,
+  autoCorrect,
+  autoComplete,
+  textContentType,
   style,
 }) {
   const { colors } = useTheme();
@@ -45,6 +49,10 @@ export default function Input({
           returnKeyType={returnKeyType}
           onFocus={onFocus}
           onBlur={onBlur}
+          autoCapitalize={autoCapitalize}
+          autoCorrect={autoCorrect}
+          autoComplete={autoComplete}
+          textContentType={textContentType}
         />
         {rightIcon && (
           <TouchableOpacity

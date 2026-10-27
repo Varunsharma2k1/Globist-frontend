@@ -12,7 +12,13 @@ import MenuScreen from '../screens/MenuScreen';
 import CreatorProfileScreen from '../screens/CreatorProfileScreen';
 import AgencyProfileScreen from '../screens/AgencyProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import MyTripsScreen from '../screens/MyTripsScreen';
+import ProfileTripsScreen from '../features/profile/screens/ProfileTripsScreen';
+import MyReelsScreen from '../features/profile/screens/MyReelsScreen';
+import ReelViewerScreen from '../features/profile/screens/ReelViewerScreen';
+import AgencyPackagesScreen from '../features/agency/screens/AgencyPackagesScreen';
+import PaymentHistoryScreen from '../features/agency/screens/PaymentHistoryScreen';
+import InvoiceScreen from '../features/agency/screens/InvoiceScreen';
+import AccountTypeModal from '../features/auth/components/AccountTypeModal';
 import { useAuth } from '../hooks/useAuth';
 
 const Stack = createNativeStackNavigator();
@@ -27,30 +33,38 @@ export default function AppNavigator() {
   const { user, loading } = useAuth();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        animation: 'slide_from_right',
-      }}
-    >
-      {loading ? (
-        <Stack.Screen name="Splash" component={SplashScreen} />
-      ) : user ? (
-        <Stack.Group>
-          <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
-          <Stack.Screen name="TripDetail" component={TripDetailScreen} />
-          <Stack.Screen name="RegionDetail" component={RegionDetailScreen} />
-          <Stack.Screen name="Booking" component={BookingScreen} />
-          <Stack.Screen name="PostReel" component={PostReelScreen} />
-          <Stack.Screen name="Menu" component={MenuScreen} />
-          <Stack.Screen name="CreatorProfile" component={CreatorProfileScreen} />
-          <Stack.Screen name="AgencyProfile" component={AgencyProfileScreen} />
-          <Stack.Screen name="Settings" component={SettingsScreen} />
-          <Stack.Screen name="MyTrips" component={MyTripsScreen} />
-        </Stack.Group>
-      ) : (
-        <Stack.Screen name="Auth" component={AuthScreen} options={{ gestureEnabled: false }} />
-      )}
-    </Stack.Navigator>
+    <>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      >
+        {loading ? (
+          <Stack.Screen name="Splash" component={SplashScreen} />
+        ) : user ? (
+          <Stack.Group>
+            <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
+            <Stack.Screen name="TripDetail" component={TripDetailScreen} />
+            <Stack.Screen name="RegionDetail" component={RegionDetailScreen} />
+            <Stack.Screen name="Booking" component={BookingScreen} />
+            <Stack.Screen name="PostReel" component={PostReelScreen} />
+            <Stack.Screen name="Menu" component={MenuScreen} />
+            <Stack.Screen name="CreatorProfile" component={CreatorProfileScreen} />
+            <Stack.Screen name="AgencyProfile" component={AgencyProfileScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="ProfileTrips" component={ProfileTripsScreen} />
+            <Stack.Screen name="MyReels" component={MyReelsScreen} />
+            <Stack.Screen name="ReelViewer" component={ReelViewerScreen} />
+            <Stack.Screen name="AgencyPackages" component={AgencyPackagesScreen} />
+            <Stack.Screen name="PaymentHistory" component={PaymentHistoryScreen} />
+            <Stack.Screen name="Invoice" component={InvoiceScreen} />
+          </Stack.Group>
+        ) : (
+          <Stack.Screen name="Auth" component={AuthScreen} options={{ gestureEnabled: false }} />
+        )}
+      </Stack.Navigator>
+      {user?.needsAccountType && <AccountTypeModal />}
+    </>
   );
 }

@@ -30,7 +30,7 @@ export default function SplashScreen() {
         <View style={[styles.iconCircle, { backgroundColor: colors.pastel.peach.bg }]}>
           <Globe size={44} color={colors.pastel.peach.fg} strokeWidth={1.5} />
         </View>
-        <Text style={[styles.wordmark, { color: colors.ink }]}>GLOBIST</Text>
+        <Text style={[styles.wordmark, { color: colors.ink }]}>TRIPTAPE</Text>
         <Text style={[styles.subtitle, { color: colors.textMuted }]}>
           Curated Travel & Community Reels
         </Text>

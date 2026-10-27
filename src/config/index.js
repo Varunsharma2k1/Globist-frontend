@@ -11,8 +11,11 @@ import { ENV } from './env';
 export const CONFIG = {
   API_BASE_URL: ENV.API_BASE_URL,
   API_TIMEOUT: ENV.API_TIMEOUT,
-  APP_NAME: 'Globist',
+  APP_NAME: 'Triptape',
   DEFAULT_DEMO_VIDEO: ENV.DEFAULT_DEMO_VIDEO,
+  GOOGLE_WEB_CLIENT_ID: ENV.GOOGLE_WEB_CLIENT_ID,
+  GOOGLE_IOS_CLIENT_ID: ENV.GOOGLE_IOS_CLIENT_ID,
+  GOOGLE_ANDROID_CLIENT_ID: ENV.GOOGLE_ANDROID_CLIENT_ID,
 };
 
 /**
@@ -21,6 +24,7 @@ export const CONFIG = {
  */
 export const STORAGE_KEYS = {
   AUTH_TOKEN: 'globist_token',
+  REFRESH_TOKEN: 'globist_refresh_token',
   USER_INFO: 'globist_user_info',
   APP_SETTINGS: 'globist_app_settings',
   THEME_MODE: 'globist_theme_mode',

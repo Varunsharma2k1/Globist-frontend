@@ -14,7 +14,7 @@ export default function MenuScreen({ navigation }) {
   const menuItems = [
     { icon: Film, title: 'Explore Reels Feed', action: () => navigation.navigate('Reels') },
     { icon: Compass, title: 'Discover Destinations', action: () => navigation.navigate('Explore') },
-    { icon: Briefcase, title: 'My Booked Trips', action: () => navigation.navigate('MyTrips') },
+    { icon: Briefcase, title: 'My Booked Trips', action: () => navigation.navigate('ProfileTrips', { kind: 'booked' }) },
     { icon: Video, title: 'Post a Travel Reel', action: () => navigation.navigate('PostReel') },
     { icon: Phone, title: 'Customer Support & FAQ', action: () => {} },
     { icon: Lock, title: 'Privacy Policy & Terms', action: () => {} },
@@ -40,7 +40,7 @@ export default function MenuScreen({ navigation }) {
         })}
 
         <View style={styles.footer}>
-          <Text style={styles.versionText}>Globist Mobile v1.0.0 (Production Ready)</Text>
+          <Text style={styles.versionText}>Triptape Mobile v1.0.0 (Production Ready)</Text>
           <Text style={styles.platformText}>iOS & Android Build • Powered by Expo & Node.js</Text>
         </View>
       </ScrollView>

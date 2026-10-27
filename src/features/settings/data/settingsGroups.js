@@ -50,7 +50,7 @@ export const SETTINGS_GROUPS = [
       { id: 'pushAll', label: 'Push Notifications', sub: 'Pause all mobile alerts', icon: Bell, type: 'toggle' },
       { id: 'notifComments', label: 'Comments', sub: 'When someone comments on your reel', icon: MessageCircle, type: 'toggle' },
       { id: 'notifLikes', label: 'Likes', sub: 'When someone likes your reel', icon: Heart, type: 'toggle' },
-      { id: 'notifDMs', label: 'Direct Messages', sub: 'New messages from other travelers', icon: Send, type: 'toggle' },
+      { id: 'notifDMs', label: 'Direct Messages', sub: 'New messages from other travellers', icon: Send, type: 'toggle' },
       { id: 'notifFollowers', label: 'New Followers', sub: 'When someone follows you', icon: UserPlus, type: 'toggle' },
       { id: 'emailSms', label: 'Email & SMS Notifications', sub: 'Booking updates and receipts', icon: Mail, type: 'toggle' },
     ],
@@ -68,7 +68,7 @@ export const SETTINGS_GROUPS = [
       { id: 'help', label: 'Help Center & Support', icon: HelpCircle, type: 'nav' },
       { id: 'report', label: 'Report a Problem', icon: Flag, type: 'nav' },
       { id: 'terms', label: 'Terms of Service & Privacy Policy', icon: FileText, type: 'nav' },
-      { id: 'about', label: 'About Globist', sub: 'Version 2.4.1', icon: Info, type: 'nav' },
+      { id: 'about', label: 'About Triptape', sub: 'Version 2.4.1', icon: Info, type: 'nav' },
     ],
   },
 ];

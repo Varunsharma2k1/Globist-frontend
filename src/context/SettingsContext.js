@@ -6,7 +6,7 @@ import { STORAGE_KEYS } from '../config';
  * Global App Settings Context
  *
  * Persists Settings-screen preferences to AsyncStorage so they survive app
- * restarts. Shape matches the "Globist Profile & Settings" design handoff:
+ * restarts. Shape matches the "Triptape Profile & Settings" design handoff:
  * grouped toggle rows + a Feed Preferences segmented choice.
  */
 export const SettingsContext = createContext();

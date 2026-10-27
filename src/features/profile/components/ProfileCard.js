@@ -1,15 +1,20 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { Medal } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
-import { TIER_EMOJI } from '../data/menuItems';
+
+// Explorer tier → medal colour.
+const TIER_COLOR = { bronze: '#CD7F32', silver: '#A8A9AD', gold: '#E0A800', elite: '#7C5CFF' };
+
+// Account type → label shown on the profile (stored values stay 'traveler' etc.).
+const ROLE_LABEL = { traveler: 'Traveller', creator: 'Creator', agency: 'Agency' };
 
 export default function ProfileCard({ user }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
+  const tier = (user?.explorerTier || 'bronze').toLowerCase();
   const initial = (user?.name || 'E').charAt(0).toUpperCase();
-  const tier = user?.explorerTier || 'Gold';
-  const tierEmoji = TIER_EMOJI[tier.toLowerCase()] || '🏆';
 
   return (
     <View style={styles.profileCard}>
@@ -21,16 +26,18 @@ export default function ProfileCard({ user }) {
         )}
       </View>
       <Text style={styles.name}>{user?.name || 'Explorer User'}</Text>
-      <View style={styles.tagRow}>
-        <View style={styles.tierBadge}>
-          <Text style={styles.tierBadgeText}>
-            {tierEmoji} {tier.toUpperCase()} EXPLORER
-          </Text>
+      {user?.role !== 'agency' && (
+        <View style={styles.tagRow}>
+          <View style={styles.tierIcon} accessibilityLabel={`${tier} explorer`}>
+            <Medal size={18} color={TIER_COLOR[tier] || TIER_COLOR.bronze} strokeWidth={2.2} />
+          </View>
+          <View style={styles.roleBadge}>
+            <Text style={styles.roleBadgeText}>
+              {(ROLE_LABEL[user?.role] || 'Traveller').toUpperCase()}
+            </Text>
+          </View>
         </View>
-        <View style={styles.roleBadge}>
-          <Text style={styles.roleBadgeText}>{(user?.role || 'traveller').toUpperCase()}</Text>
-        </View>
-      </View>
+      )}
     </View>
   );
 }
@@ -78,18 +85,6 @@ function getStyles(colors) {
       gap: SPACING.sm,
       marginTop: SPACING.sm + 2,
     },
-    tierBadge: {
-      backgroundColor: colors.pastel.peach.bg,
-      paddingHorizontal: SPACING.sm + 4,
-      paddingVertical: SPACING.xs + 2,
-      borderRadius: RADIUS.pill,
-    },
-    tierBadgeText: {
-      fontFamily: FONTS.heading,
-      fontSize: 13,
-      color: colors.pastel.peach.fg,
-      letterSpacing: 0.3,
-    },
     roleBadge: {
       backgroundColor: colors.surfaceMuted,
       paddingHorizontal: SPACING.sm + 4,
@@ -101,6 +96,14 @@ function getStyles(colors) {
       fontSize: 13,
       color: colors.text,
       letterSpacing: 0.3,
+    },
+    tierIcon: {
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      backgroundColor: colors.surfaceMuted,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
   });
 }

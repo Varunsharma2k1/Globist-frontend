@@ -18,6 +18,9 @@ import { Platform } from 'react-native';
  * @property {string} APP_ENV        'development' | 'production'.
  * @property {string} DEFAULT_DEMO_VIDEO  Fallback reel video URL used when a
  *   post has no uploaded media (e.g. seeded/demo content).
+ * @property {string} GOOGLE_WEB_CLIENT_ID      Google OAuth web client ID ('' if unset).
+ * @property {string} GOOGLE_IOS_CLIENT_ID      Google OAuth iOS client ID ('' if unset).
+ * @property {string} GOOGLE_ANDROID_CLIENT_ID  Google OAuth Android client ID ('' if unset).
  */
 
 // Fallback used only in local development when EXPO_PUBLIC_API_URL isn't
@@ -70,6 +73,11 @@ function buildEnv() {
     API_TIMEOUT: apiTimeout,
     APP_ENV: appEnv,
     DEFAULT_DEMO_VIDEO: process.env.EXPO_PUBLIC_DEFAULT_DEMO_VIDEO || DEFAULT_DEMO_VIDEO_FALLBACK,
+    // Google OAuth client IDs (Google Cloud Console). All optional: Google
+    // sign-in stays disabled until the one for the current platform is set.
+    GOOGLE_WEB_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || '',
+    GOOGLE_IOS_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID || '',
+    GOOGLE_ANDROID_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID || '',
     PLATFORM: Platform.OS,
   });
 }

@@ -12,7 +12,7 @@ import ProfileMenuList from '../components/ProfileMenuList';
 /**
  * ProfileScreen Component
  *
- * Recreated from the "Globist Profile & Settings" design handoff: large
+ * Recreated from the "Triptape Profile & Settings" design handoff: large
  * left-aligned "Profile" title with a gear icon (→ Settings) top-right, an
  * avatar + name + role-pill card, stats, and a grouped menu list. Each
  * section is its own component (see ../components) — this file is just the
@@ -22,7 +22,7 @@ export default function ProfileScreen({ navigation }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { user, logout } = useAuth();
-  const menuItems = getMenuItems(navigation, logout);
+  const menuItems = getMenuItems(navigation, logout, user?.role, user?._id);
 
   return (
     <View style={styles.container}>
@@ -30,7 +30,7 @@ export default function ProfileScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <ProfileCard user={user} />
-        <ProfileStatsCard stats={user?.stats} />
+        <ProfileStatsCard stats={user?.stats} role={user?.role} userId={user?._id} />
         <ProfileMenuList items={menuItems} />
       </ScrollView>
     </View>

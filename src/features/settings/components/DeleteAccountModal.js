@@ -24,7 +24,7 @@ export default function DeleteAccountModal({ visible, onClose }) {
           </View>
           <Text style={modalStyles.modalTitle}>Delete Account?</Text>
           <Text style={modalStyles.modalBody}>
-            This permanently deletes your Globist account, trips, and reels. This action
+            This permanently deletes your Triptape account, trips, and reels. This action
             can&apos;t be undone.
           </Text>
           <View style={styles.modalActions}>

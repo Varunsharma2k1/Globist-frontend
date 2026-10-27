@@ -1,16 +1,56 @@
-import { Alert } from 'react-native';
-import { Briefcase, Heart, CreditCard, Bell, LogOut } from 'lucide-react-native';
+import { demoCounts } from '../utils/demoCounts';
+import { Briefcase, Heart, Film, Tag, LogOut, Mountain, Receipt } from 'lucide-react-native';
 
-export const TIER_EMOJI = {
-  gold: '🥇',
-  silver: '🥈',
-  diamond: '💎',
+export const getMenuItems = (navigation, logout, role, userId) => {
+  const counts = demoCounts(userId);
+  const logoutItem = { id: 'logout', label: 'Log Out', icon: LogOut, onPress: logout };
+
+  // Agency accounts manage their listed packages and see who booked them.
+  if (role === 'agency') {
+    return [
+      {
+        id: 'packages',
+        label: 'Himalayan Treks',
+        icon: Mountain,
+        onPress: () => navigation.navigate('AgencyPackages'),
+      },
+      {
+        id: 'payments',
+        label: 'Payment History',
+        icon: Receipt,
+        onPress: () => navigation.navigate('PaymentHistory'),
+      },
+      {
+        id: 'tagged',
+        label: 'Tagged Reels',
+        icon: Tag,
+        onPress: () => navigation.navigate('MyReels', { kind: 'tagged' }),
+      },
+      logoutItem,
+    ];
+  }
+
+  return [
+    {
+      id: 'mytrips',
+      label: 'My Trips',
+      icon: Briefcase,
+      count: counts.trips,
+      onPress: () => navigation.navigate('ProfileTrips', { kind: 'booked' }),
+    },
+    {
+      id: 'saved',
+      label: 'Saved Trips',
+      icon: Heart,
+      count: counts.saved,
+      onPress: () => navigation.navigate('ProfileTrips', { kind: 'saved' }),
+    },
+    {
+      id: 'myreels',
+      label: 'My Posts',
+      icon: Film,
+      onPress: () => navigation.navigate('MyReels'),
+    },
+    logoutItem,
+  ];
 };
-
-export const getMenuItems = (navigation, logout) => [
-  { id: 'mytrips', label: 'My Trips', icon: Briefcase, onPress: () => navigation.navigate('MyTrips') },
-  { id: 'saved', label: 'Saved Trips', icon: Heart, onPress: () => Alert.alert('Saved Trips', 'Coming soon.') },
-  { id: 'payments', label: 'Payment Methods', icon: CreditCard, onPress: () => Alert.alert('Payment Methods', 'Coming soon.') },
-  { id: 'notifications', label: 'Notifications', icon: Bell, onPress: () => Alert.alert('Notifications', 'Coming soon.') },
-  { id: 'logout', label: 'Log Out', icon: LogOut, onPress: logout },
-];

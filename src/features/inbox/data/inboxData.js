@@ -71,7 +71,7 @@ export const CHATS = [
   },
   {
     id: 'c4',
-    name: 'Globist Support',
+    name: 'Triptape Support',
     preview: 'Let us know if you have any questions.',
     time: '4d',
     unread: false,
@@ -79,7 +79,7 @@ export const CHATS = [
 ];
 
 export const getCommunities = (colors) => [
-  { id: 'g1', name: 'Ladakh Travelers', members: '12.4k', tone: colors.pastel.mountain },
+  { id: 'g1', name: 'Ladakh Travellers', members: '12.4k', tone: colors.pastel.mountain },
   { id: 'g2', name: 'Solo Backpackers India', members: '8.1k', tone: colors.pastel.beach },
   { id: 'g3', name: 'Goa Beach Life', members: '5.6k', tone: colors.pastel.desert },
   { id: 'g4', name: 'Himalayan Trekkers', members: '20.2k', tone: colors.pastel.mountain },
