@@ -16,17 +16,15 @@ import {
   agencyOptions as buildAgencyOptions,
 } from '../utils/exploreFilters';
 import { useRecentDestinations } from './useRecentDestinations';
+import { isHiddenRegion } from '../../../data/hiddenRegions';
 
-export const CATEGORIES = ['All', 'Mountains', 'Beaches', 'Deserts', 'Treks', 'Luxury'];
+export const CATEGORIES = ['All', 'Mountains', 'Treks'];
 
 // How each chip matches a trip: landscape chips match the trip's imageType,
-// activity/style chips match the categories of the agency running it.
+// activity chips match the categories of the agency running it.
 const CATEGORY_MATCHERS = {
   Mountains: { imageTypes: ['mountain', 'snow', 'valley'] },
-  Beaches: { imageTypes: ['beach'] },
-  Deserts: { imageTypes: ['desert'] },
   Treks: { agencyCategory: 'Treks' },
-  Luxury: { agencyCategory: 'Luxury' },
 };
 
 function matchesCategory(trip, category) {
@@ -67,7 +65,7 @@ export function useExploreTrips() {
         getRegions().catch(() => []),
       ]);
       setTrips(tripData.trips || []);
-      setRegions(regionData || []);
+      setRegions((regionData || []).filter((r) => !isHiddenRegion(r)));
     } catch (error) {
       console.warn('[useExploreTrips] Error fetching trips:', error);
     } finally {

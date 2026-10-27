@@ -1,6 +1,7 @@
 import client from './client';
 import { normalizeTrip, normalizeBooking } from './normalize';
 import { mergeLocalTrips, getLocalTrip } from '../data/trips';
+import { isHiddenTrip } from '../data/hiddenRegions';
 
 /**
  * Trips & Bookings API Service
@@ -17,8 +18,10 @@ export const getExploreTrips = async () => {
   // The API defaults to 20 trips; Explore filters client-side, so ask for
   // the whole catalogue.
   const response = await client.get('/trips', { params: { limit: 100 } });
-  // Plus the app's frontend-only reference packages (see src/data/trips).
-  return { trips: mergeLocalTrips(response.data || []).map(normalizeTrip) };
+  // Plus the app's frontend-only reference packages (see src/data/trips),
+  // minus regions the app isn't listing right now.
+  const trips = mergeLocalTrips(response.data || []).map(normalizeTrip);
+  return { trips: trips.filter((t) => !isHiddenTrip(t)) };
 };
 
 /**

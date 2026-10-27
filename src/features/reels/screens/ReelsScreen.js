@@ -79,6 +79,11 @@ export default function ReelsScreen({ navigation }) {
     [navigation]
   );
 
+  const handleAgencyPress = useCallback(
+    (agency) => agency && navigation.navigate('AgencyProfile', { agency }),
+    [navigation]
+  );
+
   const renderItem = useCallback(
     ({ item, index }) => (
       <ReelItem
@@ -88,6 +93,7 @@ export default function ReelsScreen({ navigation }) {
         muted={muted}
         onToggleMute={handleToggleMute}
         onCreatorPress={handleCreatorPress}
+        onAgencyPress={handleAgencyPress}
         onBookPress={bookReel}
         bookingPending={pendingReelId != null && pendingReelId === item._id}
       />
@@ -99,6 +105,7 @@ export default function ReelsScreen({ navigation }) {
       muted,
       handleToggleMute,
       handleCreatorPress,
+      handleAgencyPress,
       bookReel,
       pendingReelId,
     ]

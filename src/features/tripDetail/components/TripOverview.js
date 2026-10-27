@@ -1,6 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { MapPin, Clock, Gauge, Users, Route, CalendarDays } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  ChevronRight,
+  MapPin,
+  Clock,
+  Gauge,
+  Users,
+  Route,
+  CalendarDays,
+} from 'lucide-react-native';
 import VerifiedBadge from '../../../components/VerifiedBadge';
 import RatingSummary from '../../../components/RatingSummary';
 import { useTheme } from '../../../hooks/useTheme';
@@ -18,7 +26,7 @@ function formatDate(value) {
  * Title, location, the agency (with blue tick + rating/reviews) and a grid
  * of key facts. Facts the trip doesn't have are simply left out.
  */
-export default function TripOverview({ trip }) {
+export default function TripOverview({ trip, onAgencyPress }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const agency = trip.agency || {};
@@ -45,7 +53,14 @@ export default function TripOverview({ trip }) {
       ) : null}
 
       {agency.name ? (
-        <View style={styles.agencyRow}>
+        <TouchableOpacity
+          style={styles.agencyRow}
+          onPress={() => onAgencyPress?.(agency)}
+          disabled={!onAgencyPress}
+          activeOpacity={0.7}
+          accessibilityRole="link"
+          accessibilityLabel={`Open ${agency.name} profile`}
+        >
           <Text style={styles.byLabel}>by</Text>
           <Text style={styles.agencyName} numberOfLines={1}>
             {agency.name}
@@ -53,7 +68,8 @@ export default function TripOverview({ trip }) {
           {agency.isVerified ? <VerifiedBadge size={15} label /> : null}
           <View style={styles.spacer} />
           <RatingSummary rating={trip.rating} reviewCount={trip.reviewCount} />
-        </View>
+          {onAgencyPress ? <ChevronRight size={16} color={colors.textMuted} /> : null}
+        </TouchableOpacity>
       ) : null}
 
       {facts.length ? (

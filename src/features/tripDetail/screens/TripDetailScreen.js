@@ -51,7 +51,10 @@ export default function TripDetailScreen({ route, navigation }) {
       >
         <TripDetailHero trip={item} onBack={() => navigation.goBack()} />
         <View style={styles.content}>
-          <TripOverview trip={item} />
+          <TripOverview
+            trip={item}
+            onAgencyPress={(agency) => navigation.navigate('AgencyProfile', { agency })}
+          />
           <TripOccupancyPicker
             options={item.occupancyPricing}
             value={occupancy}

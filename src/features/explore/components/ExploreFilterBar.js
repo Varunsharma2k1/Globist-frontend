@@ -7,10 +7,7 @@ import {
   SlidersHorizontal,
   Compass,
   Mountain,
-  Waves,
-  Sun,
   Footprints,
-  Gem,
 } from 'lucide-react-native';
 import ExploreChip from './ExploreChip';
 import { SPACING } from '../../../theme';
@@ -28,10 +25,7 @@ const agencyLabel = ({ agencies, verifiedOnly }, agencyOptions) => {
 const CATEGORY_ICON = {
   All: Compass,
   Mountains: Mountain,
-  Beaches: Waves,
-  Deserts: Sun,
   Treks: Footprints,
-  Luxury: Gem,
 };
 
 /**

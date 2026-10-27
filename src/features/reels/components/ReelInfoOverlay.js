@@ -4,6 +4,7 @@ import { Music2, MapPin } from 'lucide-react-native';
 import Tag from '../../../components/Tag';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 import { formatCreatorTier, initialsOf } from '../utils/reelFormat';
+import ReelFadingName from './ReelFadingName';
 
 /**
  * Bottom-left caption block: creator row (avatar, handle, tier, follow),
@@ -20,24 +21,23 @@ export default function ReelInfoOverlay({ reel, onCreatorPress }) {
   return (
     <View style={styles.info} pointerEvents="box-none">
       <View style={styles.creatorRow}>
-        <TouchableOpacity
-          style={styles.creatorTap}
-          onPress={() => onCreatorPress && onCreatorPress(reel)}
-          activeOpacity={0.7}
-          accessibilityRole="button"
-          accessibilityLabel={`Open ${handle}'s profile`}
-        >
-          {avatarUri ? (
-            <Image source={{ uri: avatarUri }} style={styles.avatar} />
-          ) : (
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{initialsOf(handle)}</Text>
-            </View>
-          )}
-          <Text style={styles.creatorName} numberOfLines={1}>
-            {handle}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.creatorTap}>
+          <TouchableOpacity
+            onPress={() => onCreatorPress && onCreatorPress(reel)}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={`Open ${handle}'s profile`}
+          >
+            {avatarUri ? (
+              <Image source={{ uri: avatarUri }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatar}>
+                <Text style={styles.avatarText}>{initialsOf(handle)}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          <ReelFadingName name={handle} />
+        </View>
         <View style={styles.tierTagWrap}>
           <Tag label={formatCreatorTier(reel.creatorTier)} variant="primary" />
         </View>
@@ -94,7 +94,6 @@ const styles = StyleSheet.create({
   creatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap',
     marginBottom: SPACING.sm,
   },
   creatorTap: {
@@ -119,17 +118,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#FFFFFF',
   },
-  creatorName: {
-    fontFamily: FONTS.heading,
-    fontSize: 14,
-    color: '#FFFFFF',
-    flexShrink: 1,
-    ...TEXT_SHADOW,
-  },
   tierTagWrap: {
+    flexShrink: 0,
     marginTop: SPACING.xs,
   },
   followBtn: {
+    flexShrink: 0,
+    marginLeft: 'auto',
     paddingHorizontal: SPACING.sm + 2,
     paddingVertical: 4,
     borderRadius: RADIUS.pill,
