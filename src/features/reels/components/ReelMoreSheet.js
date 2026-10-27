@@ -8,44 +8,22 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Building2, User, Send, Flag } from 'lucide-react-native';
+import { Flag } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 
 /**
- * "More" menu for a reel (the three dots): jump to the agency or creator
- * profile, share, or report. Items that don't apply (no agency) are left out.
+ * "More" menu for a reel (the three dots). Just one action for now:
+ * reporting the reel.
  */
-export default function ReelMoreSheet({
-  visible,
-  reel,
-  onClose,
-  onOpenAgency,
-  onOpenCreator,
-  onShare,
-  onReport,
-}) {
+export default function ReelMoreSheet({ visible, onClose, onReport }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
 
-  const items = [
-    reel.agency?.name && {
-      icon: Building2,
-      label: `View ${reel.agency.name}`,
-      onPress: onOpenAgency,
-    },
-    {
-      icon: User,
-      label: `View ${reel.creatorHandle || 'creator'} profile`,
-      onPress: onOpenCreator,
-    },
-    { icon: Send, label: 'Share reel', onPress: onShare },
-    { icon: Flag, label: 'Report', onPress: onReport, danger: true },
-  ].filter(Boolean);
+  const items = [{ icon: Flag, label: 'Report this reel', onPress: onReport, danger: true }];
 
-  // Close first so the follow-up (navigation, share sheet, alert) isn't
-  // fighting a dismissing modal.
+  // Close first so the follow-up alert isn't fighting a dismissing modal.
   const choose = (action) => () => {
     onClose();
     setTimeout(action, 250);
