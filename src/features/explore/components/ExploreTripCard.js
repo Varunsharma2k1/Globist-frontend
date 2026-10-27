@@ -1,84 +1,194 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { MapPin, Clock } from 'lucide-react-native';
-import Card from '../../../components/Card';
-import Tag from '../../../components/Tag';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Pressable, Animated, StyleSheet } from 'react-native';
+import { MapPin } from 'lucide-react-native';
+import ExploreTripCardMedia from './ExploreTripCardMedia';
+import RatingSummary from '../../../components/RatingSummary';
+import VerifiedBadge from '../../../components/VerifiedBadge';
 import { useTheme } from '../../../hooks/useTheme';
-import { SPACING, FONTS } from '../../../theme';
+import { SPACING, RADIUS, FONTS } from '../../../theme';
 
-export default function ExploreTripCard({ trip, onPress }) {
+export default function ExploreTripCard({ trip, onPress, index = 0 }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
+  const pressScale = useRef(new Animated.Value(1)).current;
+  const appear = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(appear, {
+      toValue: 1,
+      duration: 320,
+      delay: Math.min(index, 6) * 60,
+      useNativeDriver: true,
+    }).start();
+  }, [appear, index]);
+
+  const springTo = (toValue) =>
+    Animated.spring(pressScale, {
+      toValue,
+      friction: 7,
+      tension: 160,
+      useNativeDriver: true,
+    }).start();
+
+  const hasPrice = Number.isFinite(trip.price);
+
   return (
-    <Card onPress={onPress}>
-      <View style={styles.tripCardHeader}>
-        <Text style={styles.tripTitle}>{trip.title}</Text>
-        <Tag label={`⭐ ${trip.rating || 4.8}`} variant="success" />
-      </View>
+    <Animated.View
+      style={[
+        styles.card,
+        {
+          opacity: appear,
+          transform: [
+            { translateY: appear.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) },
+            { scale: pressScale },
+          ],
+        },
+      ]}
+    >
+      <Pressable
+        onPress={onPress}
+        onPressIn={() => springTo(0.98)}
+        onPressOut={() => springTo(1)}
+        accessibilityRole="button"
+        accessibilityLabel={trip.title}
+      >
+        <ExploreTripCardMedia trip={trip} />
 
-      <View style={styles.tripMetaRow}>
-        <MapPin size={12} color={colors.textMuted} />
-        <Text style={styles.tripMeta}>{trip.location || 'India'}</Text>
-        <Clock size={12} color={colors.textMuted} style={{ marginLeft: SPACING.sm }} />
-        <Text style={styles.tripMeta}>{trip.duration || '5 Days'}</Text>
-      </View>
-      <Text style={styles.tripDesc} numberOfLines={2}>
-        {trip.description || 'Authentic local guided experience.'}
-      </Text>
+        <View style={styles.body}>
+          <View style={styles.titleRow}>
+            <Text style={styles.title} numberOfLines={2}>
+              {trip.title}
+            </Text>
+            <RatingSummary rating={trip.rating} reviewCount={trip.reviewCount} />
+          </View>
 
-      <View style={styles.footerRow}>
-        <Tag label={trip.agency?.name || 'Local Agency'} />
-        <Text style={styles.price}>₹{(trip.price || 14000).toLocaleString()}</Text>
-      </View>
-    </Card>
+          {trip.location ? (
+            <View style={styles.metaRow}>
+              <MapPin size={12} color={colors.textMuted} />
+              <Text style={styles.meta}>{trip.location}</Text>
+            </View>
+          ) : null}
+
+          {trip.description ? (
+            <Text style={styles.desc} numberOfLines={2}>
+              {trip.description}
+            </Text>
+          ) : null}
+
+          <View style={styles.footerRow}>
+            <View style={styles.agency}>
+              {trip.agency?.name ? (
+                <>
+                  <Text style={styles.agencyName} numberOfLines={1}>
+                    {trip.agency.name}
+                  </Text>
+                  {trip.agency.isVerified ? <VerifiedBadge size={14} /> : null}
+                </>
+              ) : null}
+            </View>
+            {hasPrice ? (
+              <View style={styles.priceBlock}>
+                <Text style={styles.price}>
+                  ₹{trip.price.toLocaleString()}
+                  <Text style={styles.priceUnit}> onwards</Text>
+                </Text>
+                <Text style={styles.priceNote}>
+                  {trip.occupancyPricing?.length ? 'per person · sharing' : 'per person'}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        </View>
+      </Pressable>
+    </Animated.View>
   );
 }
 
 function getStyles(colors) {
   return StyleSheet.create({
-    tripCardHeader: {
+    card: {
+      backgroundColor: colors.surface,
+      borderRadius: RADIUS.md,
+      borderWidth: 1,
+      borderColor: colors.divider,
+      overflow: 'hidden',
+      marginBottom: SPACING.md,
+    },
+    body: {
+      padding: SPACING.md,
+    },
+    titleRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
+      gap: SPACING.sm,
       marginBottom: SPACING.xs,
     },
-    tripTitle: {
-      fontFamily: FONTS.heading,
-      fontSize: 16,
-      color: colors.ink,
+    title: {
       flex: 1,
-      marginRight: SPACING.xs,
+      fontFamily: FONTS.bold,
+      fontSize: 17,
+      letterSpacing: -0.2,
+      color: colors.ink,
     },
-    tripMetaRow: {
+    metaRow: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: 4,
-      marginBottom: SPACING.xs,
+      marginBottom: SPACING.sm,
     },
-    tripMeta: {
-      fontFamily: FONTS.body,
-      fontSize: 12,
-      color: colors.textMuted,
-    },
-    tripDesc: {
+    meta: {
       fontFamily: FONTS.body,
       fontSize: 13,
-      color: colors.text,
+      color: colors.textMuted,
+    },
+    desc: {
+      fontFamily: FONTS.body,
+      fontSize: 13,
+      lineHeight: 19,
+      color: colors.textMuted,
       marginBottom: SPACING.md,
     },
     footerRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingTop: SPACING.sm,
-      borderTopWidth: 1,
+      gap: SPACING.sm,
+      paddingTop: SPACING.sm + 4,
+      borderTopWidth: StyleSheet.hairlineWidth,
       borderTopColor: colors.divider,
     },
+    agency: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    agencyName: {
+      flexShrink: 1,
+      fontFamily: FONTS.body,
+      fontSize: 12,
+      color: colors.textMuted,
+    },
+    priceBlock: {
+      alignItems: 'flex-end',
+    },
+    priceNote: {
+      fontFamily: FONTS.body,
+      fontSize: 11,
+      color: colors.textMuted,
+      marginTop: 1,
+    },
     price: {
-      fontFamily: FONTS.heading,
+      fontFamily: FONTS.bold,
       fontSize: 16,
       color: colors.ink,
+    },
+    priceUnit: {
+      fontFamily: FONTS.body,
+      fontSize: 12,
+      color: colors.textMuted,
     },
   });
 }

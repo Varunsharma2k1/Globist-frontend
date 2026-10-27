@@ -4,7 +4,7 @@ import Card from '../../../components/Card';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
 
-export default function PriceBreakdownCard({ travelers, pricePerPerson, subtotal, serviceFee, totalPrice }) {
+export default function PriceBreakdownCard({ travelers, pricePerPerson, occupancyLabel, subtotal, serviceFee, totalPrice }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -14,6 +14,7 @@ export default function PriceBreakdownCard({ travelers, pricePerPerson, subtotal
       <View style={styles.breakdownRow}>
         <Text style={styles.breakdownLabel}>
           {travelers} traveler{travelers > 1 ? 's' : ''} × ₹{pricePerPerson.toLocaleString()}
+          {occupancyLabel ? ` (${occupancyLabel.toLowerCase()})` : ''}
         </Text>
         <Text style={styles.breakdownVal}>₹{subtotal.toLocaleString()}</Text>
       </View>

@@ -24,4 +24,5 @@ export const STORAGE_KEYS = {
   USER_INFO: 'globist_user_info',
   APP_SETTINGS: 'globist_app_settings',
   THEME_MODE: 'globist_theme_mode',
+  EXPLORE_RECENTS: 'globist_explore_recents',
 };
