@@ -1,16 +1,23 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plus } from 'lucide-react-native';
-import { SPACING, FONTS } from '../../../theme';
+import { SPACING } from '../../../theme';
 
 export default function ReelsHeaderOverlay({ onPressPost }) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.headerOverlay, { paddingTop: insets.top + SPACING.sm }]}>
-      <Text style={styles.headerTitle}>Travel Reels</Text>
-      <TouchableOpacity style={styles.addBtn} onPress={onPressPost}>
+    <View
+      style={[styles.headerOverlay, { paddingTop: insets.top + SPACING.sm }]}
+      pointerEvents="box-none"
+    >
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={onPressPost}
+        accessibilityRole="button"
+        accessibilityLabel="Post a reel"
+      >
         <Plus size={20} color="#FFFFFF" />
       </TouchableOpacity>
     </View>
@@ -25,15 +32,10 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,
     paddingTop: SPACING.sm,
-  },
-  headerTitle: {
-    fontFamily: FONTS.heading,
-    fontSize: 18,
-    color: '#FFFFFF',
   },
   addBtn: {
     width: 36,

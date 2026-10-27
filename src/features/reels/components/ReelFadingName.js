@@ -7,10 +7,10 @@ const FADE_ALPHAS = [0.55, 0.28];
 
 /**
  * Creator handle that shows only its first few characters, fading out like
- * Instagram, so a long name can't push the Follow button off the row. Tap to
- * reveal (or collapse) the full name.
+ * Instagram, so a long name can't push the Follow button off the row. Tap
+ * opens the creator's profile; long-press reveals (or collapses) the full name.
  */
-export default function ReelFadingName({ name }) {
+export default function ReelFadingName({ name, onPress }) {
   const [expanded, setExpanded] = useState(false);
   const needsFade = name.length > VISIBLE_CHARS + FADE_ALPHAS.length;
 
@@ -33,10 +33,11 @@ export default function ReelFadingName({ name }) {
   return (
     <TouchableOpacity
       style={styles.tap}
-      onPress={() => needsFade && setExpanded((v) => !v)}
+      onPress={onPress}
+      onLongPress={() => needsFade && setExpanded((v) => !v)}
       activeOpacity={0.7}
       accessibilityRole="button"
-      accessibilityLabel={expanded ? 'Shorten name' : `Show full name ${name}`}
+      accessibilityLabel={`Open ${name}'s profile`}
     >
       <Text style={styles.name} numberOfLines={1}>
         {content}

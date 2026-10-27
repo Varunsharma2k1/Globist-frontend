@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Music2, MapPin } from 'lucide-react-native';
-import Tag from '../../../components/Tag';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
-import { formatCreatorTier, initialsOf } from '../utils/reelFormat';
+import { initialsOf } from '../utils/reelFormat';
+import CreatorTierBadge from './CreatorTierBadge';
 import ReelFadingName from './ReelFadingName';
 
 /**
@@ -36,10 +36,10 @@ export default function ReelInfoOverlay({ reel, onCreatorPress }) {
               </View>
             )}
           </TouchableOpacity>
-          <ReelFadingName name={handle} />
+          <ReelFadingName name={handle} onPress={() => onCreatorPress && onCreatorPress(reel)} />
         </View>
-        <View style={styles.tierTagWrap}>
-          <Tag label={formatCreatorTier(reel.creatorTier)} variant="primary" />
+        <View style={styles.tierBadgeWrap}>
+          <CreatorTierBadge tier={reel.creatorTier} />
         </View>
         <TouchableOpacity
           style={[styles.followBtn, following && styles.followingBtn]}
@@ -118,9 +118,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#FFFFFF',
   },
-  tierTagWrap: {
+  tierBadgeWrap: {
     flexShrink: 0,
-    marginTop: SPACING.xs,
+    marginRight: SPACING.sm,
   },
   followBtn: {
     flexShrink: 0,

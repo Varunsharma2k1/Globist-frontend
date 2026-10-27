@@ -18,7 +18,7 @@ import ReelBookingBar from './ReelBookingBar';
 import ReelCommentsSheet from './ReelCommentsSheet';
 import ReelMoreSheet from './ReelMoreSheet';
 
-const DOUBLE_TAP_MS = 260;
+const DOUBLE_TAP_MS = 300;
 
 /**
  * ReelItem Component
@@ -38,6 +38,7 @@ function ReelItem({
   reel,
   height,
   bottomInset = 0,
+  controlsOffset = 0,
   isActive,
   muted,
   onToggleMute,
@@ -53,6 +54,7 @@ function ReelItem({
   const heartBurstRef = useRef(null);
   const lastTapRef = useRef(0);
   const singleTapTimerRef = useRef(null);
+  const surfaceSizeRef = useRef({ width: 0, height: 0 });
 
   const { hasVideo, player, paused, controlsVisible, handleTogglePlay, handleToggleMute } =
     useReelPlayback({ mediaUrl: reel.mediaUrl, isActive, muted, onToggleMute });
@@ -67,20 +69,26 @@ function ReelItem({
 
   // A single tap toggles play/pause, a double tap likes. The single-tap
   // action waits out the double-tap window so a like doesn't also pause.
-  const handleSurfacePress = useCallback(() => {
-    const now = Date.now();
-    if (now - lastTapRef.current < DOUBLE_TAP_MS) {
-      clearTimeout(singleTapTimerRef.current);
-      lastTapRef.current = 0;
-      likeOnce();
-      heartBurstRef.current?.play();
-      return;
-    }
-    lastTapRef.current = now;
-    singleTapTimerRef.current = setTimeout(() => {
-      if (hasVideo) handleTogglePlay();
-    }, DOUBLE_TAP_MS);
-  }, [likeOnce, hasVideo, handleTogglePlay]);
+  // The heart pops at the exact spot that was tapped.
+  const handleSurfacePress = useCallback(
+    (event) => {
+      const now = Date.now();
+      if (now - lastTapRef.current < DOUBLE_TAP_MS) {
+        clearTimeout(singleTapTimerRef.current);
+        lastTapRef.current = 0;
+        likeOnce();
+        const { locationX, locationY } = event?.nativeEvent || {};
+        const { width: w, height: h } = surfaceSizeRef.current;
+        heartBurstRef.current?.play(locationX ?? w / 2, locationY ?? h / 2);
+        return;
+      }
+      lastTapRef.current = now;
+      singleTapTimerRef.current = setTimeout(() => {
+        if (hasVideo) handleTogglePlay();
+      }, DOUBLE_TAP_MS);
+    },
+    [likeOnce, hasVideo, handleTogglePlay]
+  );
 
   const handleReport = () =>
     Alert.alert('Report submitted', 'Thanks — our team will review this reel.');
@@ -104,7 +112,12 @@ function ReelItem({
       <ReelGradient />
 
       <TouchableWithoutFeedback onPress={handleSurfacePress}>
-        <View style={StyleSheet.absoluteFill} />
+        <View
+          style={StyleSheet.absoluteFill}
+          onLayout={(e) => {
+            surfaceSizeRef.current = e.nativeEvent.layout;
+          }}
+        />
       </TouchableWithoutFeedback>
 
       <ReelHeartBurst ref={heartBurstRef} />
@@ -115,6 +128,7 @@ function ReelItem({
           muted={muted}
           onTogglePlay={handleTogglePlay}
           onToggleMute={handleToggleMute}
+          centerOffset={controlsOffset}
         />
       )}
 
@@ -147,11 +161,7 @@ function ReelItem({
 
       <ReelMoreSheet
         visible={moreVisible}
-        reel={reel}
         onClose={() => setMoreVisible(false)}
-        onOpenAgency={() => onAgencyPress?.(reel.agency)}
-        onOpenCreator={() => onCreatorPress?.(reel)}
-        onShare={handleShare}
         onReport={handleReport}
       />
 

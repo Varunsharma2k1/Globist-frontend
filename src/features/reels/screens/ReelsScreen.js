@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, FlatList, ActivityIndicator, PixelRatio, StyleSheet } from 'react-native';
+import { View, FlatList, ActivityIndicator, PixelRatio, Animated, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import ReelItem from '../../../components/ReelItem';
@@ -9,6 +9,7 @@ import { useReelsFeed } from '../hooks/useReelsFeed';
 import { useInfiniteReelPaging } from '../hooks/useInfiniteReelPaging';
 import { useReelsTabBarTheme } from '../hooks/useReelsTabBarTheme';
 import { useReelBooking } from '../hooks/useReelBooking';
+import { useTabSwipe } from '../hooks/useTabSwipe';
 import { ReelEngagementProvider } from '../context/ReelEngagementContext';
 import ReelsHeaderOverlay from '../components/ReelsHeaderOverlay';
 import ReelsEmptyState from '../components/ReelsEmptyState';
@@ -30,6 +31,10 @@ import ReelsEmptyState from '../components/ReelsEmptyState';
  * system bars, edge-to-edge, notches), and fractional page heights drifted
  * further out of alignment the deeper the looped list went.
  */
+// Extra push down for the play/mute controls so they sit at the visual
+// centre of the phone (tuned on a Pixel 9).
+const CONTROLS_NUDGE = 20;
+
 export default function ReelsScreen({ navigation }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
@@ -56,6 +61,10 @@ export default function ReelsScreen({ navigation }) {
     handleMomentumEnd,
   } = useInfiniteReelPaging(reels, reelHeight);
   const { bookReel, pendingReelId } = useReelBooking(navigation, user?._id);
+  const { translateX, panHandlers } = useTabSwipe(navigation, {
+    left: 'ExploreTab',
+    right: 'InboxTab',
+  });
 
   const handleFeedLayout = useCallback((e) => {
     const measured = PixelRatio.roundToNearestPixel(e.nativeEvent.layout.height);
@@ -89,6 +98,7 @@ export default function ReelsScreen({ navigation }) {
       <ReelItem
         reel={item}
         height={reelHeight}
+        controlsOffset={tabBarHeight / 2 + CONTROLS_NUDGE}
         isActive={isFocused && index === activeIndex}
         muted={muted}
         onToggleMute={handleToggleMute}
@@ -100,6 +110,7 @@ export default function ReelsScreen({ navigation }) {
     ),
     [
       reelHeight,
+      tabBarHeight,
       isFocused,
       activeIndex,
       muted,
@@ -146,9 +157,15 @@ export default function ReelsScreen({ navigation }) {
 
   return (
     <ReelEngagementProvider>
-      <View style={styles.container} onLayout={handleFeedLayout}>
-        {renderFeed()}
-        <ReelsHeaderOverlay onPressPost={() => navigation.navigate('PostReel')} />
+      <View style={styles.backdrop}>
+        <Animated.View
+          style={[styles.container, { transform: [{ translateX }] }]}
+          onLayout={handleFeedLayout}
+          {...panHandlers}
+        >
+          {renderFeed()}
+          <ReelsHeaderOverlay onPressPost={() => navigation.navigate('PostReel')} />
+        </Animated.View>
       </View>
     </ReelEngagementProvider>
   );
@@ -156,6 +173,10 @@ export default function ReelsScreen({ navigation }) {
 
 function getStyles(colors) {
   return StyleSheet.create({
+    backdrop: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
     container: {
       flex: 1,
       backgroundColor: colors.reelTone.default,
