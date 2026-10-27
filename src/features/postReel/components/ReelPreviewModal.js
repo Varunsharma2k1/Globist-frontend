@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Modal, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import ReelItem from '../../../components/ReelItem';
@@ -14,20 +14,20 @@ import { SPACING } from '../../../theme';
 export default function ReelPreviewModal({ visible, onClose, reel }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { height: windowHeight } = useWindowDimensions();
   const [muted, setMuted] = useState(false);
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose} statusBarTranslucent>
       <View style={{ flex: 1, backgroundColor: colors.reelTone.default }}>
         {reel && (
+          // No fixed height: fill the modal, whose real size can differ from
+          // the window's on Android with translucent system bars.
           <ReelItem
             reel={reel}
-            height={windowHeight}
+            bottomInset={insets.bottom}
             isActive={visible}
             muted={muted}
             onToggleMute={() => setMuted((v) => !v)}
-            onAgencyPress={() => {}}
             onCreatorPress={() => {}}
           />
         )}

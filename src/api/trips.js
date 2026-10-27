@@ -37,7 +37,9 @@ export const getTripById = async (tripId) => {
  * Backend requires checkIn/checkOut (not a single date) and computes the
  * price itself — checkOut defaults to the day after checkIn since the UI
  * only collects one travel date for now.
- * @param {Object} bookingData - ({ tripId, travelersCount, startDate, paymentMethod })
+ * `referredBy` is the creator's user id when the booking started from a reel;
+ * the backend owns validating it and awarding any commission.
+ * @param {Object} bookingData - ({ tripId, travelersCount, startDate, paymentMethod, referredBy })
  * @returns {Promise<Object>}
  */
 export const createBooking = async (bookingData) => {
@@ -55,6 +57,7 @@ export const createBooking = async (bookingData) => {
     checkOut,
     adults: bookingData.travelersCount,
     paymentMethod: bookingData.paymentMethod,
+    referredBy: bookingData.referredBy,
   });
   return normalizeBooking(response.data);
 };
