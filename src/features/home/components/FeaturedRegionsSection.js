@@ -20,7 +20,11 @@ export default function FeaturedRegionsSection({ regions, loading, navigation })
       {loading ? (
         <ActivityIndicator color={colors.ink} style={{ marginVertical: SPACING.lg }} />
       ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.horizontalScroll}
+        >
           {regions.map((region) => (
             <RegionCard
               key={region._id || region.name}

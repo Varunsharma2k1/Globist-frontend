@@ -13,13 +13,17 @@ import {
 
 import { AuthProvider } from './src/context/AuthContext';
 import { SettingsProvider } from './src/context/SettingsContext';
+import { CommunitiesProvider } from './src/context/CommunitiesContext';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { useTheme } from './src/hooks/useTheme';
+import { useSettings } from './src/hooks/useSettings';
+import TouchIndicator from './src/components/TouchIndicator';
 import AppNavigator from './src/navigation/AppNavigator';
 import { COLORS } from './src/theme';
 
 function AppContent() {
   const { colors, resolvedScheme } = useTheme();
+  const { settings } = useSettings();
 
   const navTheme = {
     ...(resolvedScheme === 'dark' ? DarkTheme : DefaultTheme),
@@ -34,10 +38,15 @@ function AppContent() {
   };
 
   return (
-    <NavigationContainer theme={navTheme}>
-      <StatusBar style={resolvedScheme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.background} />
-      <AppNavigator />
-    </NavigationContainer>
+    <TouchIndicator enabled={settings.toggles.showTouches}>
+      <NavigationContainer theme={navTheme}>
+        <StatusBar
+          style={resolvedScheme === 'dark' ? 'light' : 'dark'}
+          backgroundColor={colors.background}
+        />
+        <AppNavigator />
+      </NavigationContainer>
+    </TouchIndicator>
   );
 }
 
@@ -58,7 +67,9 @@ export default function App() {
       <AuthProvider>
         <ThemeProvider>
           <SettingsProvider>
-            <AppContent />
+            <CommunitiesProvider>
+              <AppContent />
+            </CommunitiesProvider>
           </SettingsProvider>
         </ThemeProvider>
       </AuthProvider>

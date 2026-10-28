@@ -41,11 +41,7 @@ export default function SettingsScreen({ navigation }) {
               {group.rows.map((row) => (
                 <SettingsRow
                   key={row.id}
-                  row={
-                    row.id === 'theme'
-                      ? { ...row, sub: `English · ${THEME_MODE_LABEL[mode]}` }
-                      : row
-                  }
+                  row={row.id === 'theme' ? { ...row, sub: THEME_MODE_LABEL[mode] } : row}
                   on={!!settings.toggles[row.id]}
                   onToggle={() => toggleSetting(row.id)}
                   onPress={row.id === 'theme' ? () => setShowThemePicker(true) : undefined}
@@ -61,10 +57,7 @@ export default function SettingsScreen({ navigation }) {
       </ScrollView>
 
       <ThemePickerModal visible={showThemePicker} onClose={() => setShowThemePicker(false)} />
-      <DeleteAccountModal
-        visible={showDeleteConfirm}
-        onClose={() => setShowDeleteConfirm(false)}
-      />
+      <DeleteAccountModal visible={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} />
     </View>
   );
 }

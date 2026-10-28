@@ -32,7 +32,7 @@ function getStyles(colors) {
       right: 0,
       height: 84,
       backgroundColor: colors.surface,
-      borderTopWidth: 2,
+      borderTopWidth: 1,
       borderTopColor: colors.divider,
       paddingHorizontal: SPACING.lg,
     },

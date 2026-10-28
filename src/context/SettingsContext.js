@@ -27,6 +27,7 @@ const DEFAULT_SETTINGS = {
     emailSms: false,
     hqUploads: true,
     dataSaver: false,
+    showTouches: false,
   },
   feedPref: 'algorithm',
 };

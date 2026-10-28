@@ -8,7 +8,7 @@
       "triptape",
       "com.globist.app"
     ],
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.globist.app"

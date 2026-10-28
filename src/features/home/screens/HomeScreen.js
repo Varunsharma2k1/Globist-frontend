@@ -4,14 +4,15 @@ import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, LAYOUT } from '../../../theme';
 import { useHomeData } from '../hooks/useHomeData';
 import HomeHeader from '../components/HomeHeader';
-import TrendingReelsBanner from '../components/TrendingReelsBanner';
+import HomeCarousel from '../components/HomeCarousel';
 import FeaturedRegionsSection from '../components/FeaturedRegionsSection';
 import TrendingPackagesSection from '../components/TrendingPackagesSection';
+import CommunitiesSection from '../components/CommunitiesSection';
 
 /**
  * HomeScreen Component
  *
- * Renders the top banner, featured travel regions, and trending travel
+ * Renders the auto-rotating carousel, featured travel regions, and trending travel
  * packages. Data fetching lives in useHomeData; each visual section is its
  * own component (see ../components) — this file is just the layout.
  */
@@ -24,12 +25,19 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <HomeHeader />
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <TrendingReelsBanner onPress={() => navigation.navigate('ReelsTab')} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {/* Breathing room between the app header and the carousel. */}
+        <View style={styles.carouselWrap}>
+          <HomeCarousel onSlidePress={(tab) => navigation.navigate(tab)} />
+        </View>
 
-        <FeaturedRegionsSection regions={regions} loading={loading} navigation={navigation} />
+        <View style={styles.content}>
+          <FeaturedRegionsSection regions={regions} loading={loading} navigation={navigation} />
 
-        <TrendingPackagesSection trips={trendingTrips} navigation={navigation} />
+          <TrendingPackagesSection trips={trendingTrips} navigation={navigation} />
+
+          <CommunitiesSection navigation={navigation} />
+        </View>
       </ScrollView>
     </View>
   );
@@ -40,6 +48,9 @@ function getStyles(colors) {
     container: {
       flex: 1,
       backgroundColor: colors.background,
+    },
+    carouselWrap: {
+      paddingTop: SPACING.md,
     },
     content: {
       padding: SPACING.lg,

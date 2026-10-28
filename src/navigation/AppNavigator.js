@@ -16,6 +16,9 @@ import ProfileTripsScreen from '../features/profile/screens/ProfileTripsScreen';
 import MyReelsScreen from '../features/profile/screens/MyReelsScreen';
 import ReelViewerScreen from '../features/profile/screens/ReelViewerScreen';
 import AgencyPackagesScreen from '../features/agency/screens/AgencyPackagesScreen';
+import CommunitiesScreen from '../features/communities/screens/CommunitiesScreen';
+import CommunityDetailScreen from '../features/communities/screens/CommunityDetailScreen';
+import PostDetailScreen from '../features/communities/screens/PostDetailScreen';
 import PaymentHistoryScreen from '../features/agency/screens/PaymentHistoryScreen';
 import InvoiceScreen from '../features/agency/screens/InvoiceScreen';
 import AccountTypeModal from '../features/auth/components/AccountTypeModal';
@@ -54,6 +57,9 @@ export default function AppNavigator() {
             <Stack.Screen name="AgencyProfile" component={AgencyProfileScreen} />
             <Stack.Screen name="Settings" component={SettingsScreen} />
             <Stack.Screen name="ProfileTrips" component={ProfileTripsScreen} />
+            <Stack.Screen name="Communities" component={CommunitiesScreen} />
+            <Stack.Screen name="CommunityDetail" component={CommunityDetailScreen} />
+            <Stack.Screen name="PostDetail" component={PostDetailScreen} />
             <Stack.Screen name="MyReels" component={MyReelsScreen} />
             <Stack.Screen name="ReelViewer" component={ReelViewerScreen} />
             <Stack.Screen name="AgencyPackages" component={AgencyPackagesScreen} />

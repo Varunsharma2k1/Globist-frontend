@@ -13,7 +13,7 @@ export default function HomeHeader() {
     <View style={[styles.header, { paddingTop: insets.top + SPACING.md }]}>
       <View style={styles.headerTextWrap}>
         <Text style={styles.appName}>TRIPTAPE</Text>
-        <Text style={styles.subHeader}>Discover Authentic Travel</Text>
+        <Text style={styles.subHeader}>Discover Travel</Text>
       </View>
     </View>
   );
@@ -27,7 +27,7 @@ function getStyles(colors) {
       paddingTop: SPACING.lg,
       paddingBottom: SPACING.md,
       backgroundColor: colors.background,
-      borderBottomWidth: 2,
+      borderBottomWidth: 1,
       borderBottomColor: colors.divider,
     },
     headerTextWrap: {
