@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
   },
   backBtn: {
     width: 40,

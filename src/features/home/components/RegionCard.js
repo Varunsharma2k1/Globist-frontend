@@ -9,20 +9,19 @@ import { SPACING, RADIUS, FONTS } from '../../../theme';
 // two-tone gradient so a slow/failed network load still looks intentional
 // rather than blank. Safe even when imageUrl is missing.
 function RegionHero({ region }) {
-  const imageUrl = region && region.imageUrl;
+  // `image` is a bundled photo; `imageUrl` a remote one from the API.
+  const source = region && (region.image || (region.imageUrl ? { uri: region.imageUrl } : null));
   const palette =
     (region && region.imageType) === 'desert'
       ? ['#F8E6C2', '#7A5A1E']
       : (region && region.imageType) === 'beach'
-      ? ['#DBE6F2', '#2F4D6E']
-      : ['#DFE9DA', '#3F5C3A'];
+        ? ['#DBE6F2', '#2F4D6E']
+        : ['#DFE9DA', '#3F5C3A'];
   return (
     <View style={styles.regionImage}>
       <View style={[styles.regionGradientTop, { backgroundColor: palette[0] }]} />
       <View style={[styles.regionGradientBottom, { backgroundColor: palette[1] }]} />
-      {imageUrl ? (
-        <Image source={{ uri: imageUrl }} style={styles.regionImageAsset} resizeMode="cover" />
-      ) : null}
+      {source ? <Image source={source} style={styles.regionImageAsset} resizeMode="cover" /> : null}
       <View style={styles.regionImageOverlay} />
     </View>
   );
@@ -85,6 +84,9 @@ const styles = StyleSheet.create({
   },
   regionImageAsset: {
     ...StyleSheet.absoluteFillObject,
+    // Explicit size so bundled photos fill the box instead of using their own dimensions.
+    width: '100%',
+    height: '100%',
   },
   regionImageOverlay: {
     ...StyleSheet.absoluteFillObject,

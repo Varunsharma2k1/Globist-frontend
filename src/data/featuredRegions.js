@@ -1,34 +1,38 @@
 /**
- * Featured regions allowlist.
+ * Featured regions on Home: Himachal Pradesh and Uttarakhand, in this order.
  *
- * The backend exposes `GET /api/regions/featured` which already returns only
- * the curated two featured regions (Himachal + Uttarakhand) sorted in the
- * order we want. This file owns the frontend's interest in ordering and
- * provides a stable `match` key that other screens (if they ever need it)
- * can use to align server records with frontend metadata.
- *
- * Image URLs and taglines now come from the backend per record — see
- * `Region.imageUrl` + `Region.tagline` in server/models/Region.js and
- * `normalizeRegion` in src/api/normalize.js. The frontend no longer carries
- * any imagery data of its own.
+ * The backend's `GET /api/regions/featured` supplies each region's id, trip
+ * count and pricing. The photo (bundled in assets/home) and tagline for these
+ * two are owned here, so the cards always have a Himalayan image — even if the API returns a
+ * different photo, none, or can't be reached at all (the fallback entries
+ * below then stand in for the missing records).
  */
+const FEATURED = [
+  {
+    slug: 'himachal',
+    fallback: { name: 'Himachal Pradesh', state: 'India', imageType: 'mountain' },
+    image: require('../../assets/home/spiti-snow.jpg'),
+    tagline: 'Pine valleys + snow peaks',
+  },
+  {
+    slug: 'uttarakhand',
+    fallback: { name: 'Uttarakhand', state: 'India', imageType: 'valley' },
+    image: require('../../assets/home/uttarakhand-ridges.jpg'),
+    tagline: 'Himalayan pilgrimage trails',
+  },
+];
 
-export const FEATURED_REGION_SLUGS = ['himachal', 'uttarakhand'];
+export const FEATURED_REGION_SLUGS = FEATURED.map((f) => f.slug);
 
 /**
- * Returns the curated featured regions in the order they appear on the home
- * screen. Acts as a defensive pass-through: if for some reason the API
- * returns an out-of-order or extra region, this snaps it back to the curated
- * list and order.
+ * Returns the two featured regions in order, each with its photo and tagline.
+ * A region the API didn't return is replaced by a local placeholder (no id,
+ * so tapping it opens the region screen by name only).
  */
 export const pickFeaturedRegions = (regions = []) => {
-  if (!Array.isArray(regions)) return [];
-  const lookup = regions.map((r) => ({
-    region: r,
-    haystack: `${r && r.name ? r.name : ''}`.toLowerCase(),
-  }));
-  return FEATURED_REGION_SLUGS.map((slug) => {
-    const hit = lookup.find((row) => row.haystack.includes(slug));
-    return hit ? hit.region : null;
-  }).filter(Boolean);
+  const list = Array.isArray(regions) ? regions : [];
+  return FEATURED.map(({ slug, fallback, image, tagline }) => {
+    const hit = list.find((r) => `${r?.name || ''}`.toLowerCase().includes(slug));
+    return { ...fallback, ...hit, image, tagline };
+  });
 };

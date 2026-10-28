@@ -5,7 +5,7 @@ import { SPACING } from '../../../theme';
 
 /**
  * Shared "section title + optional right-side action" row used above both
- * the Featured Regions and Top Handcrafted Packages lists.
+ * the Featured Regions and Trending Travel Packages sections.
  */
 export default function SectionHeader({ title, children }) {
   const { typography } = useTheme();
