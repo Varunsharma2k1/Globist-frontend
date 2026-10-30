@@ -3,6 +3,7 @@ import { View, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
 import { useTheme } from '../../../hooks/useTheme';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { SPACING, LAYOUT } from '../../../theme';
 import { OCCUPANCY_LABELS, defaultOccupancy, priceForOccupancy } from '../../../data/occupancy';
 import { useTripDetail } from '../hooks/useTripDetail';
@@ -31,6 +32,7 @@ export default function TripDetailScreen({ route, navigation }) {
   const { tripId, referral } = route.params || {};
   const { trip: item, loading } = useTripDetail(tripId);
   const [pickedOccupancy, setPickedOccupancy] = useState(null);
+  const { requireAuth } = useRequireAuth(navigation);
 
   if (loading) {
     return (
@@ -42,6 +44,12 @@ export default function TripDetailScreen({ route, navigation }) {
   }
 
   const occupancy = pickedOccupancy || defaultOccupancy(item);
+
+  // Booking needs an account: guests sign in first, then land on Booking.
+  const handleBook = () => {
+    const params = { trip: item, referral, occupancy };
+    if (requireAuth({ name: 'Booking', params })) navigation.navigate('Booking', params);
+  };
 
   return (
     <View style={styles.container}>
@@ -69,7 +77,7 @@ export default function TripDetailScreen({ route, navigation }) {
       <TripBottomBar
         price={priceForOccupancy(item, occupancy)}
         priceNote={occupancy ? OCCUPANCY_LABELS[occupancy] : null}
-        onBookPress={() => navigation.navigate('Booking', { trip: item, referral, occupancy })}
+        onBookPress={handleBook}
       />
     </View>
   );

@@ -38,8 +38,9 @@ function withStats(destination, trips) {
 
 /**
  * Every searchable destination: each region (e.g. Ladakh) plus each of its
- * sub-locations (e.g. Zanskar). A sub-location's trips are the region's
- * trips that name it in their title or are tagged with it.
+ * places — the region's sub-locations (e.g. Zanskar) and any place its trips
+ * are tagged with (e.g. Kalpa). A place's trips are the region's trips that
+ * name it in their title or are tagged with it.
  */
 export function buildDestinations(regions, trips) {
   const destinations = [];
@@ -51,7 +52,11 @@ export function buildDestinations(regions, trips) {
         regionTrips
       )
     );
-    (region.subLocations || []).forEach((place) => {
+    const tagged = regionTrips.flatMap((t) => t.places || []);
+    const places = [...(region.subLocations || []), ...tagged].filter(
+      (place, i, all) => all.findIndex((p) => normalize(p) === normalize(place)) === i
+    );
+    places.forEach((place) => {
       destinations.push(
         withStats(
           {

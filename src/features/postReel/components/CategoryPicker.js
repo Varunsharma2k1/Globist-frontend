@@ -1,15 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Mountain, Waves, Sun, Sparkles } from 'lucide-react-native';
+import { Mountain } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 
-const CATEGORIES = [
-  { key: 'mountain', icon: Mountain, label: 'Mountain' },
-  { key: 'beach', icon: Waves, label: 'Beach' },
-  { key: 'desert', icon: Sun, label: 'Desert' },
-  { key: 'other', icon: Sparkles, label: 'Other' },
-];
+// Triptape only lists mountain trips (Himachal / Uttarakhand) for now, so
+// Mountain is the only vibe offered.
+const CATEGORIES = [{ key: 'mountain', icon: Mountain, label: 'Mountain' }];
 
 export default function CategoryPicker({ value, onChange }) {
   const { colors } = useTheme();
@@ -52,7 +49,7 @@ function getStyles(colors) {
       marginBottom: SPACING.md,
     },
     typeCard: {
-      flex: 1,
+      width: 84,
       aspectRatio: 1.15,
       backgroundColor: colors.surfaceMuted,
       borderRadius: RADIUS.sm,

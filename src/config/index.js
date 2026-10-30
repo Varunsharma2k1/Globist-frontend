@@ -28,4 +28,5 @@ export const STORAGE_KEYS = {
   EXPLORE_RECENTS: 'globist_explore_recents',
   COMMUNITIES: 'globist_communities',
   AGENCY_PROFILES: 'globist_agency_profiles',
+  TRIP_LEDGER: 'globist_trip_ledger',
 };

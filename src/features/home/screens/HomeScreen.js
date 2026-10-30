@@ -28,7 +28,14 @@ export default function HomeScreen({ navigation }) {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Breathing room between the app header and the carousel. */}
         <View style={styles.carouselWrap}>
-          <HomeCarousel onSlidePress={(tab) => navigation.navigate(tab)} />
+          <HomeCarousel
+            onSlidePress={(slide) =>
+              navigation.navigate(
+                slide.target,
+                slide.destination ? { destination: slide.destination } : undefined
+              )
+            }
+          />
         </View>
 
         <View style={styles.content}>

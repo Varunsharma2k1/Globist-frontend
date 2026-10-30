@@ -1,15 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { getReels } from '../../../api';
+import { useAuth } from '../../../hooks/useAuth';
+import { useTripLedger } from '../../../hooks/useTripLedger';
 
 // The three demo videos used as the user's reels for now (server/uploads/reels).
 const DEMO_REEL_FILES = ['reel1.mp4', 'reel2.mp4', 'reel3.mp4'];
 
 /**
- * The reels shown in the profile's "My Posts" grid. Until reels are tied to
- * the signed-in user, this is the three demo reels from the feed.
+ * The reels shown in the profile's "My Posts" grid: the reels the signed-in
+ * user posted in the app (on-device ledger), followed by the three demo
+ * reels from the feed until backend reels are tied to the user.
  */
 export function useMyReels() {
-  const [reels, setReels] = useState([]);
+  const { user } = useAuth();
+  const { ledger } = useTripLedger();
+  const [demoReels, setReels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -35,5 +40,10 @@ export function useMyReels() {
     };
   }, []);
 
-  return { reels, loading, error };
+  const reels = useMemo(
+    () => [...ledger.reels.filter((r) => r.user?._id === user?._id), ...demoReels],
+    [ledger.reels, demoReels, user?._id]
+  );
+
+  return { reels, loading, error: error && !reels.length };
 }

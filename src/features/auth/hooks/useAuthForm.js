@@ -8,7 +8,7 @@ const MIN_PASSWORD_LENGTH = 6;
  * Owns the Sign In / Sign Up form's state and submission (email + password).
  */
 export function useAuthForm() {
-  const { login, signup } = useAuth();
+  const { login, signup, loginWithGoogle } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
@@ -16,6 +16,7 @@ export function useAuthForm() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   // Inline banner shown above the form: { type: 'info' | 'error', text }
   const [notice, setNotice] = useState(null);
 
@@ -78,6 +79,19 @@ export function useAuthForm() {
     }
   };
 
+  // Placeholder Google sign-in (see AuthContext.loginWithGoogle).
+  const handleGoogle = async () => {
+    setNotice(null);
+    setGoogleLoading(true);
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setNotice({ type: 'error', text: 'Google sign-in failed. Please try again.' });
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return {
     isLogin,
     toggleMode,
@@ -92,6 +106,8 @@ export function useAuthForm() {
     setShowPassword,
     loading,
     handleSubmit,
+    googleLoading,
+    handleGoogle,
   };
 }
 

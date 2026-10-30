@@ -14,8 +14,19 @@ import {
  * Manages the active user session (JWT + cached user in AsyncStorage) and the
  * auth actions: email login/signup, one-time account type
  * selection and logout. Screens never touch tokens directly.
+ *
+ * Nobody has to sign in to open the app: without a session the user is an
+ * in-memory guest (`{ isGuest: true }`, never persisted) who can browse
+ * everything and is asked to sign in only to book or post (see
+ * useRequireAuth). Logging out returns to guest.
+ *
+ * "Continue with Google" is a placeholder that creates a local mock session
+ * — no OAuth or backend account yet (see MOCK_TOKEN_PREFIX in api/client).
  */
 export const AuthContext = createContext();
+
+const GUEST_USER = { _id: 'guest', name: 'Guest', role: 'traveler', isGuest: true };
+export const MOCK_GOOGLE_TOKEN = 'mock-google-session';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -31,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       STORAGE_KEYS.REFRESH_TOKEN,
       STORAGE_KEYS.USER_INFO,
     ]);
-    setUser(null);
+    setUser(GUEST_USER);
   };
 
   /**
@@ -47,7 +58,10 @@ export const AuthProvider = ({ children }) => {
       ]);
       if (token && cachedUser) {
         setUser(JSON.parse(cachedUser));
-        refreshUser();
+        // Mock Google sessions have no backend account to re-validate against.
+        if (token !== MOCK_GOOGLE_TOKEN) refreshUser();
+      } else {
+        setUser(GUEST_USER);
       }
     } catch (error) {
       console.warn('[AuthContext] Session restore failed, clearing session:', error?.message);
@@ -89,6 +103,25 @@ export const AuthProvider = ({ children }) => {
     persistSession(await signupUser({ name, email, password }));
 
   /**
+   * Placeholder "Continue with Google": pretends the OAuth round-trip
+   * succeeded and signs in a fixed demo traveller, stored like a real session.
+   */
+  const loginWithGoogle = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    return persistSession({
+      token: MOCK_GOOGLE_TOKEN,
+      user: {
+        _id: 'google-demo-traveller',
+        name: 'Aarav Mehta',
+        email: 'aarav.mehta@gmail.com',
+        role: 'traveler',
+        authProvider: 'google',
+        stats: {},
+      },
+    });
+  };
+
+  /**
    * Saves the traveller / creator / agency choice for a brand-new account,
    * which also dismisses the account-type prompt.
    */
@@ -109,6 +142,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         signup,
+        loginWithGoogle,
         selectAccountType,
         logout,
         setUser,

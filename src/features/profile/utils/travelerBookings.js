@@ -23,7 +23,7 @@ export function buildTravelerBooking({ user, trip, booking, index = 0 }) {
   const pkgTrip = booking?.trip || trip;
   const h = hashId(`${user?._id}-${pkgTrip?._id}`);
   const travelers = booking?.travelersCount || 1 + (h % 3);
-  const ratePerPerson = pkgTrip?.price || 0;
+  const ratePerPerson = booking?.pricePerPerson || pkgTrip?.price || 0;
   const total = booking?.totalPrice ?? Math.round(ratePerPerson * travelers * (1 + GST_RATE));
 
   const fallbackTravel = Date.now() + (index + 1) * 30 * DAY;
@@ -38,7 +38,12 @@ export function buildTravelerBooking({ user, trip, booking, index = 0 }) {
       duration: parseInt(pkgTrip?.duration, 10) || null,
     },
     agencyName: pkgTrip?.agency?.name || 'Triptape partner agency',
-    traveler: { name: user?.name || 'Traveller', email: user?.email || '', phone: '', city: '' },
+    traveler: {
+      name: user?.name || 'Traveller',
+      email: user?.email || '',
+      phone: booking?.phone || '',
+      city: '',
+    },
     travelers,
     occupancy: booking?.occupancy || (travelers > 1 ? 'double' : 'single'),
     ratePerPerson,
@@ -49,4 +54,14 @@ export function buildTravelerBooking({ user, trip, booking, index = 0 }) {
     ...splitGst(total),
     trip: pkgTrip,
   };
+}
+
+/**
+ * Backend bookings that aren't already listed through the on-device ledger
+ * (a ledger booking mirrored to the backend keeps its id as `backendId`).
+ * Bookings whose trip no longer exists are dropped.
+ */
+export function otherBackendBookings(backendBookings, ledgerBookings) {
+  const mirrored = new Set(ledgerBookings.map((b) => b.backendId).filter(Boolean));
+  return backendBookings.filter((b) => b.trip && !mirrored.has(b._id));
 }

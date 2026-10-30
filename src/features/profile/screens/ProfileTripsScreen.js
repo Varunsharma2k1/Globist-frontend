@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
 import ExploreTripCard from '../../explore/components/ExploreTripCard';
 import BookedTripCard from '../components/BookedTripCard';
+import TripRewardActions from '../components/TripRewardActions';
 import { useProfileTrips } from '../hooks/useProfileTrips';
 import { useTheme } from '../../../hooks/useTheme';
+import { useTripLedger } from '../../../hooks/useTripLedger';
 import { SPACING, LAYOUT } from '../../../theme';
 
 const COPY = {
@@ -23,8 +25,21 @@ export default function ProfileTripsScreen({ navigation, route }) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors);
   const { trips, loading } = useProfileTrips(kind);
+  const { markTripCompleted } = useTripLedger();
   const openTrip = (trip) =>
     navigation.navigate('TripDetail', { tripId: trip._id, title: trip.title });
+
+  // Real trips complete on their own once the return date passes; this lets
+  // the reel-reward flow be tried without waiting for the trip.
+  const confirmCompleted = (booking) =>
+    Alert.alert(
+      'Mark trip as completed?',
+      'Demo only: trips complete automatically after their return date. This unlocks posting a reel for this trip.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Mark completed', onPress: () => markTripCompleted(booking._id) },
+      ]
+    );
 
   return (
     <View style={styles.container}>
@@ -45,7 +60,17 @@ export default function ProfileTripsScreen({ navigation, route }) {
                   key={booking._id}
                   booking={booking}
                   onPress={() => navigation.navigate('Invoice', { booking })}
-                />
+                >
+                  {booking.ledgerBooking ? (
+                    <TripRewardActions
+                      booking={booking.ledgerBooking}
+                      onMarkCompleted={() => confirmCompleted(booking.ledgerBooking)}
+                      onPostReel={() =>
+                        navigation.navigate('PostReel', { bookingId: booking.ledgerBooking._id })
+                      }
+                    />
+                  ) : null}
+                </BookedTripCard>
               ))
             : trips.map((trip, index) => (
                 <ExploreTripCard

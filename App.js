@@ -14,6 +14,7 @@ import {
 import { AuthProvider } from './src/context/AuthContext';
 import { SettingsProvider } from './src/context/SettingsContext';
 import { CommunitiesProvider } from './src/context/CommunitiesContext';
+import { TripLedgerProvider } from './src/context/TripLedgerContext';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { useTheme } from './src/hooks/useTheme';
 import { useSettings } from './src/hooks/useSettings';
@@ -68,7 +69,9 @@ export default function App() {
         <ThemeProvider>
           <SettingsProvider>
             <CommunitiesProvider>
-              <AppContent />
+              <TripLedgerProvider>
+                <AppContent />
+              </TripLedgerProvider>
             </CommunitiesProvider>
           </SettingsProvider>
         </ThemeProvider>

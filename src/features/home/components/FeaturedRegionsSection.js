@@ -29,12 +29,9 @@ export default function FeaturedRegionsSection({ regions, loading, navigation })
             <RegionCard
               key={region._id || region.name}
               region={region}
-              onPress={() =>
-                navigation.navigate('RegionDetail', {
-                  regionId: region._id,
-                  title: region.name,
-                })
-              }
+              // Explore scoped to the region: its places, filters and every
+              // package (including the app's own) in one place.
+              onPress={() => navigation.navigate('ExploreTab', { destination: region.name })}
             />
           ))}
         </ScrollView>

@@ -1,7 +1,20 @@
 import { demoCounts } from '../utils/demoCounts';
-import { Briefcase, Heart, Film, Tag, LogOut, Mountain, Receipt } from 'lucide-react-native';
+import {
+  Briefcase,
+  Heart,
+  Film,
+  Tag,
+  LogOut,
+  Mountain,
+  Receipt,
+  Wallet,
+} from 'lucide-react-native';
 
-export const getMenuItems = (navigation, logout, role, userId) => {
+/**
+ * @param {{ tripsCount?: number, walletBalance?: number }} [ledger] - how
+ *   many trips My Trips lists (useBookedTripsCount) and the wallet balance
+ */
+export const getMenuItems = (navigation, logout, role, userId, ledger = {}) => {
   const counts = demoCounts(userId);
   const logoutItem = { id: 'logout', label: 'Log Out', icon: LogOut, onPress: logout };
 
@@ -35,8 +48,15 @@ export const getMenuItems = (navigation, logout, role, userId) => {
       id: 'mytrips',
       label: 'My Trips',
       icon: Briefcase,
-      count: counts.trips,
+      count: ledger.tripsCount || counts.trips,
       onPress: () => navigation.navigate('ProfileTrips', { kind: 'booked' }),
+    },
+    {
+      id: 'wallet',
+      label: 'Wallet',
+      icon: Wallet,
+      count: `₹${(ledger.walletBalance || 0).toLocaleString('en-IN')}`,
+      onPress: () => navigation.navigate('Wallet'),
     },
     {
       id: 'saved',

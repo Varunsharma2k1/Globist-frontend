@@ -8,7 +8,7 @@ import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, LAYOUT } from '../../../theme';
 import { usePostReelForm } from '../hooks/usePostReelForm';
 import MediaUploadCard from '../components/MediaUploadCard';
-import AffiliateToggleRow from '../components/AffiliateToggleRow';
+import LinkedTripPicker from '../components/LinkedTripPicker';
 import CategoryPicker from '../components/CategoryPicker';
 import ReelPreviewModal from '../components/ReelPreviewModal';
 
@@ -17,16 +17,18 @@ import ReelPreviewModal from '../components/ReelPreviewModal';
  *
  * Form for travellers and agencies to post new travel clips. Only video is
  * accepted (no photos), picked from the device library, with an inline
- * Instagram-style preview once selected. Form state/submission lives in
+ * Instagram-style preview once selected. Travellers can tag the agency of
+ * a completed trip (one reel per trip, earns wallet credit) or post
+ * untagged. Form state/submission lives in
  * usePostReelForm; each visual section is its own component (see
  * ../components) — this file is just the layout.
  */
-export default function PostReelScreen({ navigation }) {
+export default function PostReelScreen({ navigation, route }) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
   const insets = useSafeAreaInsets();
   const [previewVisible, setPreviewVisible] = useState(false);
-  const form = usePostReelForm(navigation);
+  const form = usePostReelForm(navigation, route.params?.bookingId);
 
   return (
     <View style={styles.container}>
@@ -64,11 +66,10 @@ export default function PostReelScreen({ navigation }) {
             placeholder="e.g. Dharamshala, Himachal Pradesh"
           />
 
-          <AffiliateToggleRow
-            isAffiliate={form.isAffiliate}
-            onToggle={form.setIsAffiliate}
-            agencyId={form.agencyId}
-            onChangeAgencyId={form.setAgencyId}
+          <LinkedTripPicker
+            bookings={form.bookings}
+            value={form.linkedBookingId}
+            onChange={form.linkBooking}
           />
 
           <CategoryPicker value={form.imageType} onChange={form.setImageType} />

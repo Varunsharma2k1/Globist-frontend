@@ -1,17 +1,21 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getExploreTrips, getMyBookings } from '../../../api';
 import { useAuth } from '../../../hooks/useAuth';
+import { useTripLedger } from '../../../hooks/useTripLedger';
 import { demoCounts, pickDemoTrips } from '../utils/demoCounts';
-import { buildTravelerBooking } from '../utils/travelerBookings';
+import { buildTravelerBooking, otherBackendBookings } from '../utils/travelerBookings';
 
 /**
  * Trips behind the profile's "My Trips" (kind: 'booked') and "Saved Trips"
- * (kind: 'saved') rows. Booked trips come from the user's real bookings; when
+ * (kind: 'saved') rows. Booked trips are the ones booked in the app (the
+ * on-device ledger, newest first, each carrying its `ledgerBooking` for the
+ * trip-status / reel actions) followed by any other backend bookings; when
  * there are none (and for saved trips, which have no backend yet) it shows
  * placeholder picks from the catalogue, matching the counts on the profile.
  */
 export function useProfileTrips(kind) {
   const { user } = useAuth();
+  const { myBookings } = useTripLedger();
   const [catalogue, setCatalogue] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,7 +30,7 @@ export function useProfileTrips(kind) {
         ]);
         if (!active) return;
         setCatalogue(explore.trips);
-        setBookings(list.filter((b) => b.trip));
+        setBookings(list);
       } catch (error) {
         console.warn('[useProfileTrips] Failed to load trips:', error?.message);
       } finally {
@@ -42,13 +46,20 @@ export function useProfileTrips(kind) {
   const trips = useMemo(() => {
     const counts = demoCounts(user?._id);
     if (kind === 'saved') return pickDemoTrips(catalogue, user?._id, kind, counts.saved);
-    if (bookings.length) {
-      return bookings.map((booking, index) => buildTravelerBooking({ user, booking, index }));
+    const backend = otherBackendBookings(bookings, myBookings);
+    if (myBookings.length || backend.length) {
+      return [
+        ...myBookings.map((booking, index) => ({
+          ...buildTravelerBooking({ user, booking, index }),
+          ledgerBooking: booking,
+        })),
+        ...backend.map((booking, index) => buildTravelerBooking({ user, booking, index })),
+      ];
     }
     return pickDemoTrips(catalogue, user?._id, kind, counts.trips).map((trip, index) =>
       buildTravelerBooking({ user, trip, index })
     );
-  }, [bookings, catalogue, user, kind]);
+  }, [bookings, myBookings, catalogue, user, kind]);
 
   return { trips, loading };
 }

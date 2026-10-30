@@ -12,10 +12,11 @@ import spiti from './tripExtras';
 import moto from './motoExtras';
 import manaliSnowEscape from './manaliSnowEscape';
 import manaliKasolBackpacking from './manaliKasolBackpacking';
+import placePackages from './places';
 
 const TRIP_EXTRAS = { ...spiti, ...moto };
 
-export const LOCAL_TRIPS = [manaliSnowEscape, manaliKasolBackpacking];
+export const LOCAL_TRIPS = [manaliSnowEscape, manaliKasolBackpacking, ...placePackages];
 
 // The listed price is the cheapest (quad sharing) rate — the one the
 // backend charges — and fewer people per room cost more.

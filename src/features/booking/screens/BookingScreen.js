@@ -1,25 +1,28 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Calendar } from 'lucide-react-native';
 import Header from '../../../components/Header';
 import Input from '../../../components/Input';
 import { useTheme } from '../../../hooks/useTheme';
-import { SPACING, LAYOUT } from '../../../theme';
+import { SPACING, LAYOUT, FONTS } from '../../../theme';
 import { useBookingForm } from '../hooks/useBookingForm';
 import BookingSummaryCard from '../components/BookingSummaryCard';
 import TravelerStepper from '../components/TravelerStepper';
-import PaymentMethodPicker from '../components/PaymentMethodPicker';
+import DepartureCalendar from '../components/DepartureCalendar';
+import WalletRedeemCard from '../components/WalletRedeemCard';
 import PriceBreakdownCard from '../components/PriceBreakdownCard';
 import BookingBottomBar from '../components/BookingBottomBar';
 import BookingConfirmedView from '../components/BookingConfirmedView';
 import TripOccupancyPicker from '../../tripDetail/components/TripOccupancyPicker';
 import { OCCUPANCY_LABELS } from '../../../data/occupancy';
+import { formatDay, formatDaysNights } from '../utils/departures';
 
 /**
  * BookingScreen Component
  *
- * Checkout interface for reserving travel packages. Form state, pricing,
+ * Checkout interface for reserving travel packages: pick one of the
+ * agency's fixed departures on a calendar, travellers and room sharing,
+ * then "Book now" (payment is simulated for now). Form state, pricing,
  * and submission live in useBookingForm; each visual section is its own
  * component (see ../components) — this file is just the layout + the
  * confirmed/unconfirmed branch.
@@ -32,11 +35,16 @@ export default function BookingScreen({ route, navigation }) {
 
   const form = useBookingForm(trip, referral, occupancy);
 
-  if (form.confirmed) {
+  if (form.confirmedBooking) {
     return (
       <BookingConfirmedView
-        trip={trip}
-        onBack={() => navigation.goBack()}
+        booking={form.confirmedBooking}
+        onViewTrips={() =>
+          navigation.reset({
+            index: 1,
+            routes: [{ name: 'MainTabs' }, { name: 'ProfileTrips', params: { kind: 'booked' } }],
+          })
+        }
         onGoHome={() => navigation.navigate('MainTabs')}
       />
     );
@@ -59,16 +67,38 @@ export default function BookingScreen({ route, navigation }) {
           compact
         />
 
+        <Text style={typography.h3}>Choose your departure</Text>
+        <Text style={styles.hint}>
+          {trip?.agency?.name || 'The agency'} runs this trip on fixed start dates. Pick one below.
+        </Text>
+        <DepartureCalendar
+          dates={form.departures}
+          value={form.date}
+          onChange={form.setDate}
+          tripDays={form.tripDays}
+          intervalDays={form.intervalDays}
+        />
+        {form.date ? (
+          <View style={styles.datesRow}>
+            <View style={styles.dateCol}>
+              <Text style={styles.dateLabel}>Departs</Text>
+              <Text style={styles.dateVal}>{formatDay(form.date)}</Text>
+            </View>
+            <View style={[styles.dateCol, styles.returnCol]}>
+              <Text style={[styles.dateLabel, styles.returnText]}>Returns</Text>
+              <Text style={[styles.dateVal, styles.returnText]}>{formatDay(form.endDate)}</Text>
+            </View>
+          </View>
+        ) : null}
+        {form.date ? (
+          <Text style={styles.tripLength}>
+            {formatDaysNights(trip)} · {form.tripDays} day{form.tripDays > 1 ? 's' : ''} on the trip
+          </Text>
+        ) : null}
+        {form.error ? <Text style={styles.error}>{form.error}</Text> : null}
+
         <Text style={typography.h3}>Booking Details</Text>
         <View style={{ marginTop: SPACING.sm }}>
-          <Input
-            label="Travel Date"
-            value={form.date}
-            onChangeText={form.setDate}
-            placeholder="2026-10-15"
-            leftIcon={<Calendar size={16} color={colors.textMuted} />}
-          />
-
           <TravelerStepper
             value={form.travelers}
             onAdjust={form.adjustTravelers}
@@ -85,8 +115,12 @@ export default function BookingScreen({ route, navigation }) {
           />
         </View>
 
-        <Text style={[typography.h3, { marginBottom: SPACING.sm }]}>Payment Method</Text>
-        <PaymentMethodPicker value={form.paymentMethod} onChange={form.setPaymentMethod} />
+        <WalletRedeemCard
+          balance={form.walletBalance}
+          enabled={form.useWallet}
+          onToggle={form.setUseWallet}
+          applied={form.walletUsed}
+        />
 
         <PriceBreakdownCard
           travelers={form.travelers}
@@ -95,12 +129,15 @@ export default function BookingScreen({ route, navigation }) {
           subtotal={form.subtotal}
           serviceFee={form.serviceFee}
           totalPrice={form.totalPrice}
+          walletUsed={form.walletUsed}
+          amountToPay={form.amountToPay}
         />
       </ScrollView>
 
       <BookingBottomBar
-        totalPrice={form.totalPrice}
+        totalPrice={form.amountToPay}
         loading={form.loading}
+        disabled={!form.date}
         onConfirm={form.handleConfirmBooking}
       />
     </View>
@@ -119,6 +156,40 @@ function getStyles(colors) {
       width: '100%',
       maxWidth: LAYOUT.contentMaxWidth,
       alignSelf: 'center',
+    },
+    hint: {
+      fontFamily: FONTS.body,
+      fontSize: 13,
+      color: colors.textMuted,
+      marginTop: 2,
+      marginBottom: SPACING.sm,
+    },
+    datesRow: {
+      flexDirection: 'row',
+      gap: SPACING.sm,
+    },
+    returnCol: { backgroundColor: colors.pastel.peach.bg },
+    returnText: { color: colors.pastel.peach.fg },
+    tripLength: {
+      fontFamily: FONTS.semibold,
+      fontSize: 12,
+      color: colors.textMuted,
+      marginTop: SPACING.xs,
+      marginBottom: SPACING.lg,
+    },
+    dateCol: {
+      flex: 1,
+      backgroundColor: colors.surfaceMuted,
+      borderRadius: 12,
+      padding: SPACING.sm + 4,
+    },
+    dateLabel: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
+    dateVal: { fontFamily: FONTS.bold, fontSize: 14, color: colors.ink, marginTop: 2 },
+    error: {
+      fontFamily: FONTS.semibold,
+      fontSize: 13,
+      color: colors.error,
+      marginBottom: SPACING.md,
     },
   });
 }

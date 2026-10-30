@@ -6,16 +6,22 @@ import Header from '../components/Header';
 import Card from '../components/Card';
 import { SPACING, FONTS, LAYOUT } from '../theme';
 import { useTheme } from '../hooks/useTheme';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 
 export default function MenuScreen({ navigation }) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
+  const { requireAuth } = useRequireAuth(navigation);
   const menuItems = [
     { icon: Film, title: 'Explore Reels Feed', action: () => navigation.navigate('Reels') },
     { icon: Compass, title: 'Discover Destinations', action: () => navigation.navigate('Explore') },
     { icon: Briefcase, title: 'My Booked Trips', action: () => navigation.navigate('ProfileTrips', { kind: 'booked' }) },
-    { icon: Video, title: 'Post a Travel Reel', action: () => navigation.navigate('PostReel') },
+    {
+      icon: Video,
+      title: 'Post a Travel Reel',
+      action: () => requireAuth({ name: 'PostReel' }) && navigation.navigate('PostReel'),
+    },
     { icon: Phone, title: 'Customer Support & FAQ', action: () => {} },
     { icon: Lock, title: 'Privacy Policy & Terms', action: () => {} },
   ];

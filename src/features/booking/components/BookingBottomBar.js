@@ -5,7 +5,7 @@ import Button from '../../../components/Button';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS, LAYOUT } from '../../../theme';
 
-export default function BookingBottomBar({ totalPrice, loading, onConfirm }) {
+export default function BookingBottomBar({ totalPrice, loading, disabled, onConfirm }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
@@ -14,10 +14,15 @@ export default function BookingBottomBar({ totalPrice, loading, onConfirm }) {
     <View style={[styles.bottomBar, { height: 84 + insets.bottom, paddingBottom: insets.bottom }]}>
       <View style={styles.bottomBarInner}>
         <View>
-          <Text style={styles.priceLabel}>Total Price</Text>
+          <Text style={styles.priceLabel}>To pay</Text>
           <Text style={styles.priceVal}>₹{totalPrice.toLocaleString()}</Text>
         </View>
-        <Button title="Confirm & Pay" onPress={onConfirm} loading={loading} style={{ width: 170 }} />
+        <Button
+          title={loading ? 'Processing…' : 'Book now'}
+          onPress={onConfirm}
+          loading={loading}
+          style={{ width: 170, opacity: disabled ? 0.5 : 1 }}
+        />
       </View>
     </View>
   );

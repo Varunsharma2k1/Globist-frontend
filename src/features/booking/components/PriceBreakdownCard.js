@@ -4,7 +4,16 @@ import Card from '../../../components/Card';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
 
-export default function PriceBreakdownCard({ travelers, pricePerPerson, occupancyLabel, subtotal, serviceFee, totalPrice }) {
+export default function PriceBreakdownCard({
+  travelers,
+  pricePerPerson,
+  occupancyLabel,
+  subtotal,
+  serviceFee,
+  totalPrice,
+  walletUsed = 0,
+  amountToPay = totalPrice,
+}) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -22,9 +31,25 @@ export default function PriceBreakdownCard({ travelers, pricePerPerson, occupanc
         <Text style={styles.breakdownLabel}>Service Fee (3%)</Text>
         <Text style={styles.breakdownVal}>₹{serviceFee.toLocaleString()}</Text>
       </View>
+      {walletUsed > 0 ? (
+        <>
+          <View style={[styles.breakdownRow, styles.totalRow]}>
+            <Text style={styles.breakdownLabel}>Total</Text>
+            <Text style={styles.breakdownVal}>₹{totalPrice.toLocaleString()}</Text>
+          </View>
+          <View style={styles.breakdownRow}>
+            <Text style={[styles.breakdownLabel, { color: colors.success }]}>
+              Wallet ({walletUsed.toLocaleString()} points)
+            </Text>
+            <Text style={[styles.breakdownVal, { color: colors.success }]}>
+              −₹{walletUsed.toLocaleString()}
+            </Text>
+          </View>
+        </>
+      ) : null}
       <View style={[styles.breakdownRow, styles.totalRow]}>
-        <Text style={styles.totalLabel}>Total</Text>
-        <Text style={styles.totalVal}>₹{totalPrice.toLocaleString()}</Text>
+        <Text style={styles.totalLabel}>{walletUsed > 0 ? 'To pay' : 'Total'}</Text>
+        <Text style={styles.totalVal}>₹{amountToPay.toLocaleString()}</Text>
       </View>
     </Card>
   );

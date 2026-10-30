@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import ReelItem from '../../../components/ReelItem';
 import { useAuth } from '../../../hooks/useAuth';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useTheme } from '../../../hooks/useTheme';
 import { useReelsFeed } from '../hooks/useReelsFeed';
 import { useInfiniteReelPaging } from '../hooks/useInfiniteReelPaging';
@@ -41,6 +42,7 @@ export default function ReelsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
   const { user } = useAuth();
+  const { requireAuth } = useRequireAuth(navigation);
   const [muted, setMuted] = useState(false);
   const [reelHeight, setReelHeight] = useState(0);
 
@@ -164,7 +166,9 @@ export default function ReelsScreen({ navigation }) {
           {...panHandlers}
         >
           {renderFeed()}
-          <ReelsHeaderOverlay onPressPost={() => navigation.navigate('PostReel')} />
+          <ReelsHeaderOverlay
+            onPressPost={() => requireAuth({ name: 'PostReel' }) && navigation.navigate('PostReel')}
+          />
         </Animated.View>
       </View>
     </ReelEngagementProvider>

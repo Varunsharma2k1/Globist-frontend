@@ -14,15 +14,11 @@ function demoAudience(seed = '') {
   return { followers: 1200 + (h % 8300), following: 60 + (Math.floor(h / 7) % 340) };
 }
 
-// Placeholder referral bonus (₹500–₹4,500, in steps of 50) until real earnings
-// exist: derived from the user's id so it looks random but never changes.
-function demoReferralBonus(seed = '') {
-  let h = 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
-  return 500 + (Math.abs(h >> 3) % 81) * 50;
-}
-
-export default function ProfileStatsCard({ stats, role, userId }) {
+/**
+ * `tripsCount` is the number of trips My Trips lists (useBookedTripsCount);
+ * `walletBalance` is the trip ledger's reel + referral rewards.
+ */
+export default function ProfileStatsCard({ stats, role, userId, tripsCount, walletBalance = 0 }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -54,15 +50,13 @@ export default function ProfileStatsCard({ stats, role, userId }) {
       </View>
       <View style={styles.statDivider} />
       <View style={styles.statCol}>
-        <Text style={styles.statVal}>{demoCounts(userId).trips}</Text>
+        <Text style={styles.statVal}>{tripsCount || demoCounts(userId).trips}</Text>
         <Text style={styles.statLabel}>Trips Booked</Text>
       </View>
       <View style={styles.statDivider} />
       <View style={styles.statCol}>
-        <Text style={styles.statVal}>
-          ₹{(stats?.earnings || demoReferralBonus(userId)).toLocaleString('en-IN')}
-        </Text>
-        <Text style={styles.statLabel}>Referral Bonus</Text>
+        <Text style={styles.statVal}>₹{walletBalance.toLocaleString('en-IN')}</Text>
+        <Text style={styles.statLabel}>Wallet</Text>
       </View>
     </View>
   );

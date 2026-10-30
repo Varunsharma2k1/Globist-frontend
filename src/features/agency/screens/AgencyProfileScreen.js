@@ -4,16 +4,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, LAYOUT } from '../../../theme';
 import { useAgencyProfile } from '../hooks/useAgencyProfile';
+import { useAgencyReels } from '../hooks/useAgencyReels';
 import { splitTrips } from '../utils/agencyProfile';
 import AgencyHero from '../components/AgencyHero';
 import AgencyAbout from '../components/AgencyAbout';
 import AgencyTrips from '../components/AgencyTrips';
+import AgencyReels from '../components/AgencyReels';
 import AgencyComments from '../components/AgencyComments';
 import AgencyEditModal from '../components/AgencyEditModal';
 
 /**
  * Public profile of a travel agency: photo header, verified status, rating,
- * short note, upcoming / organised trips and visitor comments. Agencies get an
+ * short note, upcoming / organised trips, reels travellers tagged it in and
+ * visitor comments. Agencies get an
  * Edit button to update their own details. Data lives in useAgencyProfile.
  */
 export default function AgencyProfileScreen({ route, navigation }) {
@@ -23,6 +26,7 @@ export default function AgencyProfileScreen({ route, navigation }) {
   const base = useMemo(() => routeAgency || {}, [routeAgency]);
   const { agency, trips, loading, comments, canEdit, saveProfile, addComment } =
     useAgencyProfile(base);
+  const reels = useAgencyReels(base);
   const [editing, setEditing] = useState(false);
   const { upcoming, others } = useMemo(() => splitTrips(trips), [trips]);
 
@@ -52,6 +56,11 @@ export default function AgencyProfileScreen({ route, navigation }) {
               }
             />
           )}
+          <AgencyReels
+            agencyName={agency.name}
+            reels={reels}
+            onOpenReel={(startIndex) => navigation.navigate('ReelViewer', { reels, startIndex })}
+          />
           <AgencyComments comments={comments} onPost={addComment} />
         </View>
       </ScrollView>

@@ -19,7 +19,7 @@ const LOOPED = [...CAROUSEL_SLIDES, ...CAROUSEL_SLIDES, ...CAROUSEL_SLIDES];
  * Endless, centre-focused carousel at the top of Home: tall framed cards, the
  * middle one large and lifted with its neighbours peeking in smaller on each
  * side. Auto-advances every few seconds, pauses while dragging or when Home
- * isn't focused. Tapping a card opens its tab.
+ * isn't focused. Tapping a card calls `onSlidePress(slide)`.
  */
 export default function HomeCarousel({ onSlidePress }) {
   const isFocused = useIsFocused();
@@ -84,7 +84,7 @@ export default function HomeCarousel({ onSlidePress }) {
       itemWidth={itemWidth}
       gap={GAP}
       isActive={index % COUNT === active}
-      onPress={() => onSlidePress(item.target)}
+      onPress={() => onSlidePress(item)}
     />
   );
 

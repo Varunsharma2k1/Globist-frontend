@@ -8,9 +8,10 @@ import { buildReferral } from '../utils/reelFormat';
  * runs, then opens TripDetail for that exact trip with the creator's
  * referral context attached (carried on to Booking from there).
  *
- * Reels only reference an agency, not a specific trip, so the trip is looked
- * up via GET /agencies/:id. Every seeded agency runs a single trip; when one
- * runs several, the first is used until reels link a trip directly.
+ * Reels posted in the app after a trip link that exact trip (`reel.trip`).
+ * Older reels only reference an agency, so the trip is looked up via
+ * GET /agencies/:id. Every seeded agency runs a single trip; when one runs
+ * several, the first is used.
  *
  * @param {Object} navigation
  * @param {string} [currentUserId]
@@ -22,6 +23,14 @@ export function useReelBooking(navigation, currentUserId) {
 
   const bookReel = useCallback(
     async (reel) => {
+      if (reel.trip?._id) {
+        navigation.navigate('TripDetail', {
+          tripId: reel.trip._id,
+          title: reel.trip.title,
+          referral: buildReferral(reel, currentUserId),
+        });
+        return;
+      }
       const agencyId = reel.agency?._id;
       if (!agencyId) {
         // No agency on this reel — nothing specific to book, so fall back to

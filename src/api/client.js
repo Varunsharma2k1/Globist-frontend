@@ -2,6 +2,10 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CONFIG, STORAGE_KEYS } from '../config';
 
+// Placeholder sessions (e.g. the mock Google sign-in) store a token the
+// backend can't verify; it's not sent, so public endpoints still work.
+const MOCK_TOKEN_PREFIX = 'mock-';
+
 /**
  * Axios HTTP Client Instance
  *
@@ -21,7 +25,7 @@ client.interceptors.request.use(
   async (config) => {
     try {
       const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-      if (token) {
+      if (token && !token.startsWith(MOCK_TOKEN_PREFIX)) {
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {

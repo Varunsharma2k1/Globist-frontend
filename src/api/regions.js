@@ -8,7 +8,7 @@ import { normalizeRegion, normalizeTrip } from './normalize';
  */
 
 /**
- * Fetches ALL regions. Used by Explore / RegionDetail where we need the full
+ * Fetches ALL regions. Used by Explore where we need the full
  * catalogue. For the curated two-region home feed, use getFeaturedRegions().
  * @returns {Promise<Array>}
  */

@@ -12,11 +12,19 @@ export default function TravelerStepper({ value, onAdjust, min, max }) {
     <View style={styles.stepperContainer}>
       <Text style={styles.stepperLabel}>Number of Travellers</Text>
       <View style={styles.stepperRow}>
-        <TouchableOpacity style={styles.stepperBtn} onPress={() => onAdjust(-1)} disabled={value <= min}>
+        <TouchableOpacity
+          style={styles.stepperBtn}
+          onPress={() => onAdjust(-1)}
+          disabled={value <= min}
+        >
           <Minus size={16} color={value <= min ? colors.textMuted : colors.ink} />
         </TouchableOpacity>
         <Text style={styles.stepperValue}>{value}</Text>
-        <TouchableOpacity style={styles.stepperBtn} onPress={() => onAdjust(1)} disabled={value >= max}>
+        <TouchableOpacity
+          style={styles.stepperBtn}
+          onPress={() => onAdjust(1)}
+          disabled={value >= max}
+        >
           <Plus size={16} color={value >= max ? colors.textMuted : colors.ink} />
         </TouchableOpacity>
       </View>

@@ -11,7 +11,10 @@ export default function AccountActionsSection({ onRequestDeleteAccount }) {
   const { colors } = useTheme();
   const rowStyles = getSharedRowStyles(colors);
   const styles = getStyles(colors);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+
+  // Guests have no account to log out of or delete.
+  if (user?.isGuest) return null;
 
   return (
     <View>
