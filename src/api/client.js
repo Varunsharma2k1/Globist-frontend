@@ -41,7 +41,8 @@ client.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response ? error.response.status : 'NETWORK_ERROR';
-    console.warn(`[API Client Error ${status}]:`, error.message);
+    const url = `${error.config?.baseURL || ''}${error.config?.url || ''}`;
+    console.warn(`[API Client Error ${status}] ${url}:`, error.message);
     return Promise.reject(error);
   }
 );
