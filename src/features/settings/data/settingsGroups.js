@@ -60,7 +60,7 @@ export const SETTINGS_GROUPS = [
       {
         id: 'saved',
         label: 'Saved & Bookmarks',
-        sub: 'Trips and reels you’ve saved',
+        sub: 'Trips and tapes you’ve saved',
         icon: Bookmark,
         type: 'nav',
       },
@@ -118,14 +118,14 @@ export const SETTINGS_GROUPS = [
       {
         id: 'notifComments',
         label: 'Comments',
-        sub: 'When someone comments on your reel',
+        sub: 'When someone comments on your tape',
         icon: MessageCircle,
         type: 'toggle',
       },
       {
         id: 'notifLikes',
         label: 'Likes',
-        sub: 'When someone likes your reel',
+        sub: 'When someone likes your tape',
         icon: Heart,
         type: 'toggle',
       },
@@ -158,7 +158,7 @@ export const SETTINGS_GROUPS = [
       {
         id: 'hqUploads',
         label: 'High-Quality Uploads',
-        sub: 'Use more data for sharper reels',
+        sub: 'Use more data for sharper tapes',
         icon: ImageIcon,
         type: 'toggle',
       },

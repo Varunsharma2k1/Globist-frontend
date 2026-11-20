@@ -40,8 +40,8 @@ export const CAROUSEL_SLIDES = [
   },
   {
     id: 'reels',
-    title: 'Explore Destinations via Reels',
-    cta: 'Watch Reels Now →',
+    title: 'Explore Destinations via Tapes',
+    cta: 'Watch Tapes Now →',
     image: require('../../../../assets/home/rishikesh-ganges.jpg'),
     target: 'ReelsTab',
   },

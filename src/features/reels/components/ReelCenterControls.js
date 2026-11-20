@@ -33,7 +33,7 @@ export default function ReelCenterControls({
         onPress={onTogglePlay}
         activeOpacity={0.7}
         accessibilityRole="button"
-        accessibilityLabel={paused ? 'Play reel' : 'Pause reel'}
+        accessibilityLabel={paused ? 'Play tape' : 'Pause tape'}
       >
         {paused ? (
           <Play size={30} color="#FFFFFF" fill="#FFFFFF" />

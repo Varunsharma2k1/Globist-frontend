@@ -32,7 +32,7 @@ export default function PostReelScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Header title="Post Travel Reel" onBack={() => navigation.goBack()} />
+      <Header title="Post Travel Tape" onBack={() => navigation.goBack()} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -75,7 +75,7 @@ export default function PostReelScreen({ navigation, route }) {
           <CategoryPicker value={form.imageType} onChange={form.setImageType} />
 
           <Button
-            title="Publish Reel"
+            title="Publish Tape"
             onPress={form.handleSubmit}
             loading={form.loading}
             style={{ marginTop: SPACING.sm }}

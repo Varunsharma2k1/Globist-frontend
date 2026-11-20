@@ -21,6 +21,7 @@ import PostDetailScreen from '../features/communities/screens/PostDetailScreen';
 import PaymentHistoryScreen from '../features/agency/screens/PaymentHistoryScreen';
 import InvoiceScreen from '../features/agency/screens/InvoiceScreen';
 import WalletScreen from '../features/wallet/screens/WalletScreen';
+import IndiaMapScreen from '../features/indiaMap/screens/IndiaMapScreen';
 import AccountTypeModal from '../features/auth/components/AccountTypeModal';
 import { useAuth } from '../hooks/useAuth';
 
@@ -66,6 +67,7 @@ export default function AppNavigator() {
             <Stack.Screen name="PaymentHistory" component={PaymentHistoryScreen} />
             <Stack.Screen name="Invoice" component={InvoiceScreen} />
             <Stack.Screen name="Wallet" component={WalletScreen} />
+            <Stack.Screen name="IndiaMap" component={IndiaMapScreen} />
             {/* Sign-in sheet for guests (see useRequireAuth). */}
             <Stack.Screen
               name="Auth"

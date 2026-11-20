@@ -43,7 +43,7 @@ export default function BookingSummaryCard({ trip, pricePerPerson, referralHandl
       {referralHandle ? (
         <View style={styles.referralRow}>
           <Film size={12} color={colors.textMuted} />
-          <Text style={styles.referralText}>Booking via {referralHandle}&apos;s reel</Text>
+          <Text style={styles.referralText}>Booking via {referralHandle}&apos;s tape</Text>
         </View>
       ) : null}
     </Card>

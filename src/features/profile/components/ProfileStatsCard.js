@@ -46,7 +46,7 @@ export default function ProfileStatsCard({ stats, role, userId, tripsCount, wall
     <View style={styles.statsCard}>
       <View style={styles.statCol}>
         <Text style={styles.statVal}>{stats?.reelsPosted ?? 3}</Text>
-        <Text style={styles.statLabel}>Reels Posted</Text>
+        <Text style={styles.statLabel}>Tapes Posted</Text>
       </View>
       <View style={styles.statDivider} />
       <View style={styles.statCol}>

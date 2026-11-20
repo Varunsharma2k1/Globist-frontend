@@ -139,7 +139,7 @@ export function reelLinkProblem(booking, user) {
   if (!booking) return 'That booking no longer exists.';
   if (booking.userId !== user?._id) return 'You can only tag trips you booked.';
   if (booking.status !== 'completed') return 'You can tag this trip once it is completed.';
-  if (booking.reelId) return 'You have already posted a reel for this trip.';
+  if (booking.reelId) return 'You have already posted a tape for this trip.';
   return null;
 }
 

@@ -54,7 +54,7 @@ export default function LinkedTripPicker({ bookings, value, onChange }) {
       {option({
         key: 'none',
         title: 'No agency tag',
-        subtitle: 'Post as many untagged reels as you like',
+        subtitle: 'Post as many untagged tapes as you like',
         selected: !value,
         onPress: () => onChange(null),
       })}
@@ -68,7 +68,7 @@ export default function LinkedTripPicker({ bookings, value, onChange }) {
           selected: value === b._id,
           locked: b.status !== 'completed' || Boolean(b.reelId),
           lockReason: b.reelId
-            ? 'Reel already posted for this trip'
+            ? 'Tape already posted for this trip'
             : 'Unlocks after the trip is completed',
           onPress: () => onChange(b._id),
         })

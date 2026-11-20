@@ -94,11 +94,16 @@ export const RADIUS = {
 // back to the system font on Android while iOS fakes it — this is why type
 // weight differences were invisible on Android. Use FONTS.semibold/bold/
 // heading directly instead of layering fontWeight on FONTS.body.
+// Typeface: Inter — clean geometric sans with big LIGHT headlines and tight
+// tracking (editorial look). `display` is for large titles; the other tokens keep
+// their old roles so every screen picks up the new font automatically.
 export const FONTS = {
-  heading: 'Archivo_800ExtraBold',
-  bold: 'Archivo_700Bold',
-  semibold: 'Archivo_600SemiBold',
-  body: 'Archivo_400Regular',
+  display: 'Inter_300Light',     // large titles (h1/h2)
+  heading: 'Inter_600SemiBold',  // emphasis: buttons, numbers, card titles
+  bold: 'Inter_700Bold',
+  semibold: 'Inter_500Medium',
+  body: 'Inter_400Regular',
+  light: 'Inter_300Light',
   mono: Platform.select({ ios: 'Courier', android: 'monospace', default: 'monospace' }),
 };
 
@@ -119,12 +124,12 @@ export const buildShadow = (colors) => ({
 });
 
 export const buildTypography = (colors) => ({
-  h1: { fontFamily: FONTS.heading, fontSize: 34, color: colors.ink },
-  h2: { fontFamily: FONTS.heading, fontSize: 26, color: colors.ink },
-  h3: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
-  body: { fontFamily: FONTS.body, fontSize: 15, color: colors.text },
-  caption: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
-  button: { fontFamily: FONTS.heading, fontSize: 16, color: colors.inkContrast },
+  h1: { fontFamily: FONTS.display, fontSize: 36, lineHeight: 40, letterSpacing: -1, color: colors.ink },
+  h2: { fontFamily: FONTS.display, fontSize: 28, lineHeight: 32, letterSpacing: -0.7, color: colors.ink },
+  h3: { fontFamily: FONTS.semibold, fontSize: 18, letterSpacing: -0.3, color: colors.ink },
+  body: { fontFamily: FONTS.body, fontSize: 15, lineHeight: 21, color: colors.text },
+  caption: { fontFamily: FONTS.body, fontSize: 12, letterSpacing: 0.1, color: colors.textMuted },
+  button: { fontFamily: FONTS.semibold, fontSize: 15, letterSpacing: 0.2, color: colors.inkContrast },
 });
 
 export const SHADOW = buildShadow(LIGHT_COLORS);

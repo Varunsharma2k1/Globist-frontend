@@ -14,12 +14,12 @@ export default function MenuScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { requireAuth } = useRequireAuth(navigation);
   const menuItems = [
-    { icon: Film, title: 'Explore Reels Feed', action: () => navigation.navigate('Reels') },
+    { icon: Film, title: 'Explore Tapes Feed', action: () => navigation.navigate('Reels') },
     { icon: Compass, title: 'Discover Destinations', action: () => navigation.navigate('Explore') },
     { icon: Briefcase, title: 'My Booked Trips', action: () => navigation.navigate('ProfileTrips', { kind: 'booked' }) },
     {
       icon: Video,
-      title: 'Post a Travel Reel',
+      title: 'Post a Travel Tape',
       action: () => requireAuth({ name: 'PostReel' }) && navigation.navigate('PostReel'),
     },
     { icon: Phone, title: 'Customer Support & FAQ', action: () => {} },

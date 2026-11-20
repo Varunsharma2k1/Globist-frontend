@@ -22,7 +22,7 @@ const GAP = 2;
 export default function MyReelsScreen({ navigation, route }) {
   // 'tagged' = reels that tag this agency; otherwise the user's own posts.
   const tagged = route.params?.kind === 'tagged';
-  const noun = tagged ? 'reel' : 'post';
+  const noun = tagged ? 'tape' : 'post';
   const insets = useSafeAreaInsets();
   const { width: windowWidth } = useWindowDimensions();
   const { colors, typography } = useTheme();
@@ -34,7 +34,7 @@ export default function MyReelsScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <Header title={tagged ? 'Tagged Reels' : 'My Posts'} onBack={() => navigation.goBack()} />
+      <Header title={tagged ? 'Tagged Tapes' : 'My Posts'} onBack={() => navigation.goBack()} />
       {loading ? (
         <ActivityIndicator color={colors.ink} style={{ flex: 1 }} />
       ) : reels.length === 0 ? (
@@ -47,7 +47,7 @@ export default function MyReelsScreen({ navigation, route }) {
             {error
               ? 'Check your connection and try again.'
               : tagged
-                ? 'Reels that tag your agency will show up here.'
+                ? 'Tapes that tag your agency will show up here.'
                 : 'Posts you share will show up here.'}
           </Text>
         </View>

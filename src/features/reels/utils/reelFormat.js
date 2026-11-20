@@ -79,6 +79,6 @@ export function buildShareMessage(reel) {
       : '';
     lines.push('', `Trip by ${reel.agency.name}${price}`);
   }
-  lines.push('Watch the full reel and book it on the Triptape app.');
+  lines.push('Watch the full tape and book it on the Triptape app.');
   return lines.join('\n');
 }

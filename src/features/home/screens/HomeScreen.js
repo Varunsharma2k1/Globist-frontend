@@ -8,6 +8,7 @@ import HomeCarousel from '../components/HomeCarousel';
 import FeaturedRegionsSection from '../components/FeaturedRegionsSection';
 import TrendingPackagesSection from '../components/TrendingPackagesSection';
 import CommunitiesSection from '../components/CommunitiesSection';
+import IndiaMapTeaserCard from '../../indiaMap/components/IndiaMapTeaserCard';
 
 /**
  * HomeScreen Component
@@ -37,6 +38,8 @@ export default function HomeScreen({ navigation }) {
             }
           />
         </View>
+
+        <IndiaMapTeaserCard navigation={navigation} />
 
         <View style={styles.content}>
           <FeaturedRegionsSection regions={regions} loading={loading} navigation={navigation} />

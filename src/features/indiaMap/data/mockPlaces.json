@@ -1,0 +1,66 @@
+[
+  { "id": "manali", "name": "Manali", "state": "HP", "lat": 32.2432, "lng": 77.1892, "count": 121 },
+  { "id": "shimla", "name": "Shimla", "state": "HP", "lat": 31.1048, "lng": 77.1734, "count": 109 },
+  { "id": "dharamshala", "name": "Dharamshala", "state": "HP", "lat": 32.2190, "lng": 76.3234, "count": 71 },
+  { "id": "kasol", "name": "Kasol", "state": "HP", "lat": 32.0100, "lng": 77.3150, "count": 57 },
+  { "id": "spiti", "name": "Spiti (Kaza)", "state": "HP", "lat": 32.2276, "lng": 78.0710, "count": 47 },
+  { "id": "kalpa", "name": "Kalpa", "state": "HP", "lat": 31.5370, "lng": 78.2560, "count": 29 },
+
+  { "id": "rishikesh", "name": "Rishikesh", "state": "UK", "lat": 30.0869, "lng": 78.2676, "count": 100 },
+  { "id": "nainital", "name": "Nainital", "state": "UK", "lat": 29.3803, "lng": 79.4636, "count": 97 },
+  { "id": "mussoorie", "name": "Mussoorie", "state": "UK", "lat": 30.4598, "lng": 78.0644, "count": 84 },
+  { "id": "auli", "name": "Auli", "state": "UK", "lat": 29.4730, "lng": 79.5590, "count": 37 },
+  { "id": "valley-of-flowers", "name": "Valley of Flowers", "state": "UK", "lat": 30.7280, "lng": 79.6050, "count": 32 },
+  { "id": "kedarnath", "name": "Kedarnath", "state": "UK", "lat": 30.7346, "lng": 79.0669, "count": 124 },
+
+  { "id": "jaipur", "name": "Jaipur", "state": "RJ", "lat": 26.9124, "lng": 75.7873, "count": 233 },
+  { "id": "udaipur", "name": "Udaipur", "state": "RJ", "lat": 24.5854, "lng": 73.7125, "count": 150 },
+  { "id": "jaisalmer", "name": "Jaisalmer", "state": "RJ", "lat": 26.9157, "lng": 70.9083, "count": 99 },
+  { "id": "jodhpur", "name": "Jodhpur", "state": "RJ", "lat": 26.2389, "lng": 73.0243, "count": 80 },
+  { "id": "pushkar", "name": "Pushkar", "state": "RJ", "lat": 26.4897, "lng": 74.5511, "count": 46 },
+  { "id": "mount-abu", "name": "Mount Abu", "state": "RJ", "lat": 24.5926, "lng": 72.7156, "count": 42 },
+
+  { "id": "baga", "name": "Baga Beach", "state": "GA", "lat": 15.5560, "lng": 73.7620, "count": 196 },
+  { "id": "anjuna", "name": "Anjuna", "state": "GA", "lat": 15.5800, "lng": 73.7520, "count": 104 },
+  { "id": "palolem", "name": "Palolem", "state": "GA", "lat": 15.0120, "lng": 74.0330, "count": 91 },
+  { "id": "old-goa", "name": "Old Goa", "state": "GA", "lat": 15.5009, "lng": 73.9116, "count": 50 },
+  { "id": "dudhsagar", "name": "Dudhsagar Falls", "state": "GA", "lat": 15.3144, "lng": 74.3143, "count": 59 },
+
+  { "id": "munnar", "name": "Munnar", "state": "KL", "lat": 10.0889, "lng": 77.0595, "count": 131 },
+  { "id": "alleppey", "name": "Alleppey", "state": "KL", "lat": 9.4981, "lng": 76.3388, "count": 117 },
+  { "id": "varkala", "name": "Varkala", "state": "KL", "lat": 8.7379, "lng": 76.7163, "count": 68 },
+  { "id": "kochi", "name": "Fort Kochi", "state": "KL", "lat": 9.9658, "lng": 76.2421, "count": 97 },
+  { "id": "wayanad", "name": "Wayanad", "state": "KL", "lat": 11.6854, "lng": 76.1320, "count": 60 },
+  { "id": "thekkady", "name": "Thekkady", "state": "KL", "lat": 9.6031, "lng": 77.1615, "count": 40 },
+
+  { "id": "srinagar", "name": "Srinagar", "state": "JK", "lat": 34.0837, "lng": 74.7973, "count": 166 },
+  { "id": "gulmarg", "name": "Gulmarg", "state": "JK", "lat": 34.0484, "lng": 74.3805, "count": 109 },
+  { "id": "pahalgam", "name": "Pahalgam", "state": "JK", "lat": 34.0161, "lng": 75.3150, "count": 84 },
+  { "id": "sonamarg", "name": "Sonamarg", "state": "JK", "lat": 34.3036, "lng": 75.2933, "count": 48 },
+  { "id": "vaishno-devi", "name": "Vaishno Devi", "state": "JK", "lat": 33.0298, "lng": 74.9490, "count": 179 },
+
+  { "id": "leh", "name": "Leh", "state": "LA", "lat": 34.1526, "lng": 77.5771, "count": 147 },
+  { "id": "pangong", "name": "Pangong Tso", "state": "LA", "lat": 33.7595, "lng": 78.6674, "count": 110 },
+  { "id": "nubra", "name": "Nubra Valley", "state": "LA", "lat": 34.5547, "lng": 77.5600, "count": 71 },
+  { "id": "tso-moriri", "name": "Tso Moriri", "state": "LA", "lat": 32.9070, "lng": 78.3180, "count": 31 },
+  { "id": "kargil", "name": "Kargil", "state": "LA", "lat": 34.5539, "lng": 76.1349, "count": 23 },
+
+  { "id": "gangtok", "name": "Gangtok", "state": "SK", "lat": 27.3389, "lng": 88.6065, "count": 107 },
+  { "id": "tsomgo", "name": "Tsomgo Lake", "state": "SK", "lat": 27.3743, "lng": 88.7636, "count": 58 },
+  { "id": "pelling", "name": "Pelling", "state": "SK", "lat": 27.3020, "lng": 88.2390, "count": 42 },
+  { "id": "yumthang", "name": "Yumthang Valley", "state": "SK", "lat": 27.8264, "lng": 88.6960, "count": 34 },
+  { "id": "lachung", "name": "Lachung", "state": "SK", "lat": 27.6894, "lng": 88.7428, "count": 27 },
+
+  { "id": "shillong", "name": "Shillong", "state": "ML", "lat": 25.5788, "lng": 91.8933, "count": 92 },
+  { "id": "cherrapunji", "name": "Cherrapunji", "state": "ML", "lat": 25.2702, "lng": 91.7323, "count": 68 },
+  { "id": "dawki", "name": "Dawki", "state": "ML", "lat": 25.2000, "lng": 92.0200, "count": 63 },
+  { "id": "mawlynnong", "name": "Mawlynnong", "state": "ML", "lat": 25.2019, "lng": 91.9160, "count": 38 },
+  { "id": "nongriat", "name": "Nongriat (Root Bridges)", "state": "ML", "lat": 25.2475, "lng": 91.6739, "count": 32 },
+
+  { "id": "ooty", "name": "Ooty", "state": "TN", "lat": 11.4102, "lng": 76.6950, "count": 128 },
+  { "id": "kodaikanal", "name": "Kodaikanal", "state": "TN", "lat": 10.2381, "lng": 77.4892, "count": 87 },
+  { "id": "madurai", "name": "Madurai", "state": "TN", "lat": 9.9195, "lng": 78.1193, "count": 102 },
+  { "id": "mahabalipuram", "name": "Mahabalipuram", "state": "TN", "lat": 12.6208, "lng": 80.1945, "count": 71 },
+  { "id": "rameswaram", "name": "Rameswaram", "state": "TN", "lat": 9.2881, "lng": 79.3174, "count": 79 },
+  { "id": "kanyakumari", "name": "Kanyakumari", "state": "TN", "lat": 8.0883, "lng": 77.5385, "count": 92 }
+]

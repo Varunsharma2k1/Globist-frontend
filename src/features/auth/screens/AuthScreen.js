@@ -28,7 +28,7 @@ import FormNotice from '../components/FormNotice';
 // Why the sheet opened, keyed by the redirect's screen name.
 const REASONS = {
   Booking: 'Sign in to book this trip. It only takes a moment.',
-  PostReel: 'Sign in to post your reel and earn wallet rewards.',
+  PostReel: 'Sign in to post your tape and earn wallet rewards.',
 };
 export default function AuthScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
@@ -58,8 +58,8 @@ export default function AuthScreen({ navigation, route }) {
         <Text style={[typography.body, { marginTop: SPACING.xs, marginBottom: SPACING.lg }]}>
           {REASONS[redirect?.name] ||
             (form.isLogin
-              ? 'Sign in with your email to access your trips & reels'
-              : 'Sign up with your email to book trips & post reels')}
+              ? 'Sign in with your email to access your trips & tapes'
+              : 'Sign up with your email to book trips & post tapes')}
         </Text>
 
         <FormNotice notice={form.notice} />

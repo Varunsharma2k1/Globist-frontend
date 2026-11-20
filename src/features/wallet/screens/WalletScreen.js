@@ -14,7 +14,7 @@ import { REEL_REWARD_CAP, REFERRAL_AFTER_COMPLETION } from '../utils/rewards';
 const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 
 const TX_TITLES = {
-  reel: (tx) => `Reel reward · ${tx.agencyName || 'agency'}`,
+  reel: (tx) => `Tape reward · ${tx.agencyName || 'agency'}`,
   referral: (tx) => `Referral · ${tx.fromName || 'a traveller'} completed their trip`,
   redeem: () => 'Used for a trip booking',
 };
@@ -78,7 +78,7 @@ export default function WalletScreen({ navigation }) {
                   Post a reel tagging {booking.agency?.name || 'the agency'} to earn {inr(amount)}
                 </Text>
                 <Button
-                  title="Post reel"
+                  title="Post tape"
                   onPress={() => navigation.navigate('PostReel', { bookingId: booking._id })}
                   style={styles.itemBtn}
                 />
@@ -88,7 +88,7 @@ export default function WalletScreen({ navigation }) {
               <Card key={`p-${booking._id}`} style={styles.row}>
                 <Clock size={16} color={colors.textMuted} />
                 <View style={styles.rowText}>
-                  <Text style={styles.itemTitle}>{booking.userName} booked via your reel</Text>
+                  <Text style={styles.itemTitle}>{booking.userName} booked via your tape</Text>
                   <Text style={styles.itemSub}>
                     {booking.trip?.title} · credited after{' '}
                     {formatDay(booking.endDate, { weekday: false })}
