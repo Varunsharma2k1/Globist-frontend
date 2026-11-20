@@ -91,7 +91,7 @@ function ReelItem({
   );
 
   const handleReport = () =>
-    Alert.alert('Report submitted', 'Thanks — our team will review this reel.');
+    Alert.alert('Report submitted', 'Thanks — our team will review this tape.');
 
   const tone = colors.reelTone[categoryKey(reel.imageType)] || colors.reelTone.default;
   const sizeStyle = height ? { height } : styles.fill;

@@ -30,7 +30,7 @@ export default function ReelGridTile({ reel, width, onPress }) {
         { width, height: width * (4 / 3), backgroundColor: colors.surfaceMuted },
       ]}
       accessibilityRole="button"
-      accessibilityLabel={reel.caption || 'Open reel'}
+      accessibilityLabel={reel.caption || 'Open tape'}
     >
       {uri ? <Image source={{ uri }} style={styles.image} /> : null}
       <View style={styles.playBadge}>

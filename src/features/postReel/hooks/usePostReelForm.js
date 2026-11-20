@@ -41,7 +41,7 @@ export function usePostReelForm(navigation, initialBookingId) {
   const handlePickMedia = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert('Permission Needed', 'Allow video access to upload a reel.');
+      Alert.alert('Permission Needed', 'Allow video access to upload a tape.');
       return;
     }
 
@@ -81,7 +81,7 @@ export function usePostReelForm(navigation, initialBookingId) {
       return;
     }
     if (!media) {
-      Alert.alert('Video Required', 'Please upload a video to post a reel.');
+      Alert.alert('Video Required', 'Please upload a video to post a tape.');
       return;
     }
 
@@ -109,14 +109,14 @@ export function usePostReelForm(navigation, initialBookingId) {
       });
 
       Alert.alert(
-        'Reel published!',
+        'Tape published!',
         reward
           ? `Thanks for tagging ${linkedBooking.agency?.name || 'the agency'}. ₹${reward.toLocaleString('en-IN')} has been added to your wallet.`
-          : 'Your reel is live in the feed.',
+          : 'Your tape is live in the feed.',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
     } catch (error) {
-      Alert.alert("Couldn't post reel", error.message || 'Please try again.');
+      Alert.alert("Couldn't post tape", error.message || 'Please try again.');
     } finally {
       setLoading(false);
     }

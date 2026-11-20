@@ -11,8 +11,8 @@ export default function ReelsEmptyState({ error, onRetry }) {
     <View style={styles.emptyState}>
       <Text style={styles.emptyText}>
         {error
-          ? "Couldn't load reels. Check your connection and try again."
-          : 'No reels yet. Be the first to post one!'}
+          ? "Couldn't load tapes. Check your connection and try again."
+          : 'No tapes yet. Be the first to post one!'}
       </Text>
       {error && onRetry ? (
         <TouchableOpacity style={styles.retryBtn} onPress={onRetry} activeOpacity={0.8}>

@@ -35,7 +35,7 @@ export const getMenuItems = (navigation, logout, role, userId, ledger = {}) => {
       },
       {
         id: 'tagged',
-        label: 'Tagged Reels',
+        label: 'Tagged Tapes',
         icon: Tag,
         onPress: () => navigation.navigate('MyReels', { kind: 'tagged' }),
       },

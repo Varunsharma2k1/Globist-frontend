@@ -69,7 +69,7 @@ export default function BottomTabNavigator() {
         component={ExploreScreen}
         options={{ tabBarLabel: 'Explore' }}
       />
-      <Tab.Screen name="ReelsTab" component={ReelsScreen} options={{ tabBarLabel: 'Reels' }} />
+      <Tab.Screen name="ReelsTab" component={ReelsScreen} options={{ tabBarLabel: 'Tapes' }} />
       <Tab.Screen name="InboxTab" component={InboxScreen} options={{ tabBarLabel: 'Inbox' }} />
       <Tab.Screen
         name="ProfileTab"

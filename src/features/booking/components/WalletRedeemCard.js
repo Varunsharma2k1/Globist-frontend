@@ -27,7 +27,7 @@ export default function WalletRedeemCard({ balance, enabled, onToggle, applied }
           <Text style={styles.title}>Use wallet balance</Text>
           <Text style={styles.sub}>
             {empty
-              ? 'No points yet. Post reels after your trips to earn.'
+              ? 'No points yet. Post tapes after your trips to earn.'
               : `${balance.toLocaleString('en-IN')} points available · 1 point = ₹1`}
           </Text>
         </View>

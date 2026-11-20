@@ -16,7 +16,7 @@ export default function ReelsHeaderOverlay({ onPressPost }) {
         style={styles.addBtn}
         onPress={onPressPost}
         accessibilityRole="button"
-        accessibilityLabel="Post a reel"
+        accessibilityLabel="Post a tape"
       >
         <Plus size={20} color="#FFFFFF" />
       </TouchableOpacity>

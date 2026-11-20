@@ -34,7 +34,7 @@ export default function ProfileTripsScreen({ navigation, route }) {
   const confirmCompleted = (booking) =>
     Alert.alert(
       'Mark trip as completed?',
-      'Demo only: trips complete automatically after their return date. This unlocks posting a reel for this trip.',
+      'Demo only: trips complete automatically after their return date. This unlocks posting a tape for this trip.',
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Mark completed', onPress: () => markTripCompleted(booking._id) },

@@ -53,10 +53,10 @@ export default function TripRewardActions({ booking, onPostReel, onMarkCompleted
       <View style={styles.row}>
         <Film size={14} color={colors.pastel.peach.fg} />
         <Text style={styles.note}>
-          Trip completed! Tag {booking.agency?.name || 'the agency'} in a reel to earn {reward}.
+          Trip completed! Tag {booking.agency?.name || 'the agency'} in a tape to earn {reward}.
         </Text>
       </View>
-      <Button title={`Post reel & earn ${reward}`} onPress={onPostReel} style={styles.btn} />
+      <Button title={`Post tape & earn ${reward}`} onPress={onPostReel} style={styles.btn} />
     </View>
   );
 }

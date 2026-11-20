@@ -21,7 +21,7 @@ export default function ReelMoreSheet({ visible, onClose, onReport }) {
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
 
-  const items = [{ icon: Flag, label: 'Report this reel', onPress: onReport, danger: true }];
+  const items = [{ icon: Flag, label: 'Report this tape', onPress: onReport, danger: true }];
 
   // Close first so the follow-up alert isn't fighting a dismissing modal.
   const choose = (action) => () => {

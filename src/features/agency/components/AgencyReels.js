@@ -13,11 +13,11 @@ export default function AgencyReels({ agencyName, reels, onOpenReel }) {
 
   return (
     <View style={styles.section}>
-      <Text style={typography.h3}>Traveller reels</Text>
+      <Text style={typography.h3}>Traveller tapes</Text>
       <Text style={styles.sub}>
         {reels.length
-          ? `Reels travellers posted after their trip with ${agencyName || 'this agency'}`
-          : `No reels tagging ${agencyName || 'this agency'} yet.`}
+          ? `Tapes travellers posted after their trip with ${agencyName || 'this agency'}`
+          : `No tapes tagging ${agencyName || 'this agency'} yet.`}
       </Text>
       {reels.length ? (
         <ScrollView

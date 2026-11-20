@@ -51,7 +51,7 @@ export default function BookingConfirmedView({ booking, onViewTrips, onGoHome })
           {trip?.title} · {formatDaysNights(trip)}
         </Text>
         {booking.referral?.creatorHandle ? (
-          <Text style={styles.trip}>Booked via {booking.referral.creatorHandle}&apos;s reel</Text>
+          <Text style={styles.trip}>Booked via {booking.referral.creatorHandle}&apos;s tape</Text>
         ) : null}
 
         <Card style={styles.card}>

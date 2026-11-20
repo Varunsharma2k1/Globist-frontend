@@ -46,7 +46,7 @@ export default function ReelActionsRail({
         activeOpacity={0.7}
         hitSlop={HIT_SLOP}
         accessibilityRole="button"
-        accessibilityLabel={liked ? 'Unlike reel' : 'Like reel'}
+        accessibilityLabel={liked ? 'Unlike tape' : 'Like tape'}
         accessibilityState={{ selected: liked }}
       >
         <Animated.View style={{ transform: [{ scale: heartScale }] }}>
@@ -78,7 +78,7 @@ export default function ReelActionsRail({
         activeOpacity={0.7}
         hitSlop={HIT_SLOP}
         accessibilityRole="button"
-        accessibilityLabel="Share reel"
+        accessibilityLabel="Share tape"
       >
         <Send size={26} color="#FFFFFF" />
         <Text style={styles.actionCount}>{shares ? formatCount(shares) : 'Share'}</Text>
