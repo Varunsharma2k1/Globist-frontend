@@ -30,6 +30,15 @@ export const signupUser = async (userData) => {
 };
 
 /**
+ * Exchanges a Google ID token for our own session (creates the account on first use).
+ * @param {string} idToken
+ */
+export const loginWithGoogleToken = async (idToken) => {
+  const response = await client.post('/auth/google', { idToken });
+  return toSession(response.data);
+};
+
+/**
  * Saves the one-time account type choice for a newly created account.
  * @param {'traveler'|'creator'|'agency'} role
  * @returns {Promise<Object>} Updated user
@@ -47,3 +56,28 @@ export const getCurrentUser = async () => {
   const response = await client.get('/users/profile');
   return normalizeUser(response.data);
 };
+
+/** Ends this device's session on the server. */
+export const logoutSession = (refreshToken) =>
+  client.post('/auth/logout', { refreshToken }, { skipAuth: true });
+
+/** Ends every session of this account, on all devices. */
+export const logoutAllSessions = () => client.post('/auth/logout-all');
+
+/** Signed-in devices: [{ _id, device: { platform, name }, lastUsedAt, current }] */
+export const getSessions = async () => (await client.get('/auth/sessions')).data.sessions;
+
+/** Signs out one device. */
+export const revokeSession = (sessionId) => client.delete(`/auth/sessions/${sessionId}`);
+
+/** Emails a 6-digit reset code (the reply is the same whether or not the account exists). */
+export const requestPasswordReset = async (email) =>
+  (await client.post('/auth/password/forgot', { email }, { skipAuth: true })).data;
+
+/** Sets a new password with the emailed code; signs out all devices and starts a new session. */
+export const resetPasswordWithCode = async ({ email, code, newPassword }) =>
+  toSession((await client.post('/auth/password/reset', { email, code, newPassword }, { skipAuth: true })).data);
+
+/** Signed-in password change; other devices are signed out. */
+export const changePassword = async ({ currentPassword, newPassword }) =>
+  (await client.post('/auth/password/change', { currentPassword, newPassword })).data;

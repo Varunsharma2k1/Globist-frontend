@@ -122,8 +122,9 @@ function ReelItem({
 
       <ReelHeartBurst ref={heartBurstRef} />
 
-      {hasVideo && controlsVisible && (
+      {hasVideo && (
         <ReelCenterControls
+          visible={controlsVisible}
           paused={paused}
           muted={muted}
           onTogglePlay={handleTogglePlay}

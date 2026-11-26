@@ -6,15 +6,15 @@
     "orientation": "portrait",
     "scheme": [
       "triptape",
-      "com.globist.app"
+      "com.triptape.app"
     ],
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.globist.app"
+      "bundleIdentifier": "com.triptape.app"
     },
     "android": {
-      "package": "com.globist.app"
+      "package": "com.triptape.app"
     },
     "plugins": [
       "expo-font",
@@ -26,7 +26,9 @@
           "videoPermission": "Triptape needs access to your videos so you can post a travel reel."
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      "@react-native-google-signin/google-signin",
+      "expo-secure-store"
     ]
   }
 }

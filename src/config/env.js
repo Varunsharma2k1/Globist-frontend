@@ -31,6 +31,7 @@ import Constants from 'expo-constants';
  * @property {string} APP_ENV        'development' | 'production'.
  * @property {string} DEFAULT_DEMO_VIDEO  Fallback reel video URL used when a
  *   post has no uploaded media (e.g. seeded/demo content).
+ * @property {string} GOOGLE_WEB_CLIENT_ID  Web OAuth client ID for Google sign-in.
  * @property {string} PLATFORM       'ios' | 'android' | 'web'.
  */
 
@@ -149,6 +150,8 @@ function buildEnv() {
     ),
     APP_ENV: appEnv,
     DEFAULT_DEMO_VIDEO: process.env.EXPO_PUBLIC_DEFAULT_DEMO_VIDEO || DEFAULTS.DEMO_VIDEO,
+    // Web OAuth client ID from Google Cloud; the server checks tokens against it.
+    GOOGLE_WEB_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim() || '',
     PLATFORM: Platform.OS,
   });
 }

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useVideoPlayer } from 'expo-video';
 
-const CONTROLS_AUTO_HIDE_MS = 1800;
+// Controls flash on tap and fade out quickly, paused or not (tap the reel to resume).
+const CONTROLS_AUTO_HIDE_MS = 800;
 
 /**
  * Owns a single reel's video player instance plus the play/pause and
@@ -29,15 +30,11 @@ export function useReelPlayback({ mediaUrl, isActive, muted, onToggleMute }) {
     }
   };
 
-  // Reveal the play/pause + mute controls, auto-hiding them shortly after —
-  // unless the video is paused, in which case they stay up so there's always
-  // a visible way to resume.
-  const revealControls = (stillPaused) => {
+  // Reveal the play/pause + mute controls, then hide them shortly after.
+  const revealControls = () => {
     setControlsVisible(true);
     clearHideTimer();
-    if (!stillPaused) {
-      hideTimerRef.current = setTimeout(() => setControlsVisible(false), CONTROLS_AUTO_HIDE_MS);
-    }
+    hideTimerRef.current = setTimeout(() => setControlsVisible(false), CONTROLS_AUTO_HIDE_MS);
   };
 
   useEffect(() => clearHideTimer, []);
@@ -74,14 +71,14 @@ export function useReelPlayback({ mediaUrl, isActive, muted, onToggleMute }) {
   const handleTogglePlay = () => {
     setPaused((prev) => {
       const next = !prev;
-      revealControls(next);
+      revealControls();
       return next;
     });
   };
 
   const handleToggleMute = () => {
     onToggleMute?.();
-    revealControls(paused);
+    revealControls();
   };
 
   return { hasVideo, player, paused, controlsVisible, handleTogglePlay, handleToggleMute };

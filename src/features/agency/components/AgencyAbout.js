@@ -13,7 +13,7 @@ export default function AgencyAbout({ agency }) {
   const note =
     agency.about ||
     (agency.isVerified
-      ? 'Verified by Globist. This agency has been checked and approved to run trips on the app.'
+      ? 'Verified by Triptape. This agency has been checked and approved to run trips on the app.'
       : 'This agency hasn’t added a description yet.');
 
   return (
@@ -26,7 +26,7 @@ export default function AgencyAbout({ agency }) {
         {agency.isVerified ? (
           <View style={styles.stat}>
             <VerifiedBadge size={18} label />
-            <Text style={styles.statLabel}>Checked by Globist</Text>
+            <Text style={styles.statLabel}>Checked by Triptape</Text>
           </View>
         ) : null}
       </View>

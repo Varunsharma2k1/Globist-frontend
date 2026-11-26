@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import SplashScreen from '../screens/SplashScreen';
 import AuthScreen from '../screens/AuthScreen';
+import ForgotPasswordScreen from '../features/auth/screens/ForgotPasswordScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import TripDetailScreen from '../screens/TripDetailScreen';
 import BookingScreen from '../screens/BookingScreen';
@@ -76,6 +77,7 @@ export default function AppNavigator() {
               component={AuthScreen}
               options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
             />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
           </Stack.Group>
         )}
       </Stack.Navigator>

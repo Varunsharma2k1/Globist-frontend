@@ -12,10 +12,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MOCK_PLACES from '../data/mockPlaces.json';
 
-// 👉 Switch to your API here, e.g. 'https://api.globist.in/api/places'. null = use mock data.
+// 👉 Switch to your API here, e.g. 'https://api.triptape.app/api/places'. null = use mock data.
 export const PLACES_API_URL = null;
 
-const CACHE_KEY = 'globist.indiaMap.places.v1';
+const CACHE_KEY = 'triptape.indiaMap.places.v1';
 const TIMEOUT_MS = 10000;
 
 function isValidPlace(p) {

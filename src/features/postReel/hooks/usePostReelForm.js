@@ -1,19 +1,17 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '../../../config';
+import * as tokenStore from '../../../api/tokenStore';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTripLedger } from '../../../hooks/useTripLedger';
 import { createReel, uploadReelMedia, publishReel } from '../../../api';
 
 const STAGE_LABEL = { uploading: 'Uploading video…', processing: 'Processing video…', ready: 'Publishing…' };
 
-// Mock (placeholder Google) sessions have no backend account, so the
-// authenticated R2 upload isn't possible; they keep the legacy upload.
+// The R2 upload needs a server session; without one fall back to the legacy path.
 async function hasRealSession() {
-  const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-  return Boolean(token && !token.startsWith('mock-'));
+  await tokenStore.load();
+  return tokenStore.hasSession();
 }
 
 /**
