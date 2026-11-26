@@ -76,6 +76,7 @@ export default function PostReelScreen({ navigation, route }) {
 
           <Button
             title="Publish Tape"
+            loadingTitle={form.loadingLabel}
             onPress={form.handleSubmit}
             loading={form.loading}
             style={{ marginTop: SPACING.sm }}
