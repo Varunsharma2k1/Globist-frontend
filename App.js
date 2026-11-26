@@ -17,6 +17,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import { SettingsProvider } from './src/context/SettingsContext';
 import { CommunitiesProvider } from './src/context/CommunitiesContext';
 import { TripLedgerProvider } from './src/context/TripLedgerContext';
+import { ChatProvider } from './src/context/ChatContext';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { useTheme } from './src/hooks/useTheme';
 import { useSettings } from './src/hooks/useSettings';
@@ -74,7 +75,9 @@ export default function App() {
             <SettingsProvider>
               <CommunitiesProvider>
                 <TripLedgerProvider>
-                  <AppContent />
+                  <ChatProvider>
+                    <AppContent />
+                  </ChatProvider>
                 </TripLedgerProvider>
               </CommunitiesProvider>
             </SettingsProvider>

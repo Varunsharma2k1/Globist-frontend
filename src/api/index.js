@@ -11,4 +11,5 @@ export * from './trips';
 export * from './regions';
 export * from './reels';
 export * from './agencies';
+export * from './media';
 export { default as client } from './client';

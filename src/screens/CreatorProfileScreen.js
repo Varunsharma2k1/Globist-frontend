@@ -7,6 +7,8 @@ import Tag from '../components/Tag';
 import Button from '../components/Button';
 import { SPACING, FONTS, LAYOUT } from '../theme';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../hooks/useAuth';
+import { useRequireAuth } from '../hooks/useRequireAuth';
 
 /**
  * CreatorProfileScreen Component
@@ -20,6 +22,14 @@ export default function CreatorProfileScreen({ route, navigation }) {
   const styles = getStyles(colors);
   const { creator } = route.params || {};
   const [following, setFollowing] = useState(false);
+  const { user } = useAuth();
+  const { requireAuth } = useRequireAuth(navigation);
+  const creatorId = creator?._id;
+  const isMe = creatorId && String(creatorId) === String(user?._id);
+  const openChat = () => {
+    const params = { userId: creatorId, title: creator?.name || creator?.creatorHandle };
+    if (requireAuth({ name: 'ChatThread', params })) navigation.navigate('ChatThread', params);
+  };
 
   const initial = (creator?.name || creator?.creatorHandle || 'E').replace('@', '').charAt(0).toUpperCase();
 
@@ -66,6 +76,9 @@ export default function CreatorProfileScreen({ route, navigation }) {
           variant={following ? 'outline' : 'primary'}
           onPress={() => setFollowing((v) => !v)}
         />
+        {creatorId && !isMe && (
+          <Button title="Message" variant="outline" onPress={openChat} style={{ marginTop: SPACING.sm }} />
+        )}
       </ScrollView>
     </View>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { RADIUS, SPACING, FONTS } from '../theme';
 import { useTheme } from '../hooks/useTheme';
 
@@ -8,6 +8,7 @@ export default function Button({
   onPress,
   variant = 'primary',
   loading = false,
+  loadingTitle,
   style,
   textStyle,
 }) {
@@ -28,7 +29,14 @@ export default function Button({
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? colors.inkContrast : colors.ink} />
+        <View style={styles.loadingRow}>
+          <ActivityIndicator color={isPrimary ? colors.inkContrast : colors.ink} />
+          {loadingTitle ? (
+            <Text style={[styles.text, isPrimary && { color: colors.inkContrast }, isOutline && { color: colors.ink }, textStyle]}>
+              {loadingTitle}
+            </Text>
+          ) : null}
+        </View>
       ) : (
         <Text
           style={[
@@ -53,6 +61,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  loadingRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   text: {
     fontFamily: FONTS.heading,
     fontSize: 15,

@@ -42,7 +42,13 @@ export function useReelPlayback({ mediaUrl, isActive, muted, onToggleMute }) {
 
   useEffect(() => clearHideTimer, []);
 
-  const player = useVideoPlayer(hasVideo ? mediaUrl : null, (p) => {
+  // R2/CDN reels are HLS (.m3u8, adaptive 240–720p); older ones are MP4.
+  const source = !hasVideo
+    ? null
+    : /\.m3u8(\?|$)/.test(mediaUrl)
+      ? { uri: mediaUrl, contentType: 'hls' }
+      : mediaUrl;
+  const player = useVideoPlayer(source, (p) => {
     p.loop = true;
     p.muted = muted;
   });

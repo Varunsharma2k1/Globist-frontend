@@ -1,9 +1,20 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { STORAGE_KEYS } from '../../../config';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTripLedger } from '../../../hooks/useTripLedger';
-import { createReel, uploadReelMedia } from '../../../api';
+import { createReel, uploadReelMedia, publishReel } from '../../../api';
+
+const STAGE_LABEL = { uploading: 'Uploading video…', processing: 'Processing video…', ready: 'Publishing…' };
+
+// Mock (placeholder Google) sessions have no backend account, so the
+// authenticated R2 upload isn't possible; they keep the legacy upload.
+async function hasRealSession() {
+  const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+  return Boolean(token && !token.startsWith('mock-'));
+}
 
 /**
  * Owns the Post Reel form's state — media pick, caption/location, category,
@@ -29,6 +40,7 @@ export function usePostReelForm(navigation, initialBookingId) {
   const [imageType, setImageType] = useState('mountain');
   const [linkedBookingId, setLinkedBookingId] = useState(initialBooking?._id || null);
   const [loading, setLoading] = useState(false);
+  const [stage, setStage] = useState(null); // uploading | processing | ready
 
   const linkedBooking = myBookings.find((b) => b._id === linkedBookingId) || null;
 
@@ -56,6 +68,7 @@ export function usePostReelForm(navigation, initialBookingId) {
     setMedia({
       uri: asset.uri,
       type: 'video/mp4',
+      mimeType: asset.mimeType,
       name: asset.fileName || 'reel-video.mp4',
     });
   };
@@ -87,16 +100,19 @@ export function usePostReelForm(navigation, initialBookingId) {
 
     setLoading(true);
     try {
-      const mediaUrl = await uploadReelMedia(media).catch(() => media.uri);
       const agencyId = linkedBooking?.agency?._id;
-      const backendReel = await createReel({
-        caption,
-        location,
-        mediaUrl,
-        imageType,
-        agencyId,
-        isAffiliate: Boolean(agencyId),
-      }).catch(() => null);
+      const details = { caption, location, imageType, agencyId, isAffiliate: Boolean(agencyId) };
+      let mediaUrl;
+      let backendReel = null;
+
+      if (await hasRealSession()) {
+        // R2 pipeline: direct upload -> transcode -> HLS on the CDN.
+        backendReel = await publishReel(media, details, setStage);
+        mediaUrl = backendReel.mediaUrl || media.uri;
+      } else {
+        mediaUrl = await uploadReelMedia(media).catch(() => media.uri);
+        backendReel = await createReel({ ...details, mediaUrl }).catch(() => null);
+      }
 
       const { reward } = postReel({
         user,
@@ -108,9 +124,12 @@ export function usePostReelForm(navigation, initialBookingId) {
         backendId: backendReel?._id || null,
       });
 
+      const stillProcessing = backendReel?.status === 'processing';
       Alert.alert(
-        'Tape published!',
-        reward
+        stillProcessing ? 'Tape uploaded!' : 'Tape published!',
+        stillProcessing
+          ? "It's still processing and will show up in the feed in a minute."
+          : reward
           ? `Thanks for tagging ${linkedBooking.agency?.name || 'the agency'}. ₹${reward.toLocaleString('en-IN')} has been added to your wallet.`
           : 'Your tape is live in the feed.',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
@@ -119,6 +138,7 @@ export function usePostReelForm(navigation, initialBookingId) {
       Alert.alert("Couldn't post tape", error.message || 'Please try again.');
     } finally {
       setLoading(false);
+      setStage(null);
     }
   };
 
@@ -135,6 +155,7 @@ export function usePostReelForm(navigation, initialBookingId) {
     linkedBookingId,
     linkBooking,
     loading,
+    loadingLabel: stage ? STAGE_LABEL[stage] : null,
     previewReel,
     handleSubmit,
   };

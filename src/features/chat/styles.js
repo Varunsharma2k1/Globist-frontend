@@ -1,0 +1,77 @@
+import { StyleSheet } from 'react-native';
+import { SPACING, FONTS, RADIUS } from '../../theme';
+
+export function getStyles(colors) {
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.background },
+    subtitle: {
+      textAlign: 'center',
+      fontFamily: FONTS.body,
+      fontSize: 12,
+      color: colors.textMuted,
+      paddingVertical: 4,
+    },
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: SPACING.lg },
+    empty: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted, textAlign: 'center' },
+    list: { padding: SPACING.md, flexGrow: 1 },
+    day: {
+      alignSelf: 'center',
+      fontFamily: FONTS.semibold,
+      fontSize: 11,
+      color: colors.textMuted,
+      marginVertical: SPACING.sm,
+    },
+    bubbleRow: { flexDirection: 'row', marginTop: SPACING.xs },
+    rowMine: { justifyContent: 'flex-end' },
+    rowTheirs: { justifyContent: 'flex-start' },
+    bubble: {
+      maxWidth: '78%',
+      paddingHorizontal: SPACING.md - 2,
+      paddingVertical: SPACING.sm,
+      borderRadius: RADIUS.md,
+    },
+    bubbleMine: { backgroundColor: colors.ink, borderBottomRightRadius: 6 },
+    bubbleTheirs: { backgroundColor: colors.surfaceMuted, borderBottomLeftRadius: 6 },
+    msgText: { fontFamily: FONTS.body, fontSize: 15, lineHeight: 20, color: colors.text },
+    msgTextMine: { color: colors.inkContrast },
+    meta: {
+      fontFamily: FONTS.body,
+      fontSize: 10.5,
+      color: colors.textMuted,
+      marginTop: 2,
+      marginHorizontal: 4,
+    },
+    metaMine: { textAlign: 'right' },
+    composer: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      gap: SPACING.sm,
+      paddingHorizontal: SPACING.md,
+      paddingTop: SPACING.sm,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.divider,
+      backgroundColor: colors.background,
+    },
+    input: {
+      flex: 1,
+      maxHeight: 120,
+      minHeight: 40,
+      paddingHorizontal: SPACING.md,
+      paddingTop: 10,
+      paddingBottom: 10,
+      borderRadius: RADIUS.md,
+      backgroundColor: colors.surfaceMuted,
+      fontFamily: FONTS.body,
+      fontSize: 15,
+      color: colors.text,
+    },
+    sendBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.ink,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+  });
+}
