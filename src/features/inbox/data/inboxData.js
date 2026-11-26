@@ -47,37 +47,6 @@ export const getNotifications = (colors) => [
   },
 ];
 
-export const CHATS = [
-  {
-    id: 'c1',
-    name: '@mountain_explorer',
-    preview: 'Sent you the itinerary for Ladakh!',
-    time: '10m',
-    unread: true,
-  },
-  {
-    id: 'c2',
-    name: 'Himalayan High Treks',
-    preview: 'Your booking is confirmed. Safe travels 🎒',
-    time: '1h',
-    unread: true,
-  },
-  {
-    id: 'c3',
-    name: '@rishikesh_vibes',
-    preview: 'Haha yes, the rafting was insane',
-    time: '1d',
-    unread: false,
-  },
-  {
-    id: 'c4',
-    name: 'Triptape Support',
-    preview: 'Let us know if you have any questions.',
-    time: '4d',
-    unread: false,
-  },
-];
-
 export const TABS = [
   { key: 'notifications', label: 'Notifications' },
   { key: 'chat', label: 'Chat' },

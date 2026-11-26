@@ -2,6 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { View, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../hooks/useTheme';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
+import Button from '../../../components/Button';
 import { SPACING, LAYOUT } from '../../../theme';
 import { useAgencyProfile } from '../hooks/useAgencyProfile';
 import { useAgencyReels } from '../hooks/useAgencyReels';
@@ -28,6 +30,7 @@ export default function AgencyProfileScreen({ route, navigation }) {
     useAgencyProfile(base);
   const reels = useAgencyReels(base);
   const [editing, setEditing] = useState(false);
+  const { requireAuth } = useRequireAuth(navigation);
   const { upcoming, others } = useMemo(() => splitTrips(trips), [trips]);
 
   return (
@@ -45,6 +48,17 @@ export default function AgencyProfileScreen({ route, navigation }) {
         />
         <View style={styles.content}>
           <AgencyAbout agency={agency} />
+          {agency._id && !canEdit && (
+            <Button
+              title="Message agency"
+              variant="outline"
+              onPress={() => {
+                const params = { agencyId: agency._id, title: agency.name };
+                if (requireAuth({ name: 'ChatThread', params })) navigation.navigate('ChatThread', params);
+              }}
+              style={{ marginBottom: SPACING.md }}
+            />
+          )}
           {loading ? (
             <ActivityIndicator color={colors.ink} style={styles.loader} />
           ) : (

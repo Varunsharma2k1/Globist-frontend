@@ -5,7 +5,9 @@ import Button from '../../../components/Button';
 import { useCommunityData } from '../../../hooks/useCommunities';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, LAYOUT, FONTS } from '../../../theme';
-import { getNotifications, CHATS } from '../data/inboxData';
+import { useChat } from '../../../hooks/useChat';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
+import { getNotifications } from '../data/inboxData';
 import InboxHeader from '../components/InboxHeader';
 import NotificationRow from '../components/NotificationRow';
 import ChatRow from '../components/ChatRow';
@@ -25,10 +27,12 @@ export default function InboxScreen() {
   const navigation = useNavigation();
   const { joinedCommunities } = useCommunityData();
   const [tab, setTab] = useState('notifications');
+  const chat = useChat();
+  const { isSignedIn, requireAuth } = useRequireAuth(navigation);
 
   const unreadCountFor = (key) => {
     if (key === 'notifications') return notifications.filter((n) => n.unread).length;
-    if (key === 'chat') return CHATS.filter((c) => c.unread).length;
+    if (key === 'chat') return chat.unreadTotal;
     return 0;
   };
 
@@ -40,7 +44,45 @@ export default function InboxScreen() {
         {tab === 'notifications' &&
           notifications.map((n) => <NotificationRow key={n.id} notification={n} />)}
 
-        {tab === 'chat' && CHATS.map((c) => <ChatRow key={c.id} chat={c} />)}
+        {tab === 'chat' && !isSignedIn && (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>Your messages live here</Text>
+            <Text style={styles.emptyBody}>
+              Sign in to chat with creators and agencies about your next trip.
+            </Text>
+            <Button
+              title="Sign in"
+              onPress={() => requireAuth({ name: 'MainTabs' })}
+              style={{ marginTop: SPACING.md, alignSelf: 'stretch' }}
+            />
+          </View>
+        )}
+
+        {tab === 'chat' && isSignedIn && chat.conversations.length === 0 && (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>
+              {chat.loading ? 'Loading chats…' : chat.error || 'No chats yet'}
+            </Text>
+            {!chat.loading && (
+              <Text style={styles.emptyBody}>
+                Tap Message on a creator or agency profile to start a conversation.
+              </Text>
+            )}
+          </View>
+        )}
+
+        {tab === 'chat' &&
+          isSignedIn &&
+          chat.conversations.map((c) => (
+            <ChatRow
+              key={c._id}
+              chat={c}
+              myId={chat.userId}
+              typing={chat.typing[c._id]}
+              online={c.other?._id && chat.online[String(c.other._id)]}
+              onPress={() => navigation.navigate('ChatThread', { conversation: c })}
+            />
+          ))}
 
         {tab === 'communities' && (
           <>
