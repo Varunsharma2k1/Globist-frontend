@@ -24,7 +24,7 @@ export default function PostCard({ post, community, full, onPress, onComment }) 
 
   const share = () =>
     Share.share({
-      message: `${post.title}\n\nc/${community.handle} on Triptape, by u/${post.handle}`,
+      message: `${post.title}\n\nc/${community.handle} on TripTape, by u/${post.handle}`,
     });
 
   return (

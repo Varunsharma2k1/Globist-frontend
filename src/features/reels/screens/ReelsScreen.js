@@ -102,6 +102,8 @@ export default function ReelsScreen({ navigation }) {
         height={reelHeight}
         controlsOffset={tabBarHeight / 2 + CONTROLS_NUDGE}
         isActive={isFocused && index === activeIndex}
+        // Only the visible reel and its neighbours hold a video player (memory).
+        shouldLoad={isFocused && Math.abs(index - activeIndex) <= 1}
         muted={muted}
         onToggleMute={handleToggleMute}
         onCreatorPress={handleCreatorPress}
@@ -151,8 +153,9 @@ export default function ReelsScreen({ navigation }) {
         onMomentumScrollEnd={handleMomentumEnd}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
-        windowSize={5}
-        maxToRenderPerBatch={3}
+        windowSize={3}
+        maxToRenderPerBatch={2}
+        removeClippedSubviews
       />
     );
   };

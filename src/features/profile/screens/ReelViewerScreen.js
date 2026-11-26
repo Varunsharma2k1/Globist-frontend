@@ -40,6 +40,7 @@ export default function ReelViewerScreen({ navigation, route }) {
       reel={item}
       height={height}
       isActive={isFocused && index === activeIndex}
+      shouldLoad={isFocused && Math.abs(index - activeIndex) <= 1}
       muted={muted}
       onToggleMute={() => setMuted((v) => !v)}
       onCreatorPress={(reel) =>

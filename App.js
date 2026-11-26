@@ -23,10 +23,12 @@ import { useTheme } from './src/hooks/useTheme';
 import { useSettings } from './src/hooks/useSettings';
 import TouchIndicator from './src/components/TouchIndicator';
 import AppNavigator from './src/navigation/AppNavigator';
+import { useImmersiveNavBar } from './src/hooks/useImmersiveNavBar';
 import { COLORS } from './src/theme';
 
 function AppContent() {
   const { colors, resolvedScheme } = useTheme();
+  useImmersiveNavBar(); // hide Android's back/home bar; swipe up to peek
   const { settings } = useSettings();
 
   const navTheme = {

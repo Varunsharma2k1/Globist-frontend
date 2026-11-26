@@ -40,7 +40,7 @@ export default function CommunityHeader({
             style={styles.roundBtn}
             onPress={() =>
               Share.share({
-                message: `Join c/${community.handle} on Triptape: ${community.tagline}`,
+                message: `Join c/${community.handle} on TripTape: ${community.tagline}`,
               })
             }
             accessibilityLabel="Share community"

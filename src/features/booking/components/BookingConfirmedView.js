@@ -68,7 +68,7 @@ export default function BookingConfirmedView({ booking, onViewTrips, onGoHome })
           <Text style={styles.earnText}>
             After your trip, post a reel tagging {booking.agency?.name || 'the agency'} and earn{' '}
             <Text style={styles.earnStrong}>₹{reelReward(booking).toLocaleString('en-IN')}</Text> in
-            your Triptape wallet.
+            your TripTape wallet.
           </Text>
         </View>
 

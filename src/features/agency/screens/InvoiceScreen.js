@@ -8,6 +8,7 @@ import { getAgencyBooking, GST_RATE } from '../../../data/agencyBookings';
 import { OCCUPANCY_LABELS } from '../../../data/occupancy';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../hooks/useTheme';
+import { useTripLedger } from '../../../hooks/useTripLedger';
 import { formatDate, formatINR, STATUS_TAG } from '../utils/format';
 import { SPACING, RADIUS, FONTS, LAYOUT } from '../../../theme';
 
@@ -16,6 +17,7 @@ export default function InvoiceScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { user } = useAuth();
+  const { myBookings } = useTripLedger();
   const styles = getStyles(colors);
 
   // Agencies open a booking by id; travellers pass the booking they built.
@@ -32,11 +34,16 @@ export default function InvoiceScreen({ navigation, route }) {
   const agencyName = booking.agencyName || user?.name || 'Your Agency';
   const status = STATUS_TAG[booking.status];
 
+  // Travellers: once the trip is completed, post one tape tagged to this agency.
+  const tripId = booking.ledgerBooking?._id;
+  const trip = tripId ? myBookings.find((b) => b._id === tripId) : null;
+  const canPostTape = Boolean(trip && trip.status === 'completed' && !trip.reelId);
+
   const share = () =>
     Share.share({
       title: `Invoice ${booking.invoiceNo}`,
       message: [
-        `Triptape Tax Invoice ${booking.invoiceNo}`,
+        `TripTape Tax Invoice ${booking.invoiceNo}`,
         `Sold by: ${agencyName}`,
         `Billed to: ${traveler.name}${traveler.email ? ` (${traveler.email})` : ''}`,
         `${pkg.name} — ${booking.travelers} traveller(s), ${OCCUPANCY_LABELS[booking.occupancy]}`,
@@ -108,7 +115,19 @@ export default function InvoiceScreen({ navigation, route }) {
           <Row label="Payment status" value={status.label} styles={styles} />
         </View>
 
-        <Button title="Share Invoice" onPress={share} style={{ marginTop: SPACING.md }} />
+        {canPostTape ? (
+          <Button
+            title="Post a tape from this trip"
+            onPress={() => navigation.navigate('PostReel', { bookingId: trip._id })}
+            style={{ marginTop: SPACING.md }}
+          />
+        ) : null}
+        <Button
+          title="Share Invoice"
+          variant={canPostTape ? 'outline' : undefined}
+          onPress={share}
+          style={{ marginTop: SPACING.md }}
+        />
       </ScrollView>
     </View>
   );

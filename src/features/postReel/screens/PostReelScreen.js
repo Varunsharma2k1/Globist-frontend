@@ -9,7 +9,7 @@ import KeyboardAwareScrollView from '../../../components/KeyboardAwareScrollView
 import { SPACING, LAYOUT } from '../../../theme';
 import { usePostReelForm } from '../hooks/usePostReelForm';
 import MediaUploadCard from '../components/MediaUploadCard';
-import LinkedTripPicker from '../components/LinkedTripPicker';
+import TaggedTripCard from '../components/TaggedTripCard';
 import CategoryPicker from '../components/CategoryPicker';
 import ReelPreviewModal from '../components/ReelPreviewModal';
 
@@ -18,9 +18,9 @@ import ReelPreviewModal from '../components/ReelPreviewModal';
  *
  * Form for travellers and agencies to post new travel clips. Only video is
  * accepted (no photos), picked from the device library, with an inline
- * Instagram-style preview once selected. Travellers can tag the agency of
- * a completed trip (one reel per trip, earns wallet credit) or post
- * untagged. Form state/submission lives in
+ * Instagram-style preview once selected. From the + button it's a plain
+ * tape; opened from a booked trip it's tied to that trip's agency (one tape
+ * per trip, earns wallet credit) — see TaggedTripCard. Form state/submission lives in
  * usePostReelForm; each visual section is its own component (see
  * ../components) — this file is just the layout.
  */
@@ -39,7 +39,13 @@ export default function PostReelScreen({ navigation, route }) {
         contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + insets.bottom }]}
       >
         <Text style={typography.h2}>Share Your Journey</Text>
-        <Text style={styles.subtitle}>Post short travel videos and inspire fellow explorers.</Text>
+        <Text style={styles.subtitle}>
+          {form.linkedBooking
+            ? 'Share a tape from your trip. It will appear on the agency’s profile too.'
+            : 'Post short travel videos and inspire fellow explorers.'}
+        </Text>
+
+        {form.linkedBooking ? <TaggedTripCard booking={form.linkedBooking} /> : null}
 
         <MediaUploadCard
           media={form.media}
@@ -62,11 +68,6 @@ export default function PostReelScreen({ navigation, route }) {
           placeholder="e.g. Dharamshala, Himachal Pradesh"
         />
 
-        <LinkedTripPicker
-          bookings={form.bookings}
-          value={form.linkedBookingId}
-          onChange={form.linkBooking}
-        />
 
         <CategoryPicker value={form.imageType} onChange={form.setImageType} />
 

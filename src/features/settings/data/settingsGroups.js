@@ -177,7 +177,7 @@ export const SETTINGS_GROUPS = [
       { id: 'help', label: 'Help Center & Support', icon: HelpCircle, type: 'nav' },
       { id: 'report', label: 'Report a Problem', icon: Flag, type: 'nav' },
       { id: 'terms', label: 'Terms of Service & Privacy Policy', icon: FileText, type: 'nav' },
-      { id: 'about', label: 'About Triptape', sub: 'Version 2.4.1', icon: Info, type: 'nav' },
+      { id: 'about', label: 'About TripTape', sub: 'Version 2.4.1', icon: Info, type: 'nav' },
     ],
   },
 ];

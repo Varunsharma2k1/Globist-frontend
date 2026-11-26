@@ -15,17 +15,21 @@ async function hasRealSession() {
 }
 
 /**
- * Owns the Post Reel form's state — media pick, caption/location, category,
- * linked trip — and submission.
+ * Owns the Post Reel form's state — media pick, caption/location, category
+ * — and submission.
  *
- * Linking a completed trip tags the reel with that trip's agency and credits
- * the traveller's wallet (see features/wallet/utils/ledger). The reel is
+ * Two ways in:
+ * - the + button: a plain tape, never tagged to an agency;
+ * - "Post tape" on a booked trip (My Trips / invoice): the tape is tied to
+ *   that booking. The server checks the booking is the user's own and takes
+ *   the agency from it, so tagging can't be faked. It also credits the
+ *   traveller's wallet (see features/wallet/utils/ledger). The reel is
  * saved to the on-device ledger, which drives the feed / agency page /
  * wallet for now; uploading the video and mirroring the reel to the backend
  * are best-effort, so posting works offline or with a mock session too.
  *
  * @param {Object} navigation
- * @param {string} [initialBookingId] - preselected trip when opened from My Trips
+ * @param {string} [initialBookingId] - the booked trip this tape is for (fixed, not changeable)
  */
 export function usePostReelForm(navigation, initialBookingId) {
   const { user } = useAuth();
@@ -36,17 +40,11 @@ export function usePostReelForm(navigation, initialBookingId) {
   const [location, setLocation] = useState(initialBooking?.trip?.location || '');
   const [media, setMedia] = useState(null); // { uri, type, name }
   const [imageType, setImageType] = useState('mountain');
-  const [linkedBookingId, setLinkedBookingId] = useState(initialBooking?._id || null);
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState(null); // uploading | processing | ready
 
-  const linkedBooking = myBookings.find((b) => b._id === linkedBookingId) || null;
-
-  const linkBooking = (bookingId) => {
-    setLinkedBookingId(bookingId);
-    const booking = myBookings.find((b) => b._id === bookingId);
-    if (booking?.trip?.location && !location) setLocation(booking.trip.location);
-  };
+  // Only set when opened from a booked trip; the + button never links one.
+  const linkedBooking = initialBooking || null;
 
   const handlePickMedia = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -96,10 +94,15 @@ export function usePostReelForm(navigation, initialBookingId) {
       return;
     }
 
+    if (linkedBooking?.reelId) {
+      Alert.alert('Already posted', 'You have already posted a tape for this trip.');
+      return;
+    }
+
     setLoading(true);
     try {
-      const agencyId = linkedBooking?.agency?._id;
-      const details = { caption, location, imageType, agencyId, isAffiliate: Boolean(agencyId) };
+      // The server derives the agency from this booking (its own id: backendId).
+      const details = { caption, location, imageType, bookingId: linkedBooking?.backendId || undefined };
       let mediaUrl;
       let backendReel = null;
 
@@ -149,9 +152,7 @@ export function usePostReelForm(navigation, initialBookingId) {
     handlePickMedia,
     imageType,
     setImageType,
-    bookings: myBookings,
-    linkedBookingId,
-    linkBooking,
+    linkedBooking,
     loading,
     loadingLabel: stage ? STAGE_LABEL[stage] : null,
     previewReel,

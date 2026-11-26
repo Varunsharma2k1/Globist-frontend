@@ -11,7 +11,7 @@ import { ENV } from './env';
 export const CONFIG = {
   API_BASE_URL: ENV.API_BASE_URL,
   API_TIMEOUT: ENV.API_TIMEOUT,
-  APP_NAME: 'Triptape',
+  APP_NAME: 'TripTape',
   DEFAULT_DEMO_VIDEO: ENV.DEFAULT_DEMO_VIDEO,
 };
 

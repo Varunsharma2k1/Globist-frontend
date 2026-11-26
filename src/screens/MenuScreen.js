@@ -46,7 +46,7 @@ export default function MenuScreen({ navigation }) {
         })}
 
         <View style={styles.footer}>
-          <Text style={styles.versionText}>Triptape Mobile v1.0.0 (Production Ready)</Text>
+          <Text style={styles.versionText}>TripTape Mobile v1.0.0 (Production Ready)</Text>
           <Text style={styles.platformText}>iOS & Android Build • Powered by Expo & Node.js</Text>
         </View>
       </ScrollView>

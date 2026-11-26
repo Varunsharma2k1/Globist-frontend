@@ -16,7 +16,7 @@ import ProfileMenuList from '../components/ProfileMenuList';
 /**
  * ProfileScreen Component
  *
- * Recreated from the "Triptape Profile & Settings" design handoff: large
+ * Recreated from the "TripTape Profile & Settings" design handoff: large
  * left-aligned "Profile" title with a gear icon (→ Settings) top-right, an
  * avatar + name + role-pill card, stats, and a grouped menu list. Each
  * section is its own component (see ../components) — this file is just the

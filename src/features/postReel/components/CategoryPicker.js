@@ -4,7 +4,7 @@ import { Mountain } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 
-// Triptape only lists mountain trips (Himachal / Uttarakhand) for now, so
+// TripTape only lists mountain trips (Himachal / Uttarakhand) for now, so
 // Mountain is the only vibe offered.
 const CATEGORIES = [{ key: 'mountain', icon: Mountain, label: 'Mountain' }];
 
