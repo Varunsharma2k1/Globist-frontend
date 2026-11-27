@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   title: {
     flexShrink: 1,
     fontFamily: FONTS.bold,
-    fontSize: 13,
+    fontSize: 14,
     color: '#FFFFFF',
   },
   rating: {
@@ -122,12 +122,12 @@ const styles = StyleSheet.create({
   },
   ratingText: {
     fontFamily: FONTS.semibold,
-    fontSize: 11,
+    fontSize: 12,
     color: 'rgba(255,255,255,0.85)',
   },
   meta: {
     fontFamily: FONTS.body,
-    fontSize: 11,
+    fontSize: 12,
     color: 'rgba(255,255,255,0.7)',
     marginTop: 1,
   },
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontFamily: FONTS.heading,
-    fontSize: 13,
+    fontSize: 14,
     color: '#161311',
   },
 });

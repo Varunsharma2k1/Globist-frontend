@@ -79,7 +79,7 @@ function getStyles(colors) {
     summaryLoc: {
       flexShrink: 1,
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
     agencyRow: {
@@ -90,7 +90,7 @@ function getStyles(colors) {
     },
     byLabel: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
     agencyName: {
@@ -101,7 +101,7 @@ function getStyles(colors) {
     },
     summaryPrice: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
       marginTop: SPACING.sm,
     },

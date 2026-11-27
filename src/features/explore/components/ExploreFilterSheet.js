@@ -146,13 +146,13 @@ function getStyles(colors) {
     },
     sectionLabel: {
       fontFamily: FONTS.bold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
       marginBottom: SPACING.sm + 2,
     },
     note: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       marginBottom: SPACING.sm,
     },
@@ -175,7 +175,7 @@ function getStyles(colors) {
     },
     clearText: {
       fontFamily: FONTS.semibold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.text,
       textDecorationLine: 'underline',
     },
@@ -188,7 +188,7 @@ function getStyles(colors) {
     },
     applyText: {
       fontFamily: FONTS.bold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.inkContrast,
     },
   });

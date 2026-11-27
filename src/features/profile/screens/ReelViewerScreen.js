@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { View, FlatList, TouchableOpacity, PixelRatio, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
 import { ArrowLeft } from 'lucide-react-native';
 import ReelItem from '../../reels/components/ReelItem';
@@ -8,6 +7,7 @@ import { ReelEngagementProvider } from '../../reels/context/ReelEngagementContex
 import { useReelBooking } from '../../reels/hooks/useReelBooking';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../hooks/useTheme';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 const VIEWABILITY = { itemVisiblePercentThreshold: 80 };
 
@@ -17,7 +17,7 @@ const VIEWABILITY = { itemVisiblePercentThreshold: 80 };
  */
 export default function ReelViewerScreen({ navigation, route }) {
   const { reels = [], startIndex = 0 } = route.params || {};
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
   const isFocused = useIsFocused();
   const { colors } = useTheme();
   const { user } = useAuth();
@@ -82,7 +82,7 @@ export default function ReelViewerScreen({ navigation, route }) {
           />
         )}
         <TouchableOpacity
-          style={[styles.back, { top: insets.top + 8 }]}
+          style={[styles.back, { top: topInset + 8 }]}
           onPress={() => navigation.goBack()}
           accessibilityLabel="Back"
         >

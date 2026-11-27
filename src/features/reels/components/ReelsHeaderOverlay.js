@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plus } from 'lucide-react-native';
 import { SPACING } from '../../../theme';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 export default function ReelsHeaderOverlay({ onPressPost }) {
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
 
   return (
     <View
-      style={[styles.headerOverlay, { paddingTop: insets.top + SPACING.sm }]}
+      style={[styles.headerOverlay, { paddingTop: topInset + SPACING.sm }]}
       pointerEvents="box-none"
     >
       <TouchableOpacity

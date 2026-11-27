@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/SplashScreen';
 import AuthScreen from '../screens/AuthScreen';
 import ForgotPasswordScreen from '../features/auth/screens/ForgotPasswordScreen';
+import EditProfileScreen from '../features/profile/screens/EditProfileScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import TripDetailScreen from '../screens/TripDetailScreen';
 import BookingScreen from '../screens/BookingScreen';
@@ -71,6 +72,7 @@ export default function AppNavigator() {
             <Stack.Screen name="Wallet" component={WalletScreen} />
             <Stack.Screen name="IndiaMap" component={IndiaMapScreen} />
             <Stack.Screen name="ChatThread" component={ChatThreadScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             {/* Sign-in sheet for guests (see useRequireAuth). */}
             <Stack.Screen
               name="Auth"

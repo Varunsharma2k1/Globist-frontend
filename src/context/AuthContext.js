@@ -141,6 +141,13 @@ export const AuthProvider = ({ children }) => {
     await clearSession();
   };
 
+  /** Merges profile changes into the session (memory + cached user info). */
+  const updateUser = async (partial) => {
+    const next = { ...user, ...partial };
+    setUser(next);
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(next)).catch(() => {});
+  };
+
   /** Forgot-password: new password + emailed code. Signs this device in. */
   const resetPassword = async ({ email, code, newPassword }) =>
     persistSession(await resetPasswordWithCode({ email, code, newPassword }));
@@ -164,6 +171,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         logoutAllDevices,
         resetPassword,
+        updateUser,
         setUser,
       }}
     >

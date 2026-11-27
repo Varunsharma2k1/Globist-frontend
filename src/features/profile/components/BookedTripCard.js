@@ -112,10 +112,10 @@ function getStyles(colors) {
       alignItems: 'flex-start',
       gap: SPACING.sm,
     },
-    name: { flex: 1, fontFamily: FONTS.heading, fontSize: 17, color: colors.ink },
+    name: { flex: 1, fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
     metaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-    meta: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted },
-    agencyName: { flexShrink: 1, fontFamily: FONTS.bold, fontSize: 13, color: colors.ink },
+    meta: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted },
+    agencyName: { flexShrink: 1, fontFamily: FONTS.bold, fontSize: 14, color: colors.ink },
     tags: { flexDirection: 'row', flexWrap: 'wrap', marginTop: SPACING.sm },
     footer: {
       flexDirection: 'row',

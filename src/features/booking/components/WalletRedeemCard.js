@@ -58,7 +58,7 @@ function getStyles(colors) {
     sub: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted, marginTop: 2 },
     applied: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.success,
       marginTop: SPACING.sm,
     },

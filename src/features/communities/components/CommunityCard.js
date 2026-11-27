@@ -55,7 +55,7 @@ function getStyles(colors) {
     },
     thumb: { width: 72, height: 72, borderRadius: RADIUS.sm, backgroundColor: colors.surfaceMuted },
     main: { flex: 1 },
-    name: { fontFamily: FONTS.heading, fontSize: 15, color: colors.ink },
+    name: { fontFamily: FONTS.heading, fontSize: 14, color: colors.ink },
     tagline: {
       fontFamily: FONTS.body,
       fontSize: 12,
@@ -63,6 +63,6 @@ function getStyles(colors) {
       color: colors.textMuted,
       marginTop: 2,
     },
-    stats: { fontFamily: FONTS.semibold, fontSize: 11, color: colors.textMuted, marginTop: 5 },
+    stats: { fontFamily: FONTS.semibold, fontSize: 12, color: colors.textMuted, marginTop: 5 },
   });
 }

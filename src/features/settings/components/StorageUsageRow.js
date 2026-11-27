@@ -44,7 +44,7 @@ function getStyles() {
   return StyleSheet.create({
     clearCacheText: {
       fontFamily: FONTS.bold,
-      fontSize: 13,
+      fontSize: 14,
       color: '#C94A3A',
     },
   });

@@ -49,7 +49,7 @@ function getStyles(colors) {
     metaStrong: { fontFamily: FONTS.semibold, color: colors.text },
     text: {
       fontFamily: FONTS.body,
-      fontSize: 14.5,
+      fontSize: 14,
       lineHeight: 22,
       color: colors.text,
       marginTop: 4,

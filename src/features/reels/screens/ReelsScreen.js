@@ -8,7 +8,7 @@ import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { useTheme } from '../../../hooks/useTheme';
 import { useReelsFeed } from '../hooks/useReelsFeed';
 import { useInfiniteReelPaging } from '../hooks/useInfiniteReelPaging';
-import { useReelsTabBarTheme } from '../hooks/useReelsTabBarTheme';
+import { tabBarHeightFor } from '../../../navigation/GlassTabBar';
 import { useReelBooking } from '../hooks/useReelBooking';
 import { useTabSwipe } from '../hooks/useTabSwipe';
 import { ReelEngagementProvider } from '../context/ReelEngagementContext';
@@ -46,10 +46,8 @@ export default function ReelsScreen({ navigation }) {
   const [muted, setMuted] = useState(false);
   const [reelHeight, setReelHeight] = useState(0);
 
-  // Matches BottomTabNavigator's tab bar so restyling it here never shifts
-  // the feed's layout.
-  const tabBarHeight = 56 + insets.bottom;
-  useReelsTabBarTheme(navigation, { tabBarHeight, insetsBottom: insets.bottom, colors });
+  // Height of the glass tab bar (it turns dark by itself on this tab).
+  const tabBarHeight = tabBarHeightFor(insets);
 
   const { reels, loading, error, retry } = useReelsFeed();
   const {

@@ -38,7 +38,7 @@ export default function CommunitiesSection({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  seeAll: { fontFamily: FONTS.heading, fontSize: 13 },
+  seeAll: { fontFamily: FONTS.heading, fontSize: 14 },
   // Bleeds to the screen edges while the first card lines up with the section title.
   row: { marginHorizontal: -SPACING.lg },
   rowContent: { paddingHorizontal: SPACING.lg, paddingBottom: SPACING.xl },

@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   photo: { width: '100%', height: '100%' },
   info: { flex: 1 },
-  name: { fontFamily: FONTS.heading, fontSize: 20, color: MAP_THEME.sheetText },
+  name: { fontFamily: FONTS.heading, fontSize: 18, color: MAP_THEME.sheetText },
   state: { fontFamily: FONTS.body, fontSize: 14, color: MAP_THEME.sheetMuted, marginTop: 2 },
   countPill: { alignSelf: 'flex-start', marginTop: SPACING.sm, backgroundColor: MAP_THEME.bubble.badgeBackground, borderRadius: RADIUS.pill, paddingHorizontal: 10, paddingVertical: 4 },
   countText: { fontFamily: FONTS.heading, fontSize: 12, color: MAP_THEME.bubble.badgeText },

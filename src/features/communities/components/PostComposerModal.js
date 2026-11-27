@@ -117,11 +117,11 @@ function getStyles(colors) {
       paddingBottom: SPACING.xl,
     },
     headRow: { flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.md },
-    heading: { fontFamily: FONTS.heading, fontSize: 20, color: colors.ink },
-    sub: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted, marginTop: 2 },
+    heading: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
+    sub: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted, marginTop: 2 },
     titleInput: {
       fontFamily: FONTS.heading,
-      fontSize: 17,
+      fontSize: 18,
       color: colors.ink,
       backgroundColor: colors.surfaceMuted,
       borderRadius: RADIUS.md,
@@ -130,7 +130,7 @@ function getStyles(colors) {
     },
     bodyInput: {
       fontFamily: FONTS.body,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.text,
       backgroundColor: colors.surfaceMuted,
       borderRadius: RADIUS.md,
@@ -143,13 +143,13 @@ function getStyles(colors) {
     },
     label: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.text,
       marginTop: SPACING.md,
       marginBottom: SPACING.xs,
     },
     flairRow: { flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm },
     chip: { paddingHorizontal: SPACING.md, paddingVertical: 7, borderRadius: RADIUS.pill },
-    chipText: { fontFamily: FONTS.semibold, fontSize: 13 },
+    chipText: { fontFamily: FONTS.semibold, fontSize: 14 },
   });
 }

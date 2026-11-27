@@ -39,7 +39,7 @@ function getStyles(colors) {
   return StyleSheet.create({
     sectionLabel: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.text,
       marginBottom: SPACING.xs,
     },
@@ -62,7 +62,7 @@ function getStyles(colors) {
     },
     typeText: {
       fontFamily: FONTS.heading,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.ink,
     },
     typeTextActive: {

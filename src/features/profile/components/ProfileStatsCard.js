@@ -87,7 +87,7 @@ function getStyles(colors) {
     },
     statVal: {
       fontFamily: FONTS.heading,
-      fontSize: 20,
+      fontSize: 18,
       color: colors.ink,
     },
     statLabel: {

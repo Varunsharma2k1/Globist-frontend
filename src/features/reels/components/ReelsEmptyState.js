@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontFamily: FONTS.heading,
-    fontSize: 13,
+    fontSize: 14,
     color: '#161311',
   },
 });

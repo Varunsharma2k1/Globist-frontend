@@ -58,12 +58,12 @@ function getStyles(colors) {
     },
     priceVal: {
       fontFamily: FONTS.heading,
-      fontSize: 20,
+      fontSize: 18,
       color: colors.ink,
     },
     priceUnit: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
   });

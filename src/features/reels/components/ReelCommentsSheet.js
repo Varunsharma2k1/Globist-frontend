@@ -157,7 +157,7 @@ function getStyles(colors) {
     },
     sheetTitle: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
     },
     commentsList: {
@@ -173,12 +173,12 @@ function getStyles(colors) {
     },
     emptyTitle: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
     },
     emptyText: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       marginTop: SPACING.xs,
     },

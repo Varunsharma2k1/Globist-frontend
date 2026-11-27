@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { GoogleSignInError } from '../../../api/google';
 import { useAuth } from '../../../hooks/useAuth';
+import haptics from '../../../utils/haptics';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_PASSWORD_LENGTH = 8;
@@ -55,6 +56,7 @@ export function useAuthForm() {
       // stack automatically once AuthContext's `user` is set.
     } catch (err) {
       const code = err.response?.data?.code;
+      haptics.error();
       if (code === 'INVALID_CREDENTIALS') {
         // Deliberately vague (the server never says whether the email exists).
         setNotice({

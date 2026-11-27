@@ -80,12 +80,12 @@ function getStyles(colors) {
     },
     uploadEmptyText: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
     uploadHint: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
       opacity: 0.8,
     },

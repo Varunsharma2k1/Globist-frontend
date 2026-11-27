@@ -12,4 +12,5 @@ export * from './regions';
 export * from './reels';
 export * from './agencies';
 export * from './media';
+export * from './reviews';
 export { default as client } from './client';

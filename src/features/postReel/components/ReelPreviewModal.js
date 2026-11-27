@@ -5,6 +5,7 @@ import { X } from 'lucide-react-native';
 import ReelItem from '../../../components/ReelItem';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING } from '../../../theme';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 /**
  * Full-screen Instagram-style preview of the reel being composed, reusing
@@ -14,6 +15,7 @@ import { SPACING } from '../../../theme';
 export default function ReelPreviewModal({ visible, onClose, reel }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
   const [muted, setMuted] = useState(false);
 
   return (
@@ -32,7 +34,7 @@ export default function ReelPreviewModal({ visible, onClose, reel }) {
           />
         )}
         <TouchableOpacity
-          style={[styles.closeBtn, { top: insets.top + SPACING.sm }]}
+          style={[styles.closeBtn, { top: topInset + SPACING.sm }]}
           onPress={onClose}
         >
           <X size={20} color="#FFFFFF" strokeWidth={2.2} />

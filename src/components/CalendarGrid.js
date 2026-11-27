@@ -85,7 +85,7 @@ function getStyles(colors) {
       alignItems: 'center',
       justifyContent: 'center',
     },
-    dayText: { fontFamily: FONTS.semibold, fontSize: 15 },
+    dayText: { fontFamily: FONTS.semibold, fontSize: 14 },
     dayTextOff: { opacity: 0.28 },
     dot: {
       position: 'absolute',

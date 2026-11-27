@@ -17,9 +17,9 @@ const toneFor = (flair = '') =>
  * is trimmed and the card opens the post when pressed.
  */
 export default function PostCard({ post, community, full, onPress, onComment }) {
-  const { colors, shadow } = useTheme();
+  const { colors } = useTheme();
   const { vote } = useCommunities();
-  const styles = getStyles(colors, shadow);
+  const styles = getStyles(colors);
   const tone = colors.pastel[toneFor(post.flair)];
 
   const share = () =>
@@ -47,7 +47,7 @@ export default function PostCard({ post, community, full, onPress, onComment }) 
 
       <Text style={styles.title}>{post.title}</Text>
       {post.body ? (
-        <Text style={styles.body} numberOfLines={full ? undefined : 4}>
+        <Text style={styles.body} numberOfLines={full ? undefined : 3}>
           {post.body}
         </Text>
       ) : null}
@@ -73,55 +73,53 @@ export default function PostCard({ post, community, full, onPress, onComment }) 
   );
 }
 
-function getStyles(colors, shadow) {
+// Flat, airy list item (no card/shadow): content separated by space and a
+// hairline divider, like Threads / Apple News.
+function getStyles(colors) {
   return StyleSheet.create({
     card: {
-      backgroundColor: colors.surface,
-      borderRadius: RADIUS.md,
-      padding: SPACING.lg - 4,
-      ...shadow,
+      paddingVertical: SPACING.lg,
     },
     metaRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: SPACING.sm + 2,
-      marginBottom: SPACING.md,
+      gap: SPACING.sm,
+      marginBottom: SPACING.sm + 4,
     },
     avatar: {
-      width: 28,
-      height: 28,
-      borderRadius: 14,
+      width: 32,
+      height: 32,
+      borderRadius: 16,
       alignItems: 'center',
       justifyContent: 'center',
     },
-    avatarText: { fontFamily: FONTS.heading, fontSize: 12 },
-    meta: { flex: 1, fontFamily: FONTS.body, fontSize: 12.5, color: colors.textMuted },
+    avatarText: { fontFamily: FONTS.heading, fontSize: 14 },
+    meta: { flex: 1, fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
     metaStrong: { fontFamily: FONTS.semibold, color: colors.text },
-    flair: { paddingHorizontal: SPACING.sm + 2, paddingVertical: 4, borderRadius: RADIUS.pill },
-    flairText: { fontFamily: FONTS.semibold, fontSize: 11 },
-    title: { fontFamily: FONTS.bold, fontSize: 16, lineHeight: 23, color: colors.ink },
+    flair: { paddingHorizontal: SPACING.sm, paddingVertical: 2, borderRadius: RADIUS.pill },
+    flairText: { fontFamily: FONTS.semibold, fontSize: 12 },
+    title: { fontFamily: FONTS.bold, fontSize: 18, lineHeight: 24, color: colors.ink },
     body: {
       fontFamily: FONTS.body,
-      fontSize: 14.5,
-      lineHeight: 22,
-      color: colors.text,
-      opacity: 0.85,
-      marginTop: SPACING.sm + 2,
+      fontSize: 14,
+      lineHeight: 20,
+      color: colors.textMuted,
+      marginTop: SPACING.sm,
     },
     image: {
       width: '100%',
-      height: 200,
-      borderRadius: SPACING.md - 2,
-      marginTop: SPACING.md + 2,
+      height: 190,
+      borderRadius: RADIUS.md,
+      marginTop: SPACING.md,
       backgroundColor: colors.surfaceMuted,
     },
     actions: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: SPACING.lg - 4,
-      marginTop: SPACING.lg - 2,
+      gap: SPACING.lg,
+      marginTop: SPACING.md,
     },
-    action: { flexDirection: 'row', alignItems: 'center', gap: 7, paddingVertical: 5 },
-    actionText: { fontFamily: FONTS.semibold, fontSize: 13, color: colors.textMuted },
+    action: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4 },
+    actionText: { fontFamily: FONTS.semibold, fontSize: 14, color: colors.textMuted },
   });
 }

@@ -71,7 +71,7 @@ function getStyles(colors) {
     },
     actionBtnText: {
       fontFamily: FONTS.bold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
     },
   });

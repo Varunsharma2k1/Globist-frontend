@@ -22,6 +22,7 @@ export default function Input({
   autoCorrect,
   autoComplete,
   textContentType,
+  maxLength,
   style,
 }) {
   const { colors } = useTheme();
@@ -53,6 +54,7 @@ export default function Input({
           autoCorrect={autoCorrect}
           autoComplete={autoComplete}
           textContentType={textContentType}
+          maxLength={maxLength}
         />
         {rightIcon && (
           <TouchableOpacity
@@ -74,7 +76,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: FONTS.semibold,
-    fontSize: 13,
+    fontSize: 14,
     marginBottom: SPACING.xs,
   },
   inputWrap: {
@@ -85,7 +87,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     borderRadius: RADIUS.md,
     fontFamily: FONTS.body,
-    fontSize: 15,
+    fontSize: 14,
   },
   inputWithLeftIcon: {
     paddingLeft: 44,

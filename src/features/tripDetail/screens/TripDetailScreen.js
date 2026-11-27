@@ -7,6 +7,7 @@ import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import { SPACING, LAYOUT } from '../../../theme';
 import { OCCUPANCY_LABELS, defaultOccupancy, priceForOccupancy } from '../../../data/occupancy';
 import { useTripDetail } from '../hooks/useTripDetail';
+import { useSavedTrip } from '../hooks/useSavedTrip';
 import TripDetailHero from '../components/TripDetailHero';
 import TripOverview from '../components/TripOverview';
 import TripOccupancyPicker from '../components/TripOccupancyPicker';
@@ -33,6 +34,7 @@ export default function TripDetailScreen({ route, navigation }) {
   const { trip: item, loading } = useTripDetail(tripId);
   const [pickedOccupancy, setPickedOccupancy] = useState(null);
   const { requireAuth } = useRequireAuth(navigation);
+  const { saved, canSave, toggle: toggleSave } = useSavedTrip(tripId);
 
   if (loading) {
     return (
@@ -57,7 +59,16 @@ export default function TripDetailScreen({ route, navigation }) {
         contentContainerStyle={{ paddingBottom: 100 + insets.bottom }}
         showsVerticalScrollIndicator={false}
       >
-        <TripDetailHero trip={item} onBack={() => navigation.goBack()} />
+        <TripDetailHero
+          trip={item}
+          onBack={() => navigation.goBack()}
+          saved={saved}
+          onToggleSave={
+            canSave
+              ? () => requireAuth({ name: 'TripDetail', params: route.params }) && toggleSave()
+              : undefined
+          }
+        />
         <View style={styles.content}>
           <TripOverview
             trip={item}

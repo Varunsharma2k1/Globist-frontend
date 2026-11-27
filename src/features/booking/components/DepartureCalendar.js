@@ -144,7 +144,7 @@ function getStyles(colors) {
       alignItems: 'center',
       backgroundColor: colors.surfaceMuted,
     },
-    monthLabel: { fontFamily: FONTS.heading, fontSize: 15, color: colors.ink },
+    monthLabel: { fontFamily: FONTS.heading, fontSize: 14, color: colors.ink },
     grid: { flexDirection: 'row', flexWrap: 'wrap' },
     cell: {
       width: `${100 / 7}%`,
@@ -155,7 +155,7 @@ function getStyles(colors) {
     weekday: {
       height: 28,
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
       textAlign: 'center',
       textAlignVertical: 'center',

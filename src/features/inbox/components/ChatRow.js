@@ -86,6 +86,6 @@ function getStyles(colors) {
       alignItems: 'center',
       justifyContent: 'center',
     },
-    badgeText: { fontFamily: FONTS.bold, fontSize: 10.5, color: colors.inkContrast },
+    badgeText: { fontFamily: FONTS.bold, fontSize: 12, color: colors.inkContrast },
   });
 }

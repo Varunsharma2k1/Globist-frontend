@@ -1,49 +1,57 @@
-import { useState, useEffect, useMemo } from 'react';
-import { getReels } from '../../../api';
+import { useCallback, useMemo, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { getMyReels } from '../../../api/reels';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTripLedger } from '../../../hooks/useTripLedger';
-
-// The three demo videos used as the user's reels for now (server/uploads/reels).
-const DEMO_REEL_FILES = ['reel1.mp4', 'reel2.mp4', 'reel3.mp4'];
+import { mergeReels } from '../../reels/hooks/useReelsFeed';
 
 /**
- * The reels shown in the profile's "My Posts" grid: the reels the signed-in
- * user posted in the app (on-device ledger), followed by the three demo
- * reels from the feed until backend reels are tied to the user.
+ * The signed-in user's own tapes: GET /reels/mine (MongoDB, includes ones
+ * still processing) plus any just-posted tape on this device that the server
+ * hasn't returned yet. Refreshes whenever the profile comes into view.
  */
 export function useMyReels() {
   const { user } = useAuth();
   const { ledger } = useTripLedger();
-  const [demoReels, setReels] = useState([]);
+  const [serverReels, setServerReels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const signedIn = Boolean(user && !user.isGuest);
 
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const all = await getReels();
-        if (!active) return;
-        const demo = DEMO_REEL_FILES.map((file) =>
-          all.find((r) => r.mediaUrl?.endsWith(`/${file}`))
-        ).filter(Boolean);
-        setReels(demo.length ? demo : all.slice(0, 3));
-      } catch (err) {
-        console.warn('[useMyReels] Failed to load reels:', err?.message);
-        if (active) setError(true);
-      } finally {
-        if (active) setLoading(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (!signedIn) {
+        setLoading(false);
+        return undefined;
       }
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
+      let active = true;
+      getMyReels()
+        .then((list) => {
+          if (!active) return;
+          setServerReels(list);
+          setError(false);
+        })
+        .catch((err) => {
+          console.warn('[useMyReels]', err?.message);
+          if (active) setError(true);
+        })
+        .finally(() => active && setLoading(false));
+      return () => {
+        active = false;
+      };
+    }, [signedIn])
+  );
 
   const reels = useMemo(
-    () => [...ledger.reels.filter((r) => r.user?._id === user?._id), ...demoReels],
-    [ledger.reels, demoReels, user?._id]
+    () =>
+      mergeReels(
+        serverReels,
+        ledger.reels.filter((r) => r.user?._id === user?._id)
+      ),
+    [serverReels, ledger.reels, user?._id]
   );
 
   return { reels, loading, error: error && !reels.length };
 }
+
+export default useMyReels;

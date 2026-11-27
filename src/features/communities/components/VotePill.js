@@ -4,6 +4,7 @@ import { ArrowBigUp, ArrowBigDown } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 import { compact } from '../utils/format';
+import haptics from '../../../utils/haptics';
 
 /** Reddit-style up / down vote pill. `vote` is 1, -1 or 0. */
 export default function VotePill({ score, vote, onVote }) {
@@ -14,7 +15,14 @@ export default function VotePill({ score, vote, onVote }) {
 
   return (
     <View style={[styles.pill, { backgroundColor: colors.surfaceMuted }]}>
-      <Pressable onPress={() => onVote(1)} hitSlop={6} accessibilityLabel="Upvote">
+      <Pressable
+        onPress={() => {
+          haptics.select();
+          onVote(1);
+        }}
+        hitSlop={6}
+        accessibilityLabel="Upvote"
+      >
         <ArrowBigUp
           size={22}
           color={up ? colors.success : colors.textMuted}
@@ -22,7 +30,14 @@ export default function VotePill({ score, vote, onVote }) {
         />
       </Pressable>
       <Text style={[styles.score, { color: accent }]}>{compact(score)}</Text>
-      <Pressable onPress={() => onVote(-1)} hitSlop={6} accessibilityLabel="Downvote">
+      <Pressable
+        onPress={() => {
+          haptics.select();
+          onVote(-1);
+        }}
+        hitSlop={6}
+        accessibilityLabel="Downvote"
+      >
         <ArrowBigDown
           size={22}
           color={down ? colors.error : colors.textMuted}

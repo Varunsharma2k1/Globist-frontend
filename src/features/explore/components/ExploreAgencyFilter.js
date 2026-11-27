@@ -59,7 +59,7 @@ function getStyles(colors) {
     },
     subLabel: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       marginTop: SPACING.md,
       marginBottom: SPACING.sm,

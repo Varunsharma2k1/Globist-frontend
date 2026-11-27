@@ -39,7 +39,7 @@ function getStyles(colors) {
     },
     stepperLabel: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.text,
       marginBottom: SPACING.xs,
     },
@@ -62,7 +62,7 @@ function getStyles(colors) {
     },
     stepperValue: {
       fontFamily: FONTS.heading,
-      fontSize: 16,
+      fontSize: 18,
       color: colors.ink,
     },
   });

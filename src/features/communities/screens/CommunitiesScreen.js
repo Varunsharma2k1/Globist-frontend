@@ -125,7 +125,7 @@ function getStyles(colors) {
     searchInput: {
       flex: 1,
       fontFamily: FONTS.body,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.text,
       paddingVertical: 12,
     },
@@ -141,7 +141,7 @@ function getStyles(colors) {
       borderRadius: RADIUS.pill,
       marginRight: SPACING.sm,
     },
-    chipText: { fontFamily: FONTS.semibold, fontSize: 13 },
+    chipText: { fontFamily: FONTS.semibold, fontSize: 14 },
     section: {
       fontFamily: FONTS.heading,
       fontSize: 18,
@@ -154,7 +154,7 @@ function getStyles(colors) {
     joinedImage: { width: 64, height: 64, borderRadius: 32, backgroundColor: colors.surfaceMuted },
     joinedName: {
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       lineHeight: 14,
       color: colors.text,
       textAlign: 'center',

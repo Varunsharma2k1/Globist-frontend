@@ -111,7 +111,7 @@ function getStyles(colors) {
   },
   avatarInitial: {
     fontFamily: FONTS.heading,
-    fontSize: 34,
+    fontSize: 28,
     color: colors.pastel.peach.fg,
   },
   nameRow: {
@@ -121,7 +121,7 @@ function getStyles(colors) {
   },
   handleText: {
     fontFamily: FONTS.body,
-    fontSize: 13,
+    fontSize: 14,
     color: colors.textMuted,
     marginTop: 2,
   },
@@ -142,7 +142,7 @@ function getStyles(colors) {
   },
   statLabel: {
     fontFamily: FONTS.body,
-    fontSize: 11,
+    fontSize: 12,
     color: colors.textMuted,
     marginTop: 2,
   },

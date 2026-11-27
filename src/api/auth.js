@@ -81,3 +81,6 @@ export const resetPasswordWithCode = async ({ email, code, newPassword }) =>
 /** Signed-in password change; other devices are signed out. */
 export const changePassword = async ({ currentPassword, newPassword }) =>
   (await client.post('/auth/password/change', { currentPassword, newPassword })).data;
+
+/** Updates name / bio / location (server validates lengths). */
+export const updateProfile = async (fields) => normalizeUser((await client.put('/users/profile', fields)).data);

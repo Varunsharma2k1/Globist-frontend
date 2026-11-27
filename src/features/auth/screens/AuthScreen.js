@@ -153,9 +153,9 @@ function getStyles(colors) {
       marginVertical: SPACING.md,
     },
     orLine: { flex: 1, height: 1, backgroundColor: colors.divider },
-    orText: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted },
+    orText: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted },
     forgot: { alignSelf: 'flex-end', paddingVertical: SPACING.xs },
-    forgotText: { fontFamily: FONTS.heading, fontSize: 13, color: colors.ink },
+    forgotText: { fontFamily: FONTS.heading, fontSize: 14, color: colors.ink },
     content: {
       padding: SPACING.lg,
       width: '100%',

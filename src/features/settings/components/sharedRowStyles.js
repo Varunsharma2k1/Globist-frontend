@@ -8,7 +8,7 @@ export function getSharedRowStyles(colors) {
   return StyleSheet.create({
     sectionTitle: {
       fontFamily: FONTS.bold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 1,
       textTransform: 'uppercase',
       color: colors.textMuted,
@@ -34,7 +34,7 @@ export function getSharedRowStyles(colors) {
     },
     rowLabel: {
       fontFamily: FONTS.bold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
     },
     rowSub: {

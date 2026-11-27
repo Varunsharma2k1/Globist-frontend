@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Search, X } from 'lucide-react-native';
 import Input from '../../../components/Input';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 /**
  * Title + search field. While the field is focused a "Cancel" button
@@ -23,10 +23,10 @@ export default function ExploreSearchHeader({
 }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
 
   return (
-    <View style={[styles.searchSection, { paddingTop: insets.top + SPACING.md }]}>
+    <View style={[styles.searchSection, { paddingTop: topInset + SPACING.md }]}>
       <Text style={styles.eyebrow}>EXPLORE</Text>
       <Text style={styles.pageTitle}>Where to next?</Text>
       <View style={styles.searchRow}>
@@ -63,7 +63,7 @@ function getStyles(colors) {
     },
     eyebrow: {
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 1.6,
       color: colors.textMuted,
       marginBottom: SPACING.xs,

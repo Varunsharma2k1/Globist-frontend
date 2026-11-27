@@ -67,19 +67,19 @@ function getStyles(colors) {
     },
     title: {
       fontFamily: FONTS.heading,
-      fontSize: 22,
+      fontSize: 18,
       letterSpacing: -0.3,
       color: colors.ink,
     },
     parent: {
       fontFamily: FONTS.body,
-      fontSize: 15,
+      fontSize: 14,
       letterSpacing: 0,
       color: colors.textMuted,
     },
     meta: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       marginTop: 4,
     },
@@ -97,12 +97,12 @@ function getStyles(colors) {
     },
     seeMoreTitle: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
     seeMoreSubtitle: {
       fontFamily: FONTS.bold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
       marginTop: 2,
     },

@@ -123,13 +123,13 @@ function getCardStyles(colors) {
     },
     regionPillText: {
       fontFamily: FONTS.heading,
-      fontSize: 10,
+      fontSize: 12,
       color: colors.white,
       letterSpacing: 0.4,
     },
     regionName: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
       paddingHorizontal: SPACING.xs,
     },
@@ -142,14 +142,14 @@ function getCardStyles(colors) {
     },
     regionTagline: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
       marginBottom: SPACING.xs,
       paddingHorizontal: SPACING.xs,
     },
     regionPrice: {
       fontFamily: FONTS.heading,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.ink,
       paddingHorizontal: SPACING.xs,
     },

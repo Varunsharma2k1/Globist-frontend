@@ -54,18 +54,10 @@ export const getTripById = async (tripId) => {
  * @returns {Promise<Object>}
  */
 export const createBooking = async (bookingData) => {
-  const checkIn = bookingData.startDate;
-  let checkOut;
-  const parsed = new Date(checkIn);
-  if (!isNaN(parsed.getTime())) {
-    parsed.setDate(parsed.getDate() + 1);
-    checkOut = parsed.toISOString().slice(0, 10);
-  }
-
+  // The server computes the return date from the trip's length.
   const response = await client.post('/bookings', {
     tripId: bookingData.tripId,
-    checkIn,
-    checkOut,
+    checkIn: bookingData.startDate,
     adults: bookingData.travelersCount,
     occupancy: bookingData.occupancy,
     paymentMethod: bookingData.paymentMethod,
@@ -82,3 +74,11 @@ export const getMyBookings = async () => {
   const response = await client.get('/bookings');
   return (response.data || []).map(normalizeBooking);
 };
+
+/** Trips the user saved (♡), from MongoDB. */
+export const getWishlist = async () =>
+  ((await client.get('/users/wishlist')).data || []).map(normalizeTrip);
+
+/** Saves / un-saves a trip. @returns {Promise<boolean>} saved now? */
+export const toggleWishlist = async (tripId) =>
+  Boolean((await client.post(`/users/wishlist/${tripId}`)).data?.wishlisted);

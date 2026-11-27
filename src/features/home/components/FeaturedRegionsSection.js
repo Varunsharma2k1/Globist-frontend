@@ -44,7 +44,7 @@ function getStyles(colors) {
   return StyleSheet.create({
     seeAll: {
       fontFamily: FONTS.heading,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.ink,
     },
     horizontalScroll: {

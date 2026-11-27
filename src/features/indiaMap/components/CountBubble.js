@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     minWidth: 22, height: 20, paddingHorizontal: 6, borderRadius: 10,
     backgroundColor: B.badgeBackground, alignItems: 'center', justifyContent: 'center',
   },
-  badgeText: { fontFamily: FONTS.heading, fontSize: 11, color: B.badgeText },
+  badgeText: { fontFamily: FONTS.heading, fontSize: 12, color: B.badgeText },
 
   // state: dark glass pill centred on the state
   statePill: {

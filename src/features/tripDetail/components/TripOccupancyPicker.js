@@ -62,7 +62,7 @@ function getStyles(colors) {
     },
     subtitle: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       marginTop: SPACING.xs,
     },
@@ -109,7 +109,7 @@ function getStyles(colors) {
     },
     label: {
       fontFamily: FONTS.semibold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
     },
     hint: {
@@ -123,12 +123,12 @@ function getStyles(colors) {
     },
     price: {
       fontFamily: FONTS.bold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
     },
     priceNote: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
       marginTop: 1,
     },

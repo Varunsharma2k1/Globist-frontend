@@ -55,7 +55,7 @@ function getStyles(colors) {
     },
     paymentText: {
       fontFamily: FONTS.bold,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.ink,
       textAlign: 'center',
     },

@@ -5,8 +5,13 @@ import * as tokenStore from '../../../api/tokenStore';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTripLedger } from '../../../hooks/useTripLedger';
 import { createReel, uploadReelMedia, publishReel } from '../../../api';
+import haptics from '../../../utils/haptics';
 
-const STAGE_LABEL = { uploading: 'Uploading video…', processing: 'Processing video…', ready: 'Publishing…' };
+const STAGE_LABEL = {
+  uploading: 'Uploading video…',
+  processing: 'Processing video…',
+  ready: 'Publishing…',
+};
 
 // The R2 upload needs a server session; without one fall back to the legacy path.
 async function hasRealSession() {
@@ -102,7 +107,12 @@ export function usePostReelForm(navigation, initialBookingId) {
     setLoading(true);
     try {
       // The server derives the agency from this booking (its own id: backendId).
-      const details = { caption, location, imageType, bookingId: linkedBooking?.backendId || undefined };
+      const details = {
+        caption,
+        location,
+        imageType,
+        bookingId: linkedBooking?.backendId || undefined,
+      };
       let mediaUrl;
       let backendReel = null;
 
@@ -126,16 +136,18 @@ export function usePostReelForm(navigation, initialBookingId) {
       });
 
       const stillProcessing = backendReel?.status === 'processing';
+      haptics.success();
       Alert.alert(
         stillProcessing ? 'Tape uploaded!' : 'Tape published!',
         stillProcessing
           ? "It's still processing and will show up in the feed in a minute."
           : reward
-          ? `Thanks for tagging ${linkedBooking.agency?.name || 'the agency'}. ₹${reward.toLocaleString('en-IN')} has been added to your wallet.`
-          : 'Your tape is live in the feed.',
+            ? `Thanks for tagging ${linkedBooking.agency?.name || 'the agency'}. ₹${reward.toLocaleString('en-IN')} has been added to your wallet.`
+            : 'Your tape is live in the feed.',
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
     } catch (error) {
+      haptics.error();
       Alert.alert("Couldn't post tape", error.message || 'Please try again.');
     } finally {
       setLoading(false);

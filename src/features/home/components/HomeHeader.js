@@ -1,19 +1,22 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 export default function HomeHeader() {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top + SPACING.md }]}>
+    <View style={[styles.header, { paddingTop: topInset + SPACING.md }]}>
       <View style={styles.headerTextWrap}>
-        <Text style={styles.appName}>TRIPTAPE</Text>
-        <Text style={styles.subHeader}>Discover Travel</Text>
+        {/* Large title: bold, tight, centred; quiet subtitle. */}
+        <Text style={styles.appName} accessibilityRole="header">
+          TripTape
+        </Text>
+        <Text style={styles.subHeader}>Discover travel</Text>
       </View>
     </View>
   );
@@ -25,23 +28,23 @@ function getStyles(colors) {
       alignItems: 'center',
       paddingHorizontal: SPACING.lg,
       paddingTop: SPACING.lg,
-      paddingBottom: SPACING.md,
+      paddingBottom: SPACING.sm,
       backgroundColor: colors.background,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.divider,
     },
     headerTextWrap: {
       alignItems: 'center',
     },
     appName: {
       fontFamily: FONTS.heading,
-      fontSize: 22,
+      fontSize: 34,
+      lineHeight: 40,
+      letterSpacing: -0.8,
       color: colors.ink,
-      letterSpacing: 1,
     },
     subHeader: {
       fontFamily: FONTS.body,
-      fontSize: 12,
+      fontSize: 14,
+      lineHeight: 18,
       color: colors.textMuted,
       marginTop: 2,
     },

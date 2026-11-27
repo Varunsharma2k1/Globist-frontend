@@ -52,13 +52,13 @@ function getStyles(colors) {
     },
     menuCount: {
       fontFamily: FONTS.semibold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.textMuted,
     },
     menuLabel: {
       flex: 1,
       fontFamily: FONTS.semibold,
-      fontSize: 16,
+      fontSize: 18,
       color: colors.ink,
     },
   });

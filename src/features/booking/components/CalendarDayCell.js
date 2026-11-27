@@ -85,7 +85,7 @@ function getStyles(colors) {
       borderWidth: 1.5,
       borderColor: colors.pastel.peach.fg,
     },
-    text: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted, opacity: 0.6 },
+    text: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted, opacity: 0.6 },
     textInTrip: { color: colors.pastel.peach.fg, opacity: 1 },
     textAvailable: { fontFamily: FONTS.bold, color: colors.ink, opacity: 1 },
     textStart: { fontFamily: FONTS.bold, color: colors.inkContrast },

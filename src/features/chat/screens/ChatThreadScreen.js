@@ -17,6 +17,7 @@ import { SPACING } from '../../../theme';
 import { getStyles } from '../styles';
 import MessageBubble from '../components/MessageBubble';
 import { getMessages, startConversation } from '../../../api/chat';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 const PAGE = 30;
 const sameId = (a, b) => String(a) === String(b);
@@ -35,6 +36,7 @@ export default function ChatThreadScreen({ route, navigation }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
   const chat = useChat();
   const { userId, subscribe, sendMessage, markRead, sendTyping, typing, online, connected } = chat;
 
@@ -146,7 +148,9 @@ export default function ChatThreadScreen({ route, navigation }) {
       });
     } catch {
       setMessages((prev) =>
-        prev.map((x) => (x.clientId === pending.clientId && x.status ? { ...x, status: 'failed' } : x))
+        prev.map((x) =>
+          x.clientId === pending.clientId && x.status ? { ...x, status: 'failed' } : x
+        )
       );
     }
   };
@@ -170,7 +174,9 @@ export default function ChatThreadScreen({ route, navigation }) {
   };
 
   const retry = (m) => {
-    setMessages((prev) => prev.map((x) => (x.clientId === m.clientId ? { ...x, status: 'sending' } : x)));
+    setMessages((prev) =>
+      prev.map((x) => (x.clientId === m.clientId ? { ...x, status: 'sending' } : x))
+    );
     deliver(m);
   };
 
@@ -244,7 +250,7 @@ export default function ChatThreadScreen({ route, navigation }) {
           // Android is always edge-to-edge on this SDK, so the window no longer
           // resizes for the keyboard; pad on both platforms.
           behavior="padding"
-          keyboardVerticalOffset={56 + insets.top}
+          keyboardVerticalOffset={56 + topInset}
         >
           {loading || !conversationId ? (
             <View style={styles.center}>
@@ -261,7 +267,9 @@ export default function ChatThreadScreen({ route, navigation }) {
               onEndReachedThreshold={0.3}
               keyboardShouldPersistTaps="handled"
               ListFooterComponent={
-                loadingOlder ? <ActivityIndicator style={{ margin: SPACING.md }} color={colors.ink} /> : null
+                loadingOlder ? (
+                  <ActivityIndicator style={{ margin: SPACING.md }} color={colors.ink} />
+                ) : null
               }
               ListEmptyComponent={
                 <View style={[styles.center, { transform: [{ scaleY: -1 }] }]}>

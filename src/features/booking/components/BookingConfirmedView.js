@@ -99,8 +99,8 @@ function getStyles(colors) {
       marginTop: SPACING.lg,
       marginBottom: SPACING.md,
     },
-    paid: { fontFamily: FONTS.bold, fontSize: 13, color: colors.success },
-    title: { fontFamily: FONTS.heading, fontSize: 22, color: colors.ink, marginTop: 4 },
+    paid: { fontFamily: FONTS.bold, fontSize: 14, color: colors.success },
+    title: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink, marginTop: 4 },
     trip: {
       fontFamily: FONTS.body,
       fontSize: 14,
@@ -110,8 +110,8 @@ function getStyles(colors) {
     },
     card: { width: '100%', marginTop: SPACING.lg },
     row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
-    rowLabel: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted },
-    rowVal: { fontFamily: FONTS.semibold, fontSize: 13, color: colors.ink },
+    rowLabel: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted },
+    rowVal: { fontFamily: FONTS.semibold, fontSize: 14, color: colors.ink },
     earn: {
       flexDirection: 'row',
       gap: SPACING.sm,
@@ -121,7 +121,7 @@ function getStyles(colors) {
       padding: SPACING.md,
       marginBottom: SPACING.md,
     },
-    earnText: { flex: 1, fontFamily: FONTS.body, fontSize: 13, color: colors.pastel.peach.fg },
+    earnText: { flex: 1, fontFamily: FONTS.body, fontSize: 14, color: colors.pastel.peach.fg },
     earnStrong: { fontFamily: FONTS.heading },
     btn: { width: '100%', marginTop: SPACING.sm },
   });

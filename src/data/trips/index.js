@@ -42,7 +42,8 @@ export function withTripExtras(trip) {
 export const getLocalTrip = (id) => LOCAL_TRIPS.find((t) => t._id === id) || null;
 
 /**
- * Puts the local packages in front of the API's list, swapping their
+ * Appends the app-only demo packages AFTER the API's list (real, bookable
+ * trips — featured agency first — always lead), swapping their
  * agency/region snapshots for the live objects (real _ids, categories) when
  * the API returned another trip by the same agency / in the same region.
  */
@@ -54,5 +55,5 @@ export function mergeLocalTrips(apiTrips) {
     agency: agencies.get(t.agency.name) || t.agency,
     region: regions.get(t.region.name) || t.region,
   }));
-  return [...local, ...apiTrips];
+  return [...apiTrips, ...local];
 }

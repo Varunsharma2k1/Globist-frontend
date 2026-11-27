@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, Pressable, Alert, StyleSheet } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, FlatList, Pressable, Alert, LayoutAnimation, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plus } from 'lucide-react-native';
 import PostCard from '../components/PostCard';
@@ -19,7 +19,14 @@ export default function CommunityDetailScreen({ navigation, route }) {
   const { user } = useAuth();
   const { toggleJoin, addPost } = useCommunities();
   const { isJoined, memberCount, getPostsFor } = useCommunityData();
-  const [sort, setSort] = useState('hot');
+  const [sort, setSortState] = useState('hot');
+  const listRef = useRef(null);
+  // Animate the reorder so switching Hot / New / Top is visible.
+  const setSort = (next) => {
+    if (next === sort) return;
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSortState(next);
+  };
   const [composing, setComposing] = useState(false);
   const styles = getStyles(colors);
 
@@ -45,6 +52,7 @@ export default function CommunityDetailScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <FlatList
+        ref={listRef}
         data={posts}
         keyExtractor={(p) => p.id}
         ListHeaderComponent={
@@ -58,7 +66,7 @@ export default function CommunityDetailScreen({ navigation, route }) {
             onToggleJoin={() => toggleJoin(community.id)}
           />
         }
-        ItemSeparatorComponent={() => <View style={{ height: SPACING.md + 2 }} />}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={{ paddingBottom: 110 + insets.bottom }}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
@@ -103,10 +111,15 @@ function getStyles(colors) {
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.background },
     postWrap: {
-      paddingHorizontal: SPACING.md + 4,
+      paddingHorizontal: SPACING.lg,
       width: '100%',
       maxWidth: LAYOUT.contentMaxWidth,
       alignSelf: 'center',
+    },
+    separator: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: colors.divider,
+      marginHorizontal: SPACING.lg,
     },
     empty: {
       fontFamily: FONTS.body,
@@ -123,14 +136,14 @@ function getStyles(colors) {
       gap: 8,
       backgroundColor: colors.ink,
       paddingHorizontal: SPACING.lg,
-      paddingVertical: 13,
+      paddingVertical: 14,
       borderRadius: RADIUS.pill,
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.3,
-      shadowRadius: 12,
-      elevation: 8,
+      shadowColor: '#17271E',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.18,
+      shadowRadius: 16,
+      elevation: 4,
     },
-    fabText: { fontFamily: FONTS.heading, fontSize: 15, color: colors.inkContrast },
+    fabText: { fontFamily: FONTS.heading, fontSize: 14, color: colors.inkContrast },
   });
 }

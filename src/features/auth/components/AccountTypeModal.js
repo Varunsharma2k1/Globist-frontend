@@ -115,7 +115,7 @@ function getStyles(colors) {
     },
     title: {
       fontFamily: FONTS.heading,
-      fontSize: 22,
+      fontSize: 18,
       color: colors.text,
     },
     subtitle: {
@@ -155,7 +155,7 @@ function getStyles(colors) {
     },
     optionLabel: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.text,
     },
     optionDesc: {

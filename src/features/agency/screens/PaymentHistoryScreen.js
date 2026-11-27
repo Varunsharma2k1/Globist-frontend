@@ -91,11 +91,11 @@ function getStyles(colors) {
       paddingVertical: SPACING.md,
       paddingHorizontal: SPACING.sm + 2,
     },
-    summaryValue: { fontFamily: FONTS.heading, fontSize: 17, color: colors.ink },
+    summaryValue: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
     summaryLabel: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted, marginTop: 2 },
     rowTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    name: { fontFamily: FONTS.heading, fontSize: 16, color: colors.ink, flex: 1 },
-    pkg: { fontFamily: FONTS.semibold, fontSize: 13, color: colors.text, marginTop: 2 },
+    name: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink, flex: 1 },
+    pkg: { fontFamily: FONTS.semibold, fontSize: 14, color: colors.text, marginTop: 2 },
     meta: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted, marginTop: 2 },
     rowBottom: {
       flexDirection: 'row',
@@ -107,6 +107,6 @@ function getStyles(colors) {
       borderTopColor: colors.divider,
     },
     amountWrap: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-    amount: { fontFamily: FONTS.heading, fontSize: 16, color: colors.ink },
+    amount: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
   });
 }

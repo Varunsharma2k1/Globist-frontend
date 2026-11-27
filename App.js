@@ -6,11 +6,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import {
   useFonts,
-  Inter_300Light,
   Inter_400Regular,
-  Inter_500Medium,
   Inter_600SemiBold,
-  Inter_700Bold,
 } from '@expo-google-fonts/inter';
 
 import { AuthProvider } from './src/context/AuthContext';
@@ -58,12 +55,9 @@ function AppContent() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Inter_300Light,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
+      Inter_400Regular,
+      Inter_600SemiBold,
+    });
 
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: COLORS.background }} />;

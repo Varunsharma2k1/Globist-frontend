@@ -98,7 +98,7 @@ function getStyles(colors) {
     },
     title: {
       fontFamily: FONTS.heading,
-      fontSize: 24,
+      fontSize: 28,
       letterSpacing: -0.4,
       color: colors.ink,
     },
@@ -125,7 +125,7 @@ function getStyles(colors) {
     },
     byLabel: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
     agencyName: {
@@ -157,12 +157,12 @@ function getStyles(colors) {
     },
     factLabel: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
     },
     factValue: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.ink,
       marginTop: 1,
     },

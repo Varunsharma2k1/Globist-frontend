@@ -5,7 +5,7 @@ import CarouselCard from './CarouselCard';
 import { CAROUSEL_SLIDES } from '../data/carouselSlides';
 import { SPACING } from '../../../theme';
 
-const AUTO_ADVANCE_MS = 4000;
+const AUTO_ADVANCE_MS = 3300; // a touch quicker than the old 4 s
 const CARD_WIDTH_RATIO = 0.62; // of the screen width
 const CARD_ASPECT = 1.25; // height / width
 const GAP = 14;
@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     marginBottom: SPACING.sm,
   },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(128,128,128,0.45)' },
-  dotActive: { width: 18, backgroundColor: '#8A8A8A' },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(23, 39, 30, 0.16)' },
+  dotActive: { width: 18, backgroundColor: 'rgba(23, 39, 30, 0.55)' },
 });
