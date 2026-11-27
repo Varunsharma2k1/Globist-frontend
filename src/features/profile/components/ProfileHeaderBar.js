@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Settings } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 export default function ProfileHeaderBar({ onOpenSettings }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top + SPACING.sm }]}>
+    <View style={[styles.header, { paddingTop: topInset + SPACING.sm }]}>
       <Text style={styles.headerTitle}>Profile</Text>
       <TouchableOpacity style={styles.gearBtn} onPress={onOpenSettings}>
         <Settings size={22} color={colors.ink} strokeWidth={1.8} />
@@ -26,10 +26,8 @@ function getStyles(colors) {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingHorizontal: SPACING.xl,
-      paddingBottom: SPACING.md,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.divider,
+      paddingHorizontal: SPACING.lg,
+      paddingBottom: SPACING.sm,
     },
     headerTitle: {
       fontFamily: FONTS.heading,

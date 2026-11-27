@@ -87,7 +87,7 @@ function getStyles(colors) {
     },
     feedOptionLabel: {
       fontFamily: FONTS.bold,
-      fontSize: 14.5,
+      fontSize: 14,
       color: colors.text,
     },
     feedOptionLabelActive: {
@@ -95,7 +95,7 @@ function getStyles(colors) {
     },
     feedOptionSub: {
       fontFamily: FONTS.body,
-      fontSize: 11.5,
+      fontSize: 12,
       color: colors.textMuted,
       marginTop: 2,
     },

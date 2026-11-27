@@ -32,6 +32,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: FONTS.bold,
-    fontSize: 11,
+    fontSize: 12,
   },
 });

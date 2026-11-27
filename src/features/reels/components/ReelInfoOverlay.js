@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontFamily: FONTS.bold,
-    fontSize: 13,
+    fontSize: 14,
     color: '#FFFFFF',
   },
   tierBadgeWrap: {
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   },
   followText: {
     fontFamily: FONTS.heading,
-    fontSize: 11,
+    fontSize: 12,
     color: '#FFFFFF',
   },
   followingText: {

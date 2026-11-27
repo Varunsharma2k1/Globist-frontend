@@ -60,7 +60,7 @@ function getStyles(colors) {
     container: { marginBottom: SPACING.md },
     label: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       marginBottom: SPACING.xs,
       color: colors.text,
     },
@@ -73,6 +73,6 @@ function getStyles(colors) {
       paddingHorizontal: SPACING.md,
       paddingVertical: SPACING.md,
     },
-    value: { flex: 1, fontFamily: FONTS.body, fontSize: 15, color: colors.text },
+    value: { flex: 1, fontFamily: FONTS.body, fontSize: 14, color: colors.text },
   });
 }

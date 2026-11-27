@@ -76,6 +76,6 @@ function getStyles(colors) {
       marginBottom: SPACING.sm,
     },
     row: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, paddingVertical: 14 },
-    label: { flex: 1, fontFamily: FONTS.semibold, fontSize: 15, color: colors.ink },
+    label: { flex: 1, fontFamily: FONTS.semibold, fontSize: 14, color: colors.ink },
   });
 }

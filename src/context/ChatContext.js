@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STORAGE_KEYS } from '../config';
+import * as tokenStore from '../api/tokenStore';
 import { useAuth } from '../hooks/useAuth';
 import { getConversations, postMessage, markConversationRead } from '../api/chat';
 import { createChatSocket, emitWithAck } from '../features/chat/socket';
@@ -76,9 +75,9 @@ export function ChatProvider({ children }) {
     let socket;
 
     (async () => {
-      const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-      if (cancelled || !token || token.startsWith('mock-')) return;
-      socket = createChatSocket(token);
+      const token = await tokenStore.getAccessToken();
+      if (cancelled || !token) return;
+      socket = createChatSocket(tokenStore.getAccessToken);
       socketRef.current = socket;
 
       socket.on('connect', () => {
@@ -88,7 +87,11 @@ export function ChatProvider({ children }) {
         emit({ type: 'reconnect' });
       });
       socket.on('disconnect', () => setConnected(false));
-      socket.on('connect_error', () => setConnected(false));
+      socket.on('connect_error', () => {
+        setConnected(false);
+        // Auth rejections aren't retried by socket.io itself; retry with a fresh token.
+        if (!socket.active) setTimeout(() => !cancelled && socket.connect(), 5000);
+      });
 
       socket.on('message:new', ({ message, conversation }) => {
         upsertConversation(conversation);

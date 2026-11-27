@@ -7,11 +7,16 @@ import { useTheme } from '../../../hooks/useTheme';
 import { FONTS } from '../../../theme';
 
 /** One square-ish tile in the My Posts grid: a frame from the video, a play badge and the like count. */
-export default function ReelGridTile({ reel, width, onPress }) {
+export default function ReelGridTile({ reel, width, aspect = 4 / 3, onPress, children }) {
   const { colors } = useTheme();
-  const [uri, setUri] = useState(null);
+  const [uri, setUri] = useState(reel.thumbnailUrl || null);
 
   useEffect(() => {
+    // Server-made thumbnail (R2): use it, no need to download the video.
+    if (reel.thumbnailUrl) {
+      setUri(reel.thumbnailUrl);
+      return undefined;
+    }
     let active = true;
     VideoThumbnails.getThumbnailAsync(reel.mediaUrl, { time: 1000 })
       .then((thumb) => active && setUri(thumb.uri))
@@ -25,10 +30,7 @@ export default function ReelGridTile({ reel, width, onPress }) {
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.tile,
-        { width, height: width * (4 / 3), backgroundColor: colors.surfaceMuted },
-      ]}
+      style={[styles.tile, { width, height: width * aspect, backgroundColor: colors.surfaceMuted }]}
       accessibilityRole="button"
       accessibilityLabel={reel.caption || 'Open tape'}
     >
@@ -40,6 +42,7 @@ export default function ReelGridTile({ reel, width, onPress }) {
         <Heart size={12} color="#FFFFFF" fill="#FFFFFF" />
         <Text style={styles.likesText}>{reel.likes ?? 0}</Text>
       </View>
+      {children}
     </Pressable>
   );
 }

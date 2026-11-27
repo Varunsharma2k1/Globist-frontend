@@ -83,7 +83,7 @@ function getStyles(colors) {
     },
     time: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
     },
     text: {

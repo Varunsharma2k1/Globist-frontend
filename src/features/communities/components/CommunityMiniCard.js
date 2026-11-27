@@ -59,7 +59,7 @@ function getStyles(colors) {
     body: { padding: SPACING.md - 2 },
     name: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       lineHeight: 19,
       color: colors.ink,
       minHeight: 38,

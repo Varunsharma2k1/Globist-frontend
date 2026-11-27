@@ -126,14 +126,14 @@ function getStyles(colors) {
       maxWidth: 520,
       alignSelf: 'center',
     },
-    title: { fontFamily: FONTS.heading, fontSize: 20, color: colors.ink, marginBottom: SPACING.md },
+    title: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink, marginBottom: SPACING.md },
     monthRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       marginBottom: SPACING.sm,
     },
-    monthText: { fontFamily: FONTS.bold, fontSize: 16, color: colors.ink },
+    monthText: { fontFamily: FONTS.bold, fontSize: 18, color: colors.ink },
     arrow: {
       width: 36,
       height: 36,
@@ -152,7 +152,7 @@ function getStyles(colors) {
       borderTopWidth: 1,
       borderTopColor: colors.divider,
     },
-    picked: { fontFamily: FONTS.bold, fontSize: 15, color: colors.ink, textAlign: 'center' },
+    picked: { fontFamily: FONTS.bold, fontSize: 14, color: colors.ink, textAlign: 'center' },
     actions: { flexDirection: 'row', gap: SPACING.sm + 2, marginTop: SPACING.md },
   });
 }

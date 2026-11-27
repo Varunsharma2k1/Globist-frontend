@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { GoogleSignInError } from '../../../api/google';
 import { useAuth } from '../../../hooks/useAuth';
+import haptics from '../../../utils/haptics';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 6;
+const MIN_PASSWORD_LENGTH = 8;
 
 /**
  * Owns the Sign In / Sign Up form's state and submission (email + password).
@@ -54,12 +56,12 @@ export function useAuthForm() {
       // stack automatically once AuthContext's `user` is set.
     } catch (err) {
       const code = err.response?.data?.code;
-      if (code === 'USER_NOT_FOUND') {
-        // First-time user: move to sign up, keeping the email they typed.
-        setIsLogin(false);
+      haptics.error();
+      if (code === 'INVALID_CREDENTIALS') {
+        // Deliberately vague (the server never says whether the email exists).
         setNotice({
-          type: 'info',
-          text: "We couldn't find an account for this email. Add your name to create one.",
+          type: 'error',
+          text: 'Incorrect email or password. New here? Tap Sign Up below. Forgot it? Reset your password.',
         });
       } else if (code === 'EMAIL_EXISTS') {
         setIsLogin(true);
@@ -79,14 +81,18 @@ export function useAuthForm() {
     }
   };
 
-  // Placeholder Google sign-in (see AuthContext.loginWithGoogle).
+  // Native Google sheet -> server verifies the token (see AuthContext.loginWithGoogle).
   const handleGoogle = async () => {
     setNotice(null);
     setGoogleLoading(true);
     try {
       await loginWithGoogle();
     } catch (err) {
-      setNotice({ type: 'error', text: 'Google sign-in failed. Please try again.' });
+      const text =
+        err instanceof GoogleSignInError
+          ? err.message
+          : err.response?.data?.message || 'Google sign-in failed. Please try again.';
+      setNotice({ type: 'error', text });
     } finally {
       setGoogleLoading(false);
     }

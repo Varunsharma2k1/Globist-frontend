@@ -76,3 +76,19 @@ export const likeReel = async (reelId) => {
   const response = await client.post(`/reels/${reelId}/like`);
   return response.data;
 };
+
+/**
+ * Tapes tagged to an agency (verified bookings only), newest first.
+ * @param {string} agencyId - backend agency _id
+ */
+export const getAgencyReels = async (agencyId) => {
+  const response = await client.get(`/reels/agency/${agencyId}`);
+  return (response.data || []).map((r) => ({ ...r, mediaUrl: resolveMediaUrl(r.mediaUrl) }));
+};
+
+/** Live map numbers from MongoDB: { tapes, spots } (spots = distinct tagged locations). */
+export const getTapeStats = async () => (await client.get('/reels/stats')).data;
+
+/** The signed-in user's own tapes, newest first (incl. still processing). */
+export const getMyReels = async () =>
+  ((await client.get('/reels/mine')).data || []).map((r) => ({ ...r, mediaUrl: resolveMediaUrl(r.mediaUrl) }));

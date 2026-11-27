@@ -47,7 +47,7 @@ function getStyles(colors) {
     },
     ratingText: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.ink,
     },
     reviewCount: {

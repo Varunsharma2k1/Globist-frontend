@@ -107,7 +107,7 @@ function getStyles(colors) {
     },
     commentsTitle: {
       fontFamily: FONTS.bold,
-      fontSize: 17,
+      fontSize: 18,
       color: colors.ink,
       marginTop: SPACING.xl,
       marginBottom: SPACING.sm,
@@ -115,7 +115,7 @@ function getStyles(colors) {
     count: { color: colors.textMuted },
     more: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       textAlign: 'center',
       paddingVertical: SPACING.md,
@@ -133,7 +133,7 @@ function getStyles(colors) {
     input: {
       flex: 1,
       fontFamily: FONTS.body,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.text,
       backgroundColor: colors.surfaceMuted,
       borderRadius: RADIUS.pill,

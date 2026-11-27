@@ -112,11 +112,13 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 18,
     backgroundColor: '#1B2A18',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    elevation: 10,
+    // Soft, green-tinted lift: the old black 28% / elevation 10 shadow drew a
+    // grey haze around the cards on the white page (esp. on Android).
+    shadowColor: '#17271E',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 3,
   },
   photo: { flex: 1, borderRadius: 18, overflow: 'hidden', backgroundColor: '#1B2A18' },
   image: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
     right: SPACING.md,
     bottom: SPACING.md + 2,
   },
-  title: { fontFamily: FONTS.heading, fontSize: 24, lineHeight: 28, color: '#FFFFFF' },
+  title: { fontFamily: FONTS.heading, fontSize: 28, lineHeight: 28, color: '#FFFFFF' },
   meta: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
   metaText: { fontFamily: FONTS.semibold, fontSize: 14, color: '#FFFFFF' },
   dots: {

@@ -11,7 +11,7 @@ import { ENV } from './env';
 export const CONFIG = {
   API_BASE_URL: ENV.API_BASE_URL,
   API_TIMEOUT: ENV.API_TIMEOUT,
-  APP_NAME: 'Triptape',
+  APP_NAME: 'TripTape',
   DEFAULT_DEMO_VIDEO: ENV.DEFAULT_DEMO_VIDEO,
 };
 
@@ -20,13 +20,14 @@ export const CONFIG = {
  * Using constants prevents typos across files when saving/retrieving local data.
  */
 export const STORAGE_KEYS = {
-  AUTH_TOKEN: 'globist_token',
-  REFRESH_TOKEN: 'globist_refresh_token',
-  USER_INFO: 'globist_user_info',
-  APP_SETTINGS: 'globist_app_settings',
-  THEME_MODE: 'globist_theme_mode',
-  EXPLORE_RECENTS: 'globist_explore_recents',
-  COMMUNITIES: 'globist_communities',
-  AGENCY_PROFILES: 'globist_agency_profiles',
-  TRIP_LEDGER: 'globist_trip_ledger',
+  // Legacy plain-text token keys: only read to wipe them. Tokens are in SecureStore (api/tokenStore).
+  AUTH_TOKEN: 'triptape_token',
+  REFRESH_TOKEN: 'triptape_refresh_token',
+  USER_INFO: 'triptape_user_info',
+  APP_SETTINGS: 'triptape_app_settings',
+  THEME_MODE: 'triptape_theme_mode',
+  EXPLORE_RECENTS: 'triptape_explore_recents',
+  COMMUNITIES: 'triptape_communities',
+  AGENCY_PROFILES: 'triptape_agency_profiles',
+  TRIP_LEDGER: 'triptape_trip_ledger',
 };

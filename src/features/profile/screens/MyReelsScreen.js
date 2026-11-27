@@ -77,7 +77,7 @@ function getStyles(colors) {
     container: { flex: 1, backgroundColor: colors.background },
     count: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       padding: SPACING.md,
     },

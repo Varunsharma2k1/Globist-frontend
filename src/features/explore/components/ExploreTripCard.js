@@ -134,7 +134,7 @@ function getStyles(colors) {
     title: {
       flex: 1,
       fontFamily: FONTS.bold,
-      fontSize: 17,
+      fontSize: 18,
       letterSpacing: -0.2,
       color: colors.ink,
     },
@@ -146,12 +146,12 @@ function getStyles(colors) {
     },
     meta: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
     desc: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       lineHeight: 19,
       color: colors.textMuted,
       marginBottom: SPACING.md,
@@ -188,13 +188,13 @@ function getStyles(colors) {
     },
     priceNote: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
       marginTop: 1,
     },
     price: {
       fontFamily: FONTS.bold,
-      fontSize: 16,
+      fontSize: 18,
       color: colors.ink,
     },
     priceUnit: {

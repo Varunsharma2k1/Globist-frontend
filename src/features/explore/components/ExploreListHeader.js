@@ -46,7 +46,7 @@ function getStyles(colors) {
   return StyleSheet.create({
     count: {
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 1.4,
       color: colors.textMuted,
       marginBottom: SPACING.sm + 4,

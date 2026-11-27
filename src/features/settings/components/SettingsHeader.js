@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 export default function SettingsHeader({ onBack }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top + SPACING.sm }]}>
+    <View style={[styles.header, { paddingTop: topInset + SPACING.sm }]}>
       <TouchableOpacity onPress={onBack} style={styles.backBtn}>
         <ArrowLeft size={20} color={colors.ink} strokeWidth={2.2} />
       </TouchableOpacity>
@@ -41,7 +41,7 @@ function getStyles(colors) {
     },
     headerTitle: {
       fontFamily: FONTS.heading,
-      fontSize: 20,
+      fontSize: 18,
       color: colors.ink,
     },
   });

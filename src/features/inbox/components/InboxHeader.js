@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS, RADIUS } from '../../../theme';
 import { TABS } from '../data/inboxData';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 export default function InboxHeader({ activeTab, onChangeTab, unreadCountFor }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
 
   return (
-    <View style={[styles.header, { paddingTop: insets.top + SPACING.sm }]}>
+    <View style={[styles.header, { paddingTop: topInset + SPACING.sm }]}>
       <Text style={styles.headerTitle}>Inbox</Text>
       <View style={styles.tabRow}>
         {TABS.map((t) => {
@@ -69,7 +69,7 @@ function getStyles(colors) {
     },
     tabBtnText: {
       fontFamily: FONTS.bold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.text,
     },
     tabBtnTextActive: {
@@ -89,7 +89,7 @@ function getStyles(colors) {
     },
     badgeText: {
       fontFamily: FONTS.bold,
-      fontSize: 10,
+      fontSize: 12,
       color: colors.white,
     },
   });

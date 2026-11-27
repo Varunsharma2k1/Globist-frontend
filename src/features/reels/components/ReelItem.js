@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, TouchableWithoutFeedback, Alert } from 'react-native';
+import { View, Image, StyleSheet, TouchableWithoutFeedback, Alert } from 'react-native';
 import { VideoView } from 'expo-video';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../hooks/useTheme';
@@ -40,6 +40,7 @@ function ReelItem({
   bottomInset = 0,
   controlsOffset = 0,
   isActive,
+  shouldLoad = true,
   muted,
   onToggleMute,
   onCreatorPress,
@@ -56,8 +57,8 @@ function ReelItem({
   const singleTapTimerRef = useRef(null);
   const surfaceSizeRef = useRef({ width: 0, height: 0 });
 
-  const { hasVideo, player, paused, controlsVisible, handleTogglePlay, handleToggleMute } =
-    useReelPlayback({ mediaUrl: reel.mediaUrl, isActive, muted, onToggleMute });
+  const { hasVideo, isLoaded, player, paused, controlsVisible, handleTogglePlay, handleToggleMute } =
+    useReelPlayback({ mediaUrl: reel.mediaUrl, shouldLoad, isActive, muted, onToggleMute });
   const { likes, liked, handleLike, likeOnce } = useReelLike(reel);
   const { comments, commentText, setCommentText, handlePostComment } = useReelComments(
     reel,
@@ -100,7 +101,12 @@ function ReelItem({
     <View style={[styles.container, sizeStyle, { backgroundColor: tone }]}>
       <ReelBackground imageType={reel.imageType} location={reel.location} />
 
-      {hasVideo && (
+      {/* Thumbnail shows instantly (and for unloaded reels) until video frames arrive. */}
+      {reel.thumbnailUrl ? (
+        <Image source={{ uri: reel.thumbnailUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+      ) : null}
+
+      {hasVideo && isLoaded && (
         <VideoView
           style={StyleSheet.absoluteFill}
           player={player}
@@ -122,8 +128,9 @@ function ReelItem({
 
       <ReelHeartBurst ref={heartBurstRef} />
 
-      {hasVideo && controlsVisible && (
+      {hasVideo && (
         <ReelCenterControls
+          visible={controlsVisible}
           paused={paused}
           muted={muted}
           onTogglePlay={handleTogglePlay}

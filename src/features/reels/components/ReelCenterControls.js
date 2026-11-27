@@ -1,15 +1,19 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Play, Pause, Volume2, VolumeX } from 'lucide-react-native';
 import { SPACING } from '../../../theme';
 
-const PLAY_SIZE = 64;
-const MUTE_SIZE = 44;
+// Play/pause and mute are the same size.
+const BUTTON_SIZE = 56;
+const ICON_SIZE = 24;
+const FADE_IN_MS = 120;
+const FADE_OUT_MS = 200;
 const GAP = SPACING.md;
 
 /**
  * Play/pause in the exact centre of the phone screen with the mute toggle a
- * little below it, shown briefly on tap and kept up while paused. Plain flow
+ * little below it. Fades in on tap and fades out quickly (`visible`); while
+ * hidden it ignores touches so taps reach the reel. Plain flow
  * layout: an invisible spacer the size of the mute button sits above play, so
  * the column is balanced and play lands dead-centre.
  *
@@ -18,14 +22,28 @@ const GAP = SPACING.md;
  * below the reel, halved — pushes the controls down to the screen centre.
  */
 export default function ReelCenterControls({
+  visible,
   paused,
   muted,
   onTogglePlay,
   onToggleMute,
   centerOffset = 0,
 }) {
+  const opacity = useRef(new Animated.Value(visible ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: visible ? 1 : 0,
+      duration: visible ? FADE_IN_MS : FADE_OUT_MS,
+      useNativeDriver: true,
+    }).start();
+  }, [visible, opacity]);
+
   return (
-    <View style={[styles.layer, { paddingTop: centerOffset * 2 }]} pointerEvents="box-none">
+    <Animated.View
+      style={[styles.layer, { paddingTop: centerOffset * 2, opacity }]}
+      pointerEvents={visible ? 'box-none' : 'none'}
+    >
       <View style={styles.spacer} pointerEvents="none" />
 
       <TouchableOpacity
@@ -36,9 +54,9 @@ export default function ReelCenterControls({
         accessibilityLabel={paused ? 'Play tape' : 'Pause tape'}
       >
         {paused ? (
-          <Play size={30} color="#FFFFFF" fill="#FFFFFF" />
+          <Play size={ICON_SIZE} color="#FFFFFF" fill="#FFFFFF" />
         ) : (
-          <Pause size={30} color="#FFFFFF" fill="#FFFFFF" />
+          <Pause size={ICON_SIZE} color="#FFFFFF" fill="#FFFFFF" />
         )}
       </TouchableOpacity>
 
@@ -49,9 +67,9 @@ export default function ReelCenterControls({
         accessibilityRole="button"
         accessibilityLabel={muted ? 'Unmute' : 'Mute'}
       >
-        {muted ? <VolumeX size={22} color="#FFFFFF" /> : <Volume2 size={22} color="#FFFFFF" />}
+        {muted ? <VolumeX size={ICON_SIZE} color="#FFFFFF" /> : <Volume2 size={ICON_SIZE} color="#FFFFFF" />}
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -72,12 +90,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   spacer: {
-    height: MUTE_SIZE,
+    height: BUTTON_SIZE,
     marginBottom: GAP,
   },
-  playBtn: round(PLAY_SIZE),
+  playBtn: round(BUTTON_SIZE),
   muteBtn: {
-    ...round(MUTE_SIZE),
+    ...round(BUTTON_SIZE),
     marginTop: GAP,
   },
 });

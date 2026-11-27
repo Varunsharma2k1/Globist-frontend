@@ -29,9 +29,11 @@ import IndiaMapCanvas from '../components/IndiaMapCanvas';
 import CountBubble from '../components/CountBubble';
 import OceanLabels from '../components/OceanLabels';
 import PlaceSheet from '../components/PlaceSheet';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 export default function IndiaMapScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
   const insetsRef = useRef(insets);
   insetsRef.current = insets;
   const { places } = usePlaces();
@@ -53,28 +55,41 @@ export default function IndiaMapScreen({ navigation }) {
 
   // Only the tapped state's places get pins + bubbles (top N by tape count).
   const statePlaces = useMemo(
-    () => (selectedState
-      ? places.filter((p) => p.state === selectedState).sort((a, b) => b.count - a.count).slice(0, MAP_CONFIG.trendingLimit)
-      : []),
+    () =>
+      selectedState
+        ? places
+            .filter((p) => p.state === selectedState)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, MAP_CONFIG.trendingLimit)
+        : [],
     [places, selectedState]
   );
-  const pinKey = useMemo(() => statePlaces.map((p) => `${p.id}@${p.lat},${p.lng}`).join('|'), [statePlaces]);
+  const pinKey = useMemo(
+    () => statePlaces.map((p) => `${p.id}@${p.lat},${p.lng}`).join('|'),
+    [statePlaces]
+  );
 
   // Refs so the (stable) camera callbacks always see the latest values.
   const live = useRef({});
   live.current = { selectedState, allPlaceModels, stateModels, visible };
 
   // Pick visible, non-overlapping bubbles for a camera position.
-  const relayout = useCallback((cam) => {
-    lastCam.current = cam;
-    setBorderScale((b) => (Math.abs(cam.scale - b) / b > 0.12 ? cam.scale : b));
-    if (!size.w) return;
-    const { selectedState: sel, allPlaceModels: pm, stateModels: sm } = live.current;
-    const candidates = sel
-      ? pm.filter((b) => b.place.state === sel).sort((a, b) => b.count - a.count).slice(0, MAP_CONFIG.trendingLimit)
-      : sm;
-    setVisible(layoutBubbles(candidates, cam, size.w, size.h));
-  }, [size.w, size.h]);
+  const relayout = useCallback(
+    (cam) => {
+      lastCam.current = cam;
+      setBorderScale((b) => (Math.abs(cam.scale - b) / b > 0.12 ? cam.scale : b));
+      if (!size.w) return;
+      const { selectedState: sel, allPlaceModels: pm, stateModels: sm } = live.current;
+      const candidates = sel
+        ? pm
+            .filter((b) => b.place.state === sel)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, MAP_CONFIG.trendingLimit)
+        : sm;
+      setVisible(layoutBubbles(candidates, cam, size.w, size.h));
+    },
+    [size.w, size.h]
+  );
 
   // Tapping a place bubble opens the Tapes feed (bottom tab). The place is passed
   // along as a param so the feed can filter to it once it supports that.
@@ -99,7 +114,7 @@ export default function IndiaMapScreen({ navigation }) {
     const st = STATE_BY_ID[id];
     if (!camera) return;
     // Centre the whole state (its outline box) in the area below the header, fitted with padding.
-    if (st) camera.flyToBBox(st.bbox, { topInset: insets.top + 60 });
+    if (st) camera.flyToBBox(st.bbox, { topInset: topInset + 60 });
   };
 
   const onTap = useCallback((x, y, cam) => {
@@ -146,9 +161,7 @@ export default function IndiaMapScreen({ navigation }) {
           The map's pan/zoom IS the interaction, so always run it at full motion here. */}
       <ReducedMotionConfig mode={ReduceMotion.Never} />
       <GestureDetector gesture={camera.gesture}>
-        <View
-          style={StyleSheet.absoluteFill}
-        >
+        <View style={StyleSheet.absoluteFill}>
           {size.w && camera.ready ? (
             <IndiaMapCanvas
               camera={sharedCam}
@@ -160,24 +173,30 @@ export default function IndiaMapScreen({ navigation }) {
             />
           ) : null}
           {camera.ready ? <OceanLabels camera={sharedCam} /> : null}
-          {camera.ready && visible.map((b) => (
-            <CountBubble key={b.key} bubble={b} camera={sharedCam} />
-          ))}
+          {camera.ready &&
+            visible.map((b) => <CountBubble key={b.key} bubble={b} camera={sharedCam} />)}
         </View>
       </GestureDetector>
 
       {/* Header */}
-      <View style={[styles.header, { top: insets.top + SPACING.sm }]} pointerEvents="box-none">
+      <View style={[styles.header, { top: topInset + SPACING.sm }]} pointerEvents="box-none">
         <Pressable style={styles.iconBtn} onPress={() => navigation.goBack()} hitSlop={8}>
           <ArrowLeft size={20} color={MAP_THEME.buttonText} />
         </Pressable>
         <View style={styles.titlePill}>
-          <Text style={styles.title}>{selectedState ? STATE_BY_ID[selectedState]?.name : 'Across India'}</Text>
+          <Text style={styles.title}>
+            {selectedState ? STATE_BY_ID[selectedState]?.name : 'Across India'}
+          </Text>
           <Text style={styles.subtitle}>
             {selectedState ? 'Trending places · tapes' : 'Tap a state to see trending places'}
           </Text>
         </View>
-        <Pressable style={styles.iconBtn} onPress={reset} hitSlop={8} accessibilityLabel="Reset map">
+        <Pressable
+          style={styles.iconBtn}
+          onPress={reset}
+          hitSlop={8}
+          accessibilityLabel="Reset map"
+        >
           <Maximize2 size={18} color={MAP_THEME.buttonText} />
         </Pressable>
       </View>
@@ -190,19 +209,32 @@ export default function IndiaMapScreen({ navigation }) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: MAP_THEME.background },
   header: {
-    position: 'absolute', left: SPACING.md, right: SPACING.md,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    position: 'absolute',
+    left: SPACING.md,
+    right: SPACING.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   iconBtn: {
-    width: 42, height: 42, borderRadius: 21, backgroundColor: MAP_THEME.buttonBackground,
-    borderWidth: 1, borderColor: MAP_THEME.bubble.border,
-    alignItems: 'center', justifyContent: 'center',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: MAP_THEME.buttonBackground,
+    borderWidth: 1,
+    borderColor: MAP_THEME.bubble.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   titlePill: {
-    backgroundColor: MAP_THEME.buttonBackground, borderRadius: RADIUS.pill,
-    borderWidth: 1, borderColor: MAP_THEME.bubble.border,
-    paddingHorizontal: SPACING.md, paddingVertical: 6, alignItems: 'center',
+    backgroundColor: MAP_THEME.buttonBackground,
+    borderRadius: RADIUS.pill,
+    borderWidth: 1,
+    borderColor: MAP_THEME.bubble.border,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: 6,
+    alignItems: 'center',
   },
-  title: { fontFamily: FONTS.heading, fontSize: 15, color: MAP_THEME.buttonText },
-  subtitle: { fontFamily: FONTS.body, fontSize: 11, color: MAP_THEME.sheetMuted },
+  title: { fontFamily: FONTS.heading, fontSize: 14, color: MAP_THEME.buttonText },
+  subtitle: { fontFamily: FONTS.body, fontSize: 12, color: MAP_THEME.sheetMuted },
 });

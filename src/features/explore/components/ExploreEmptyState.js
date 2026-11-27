@@ -57,7 +57,7 @@ function getStyles(colors) {
     },
     title: {
       fontFamily: FONTS.bold,
-      fontSize: 17,
+      fontSize: 18,
       color: colors.ink,
       marginBottom: SPACING.xs,
       textAlign: 'center',

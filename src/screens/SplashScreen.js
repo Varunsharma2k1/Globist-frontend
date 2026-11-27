@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Globe } from 'lucide-react-native';
 import { SPACING, FONTS } from '../theme';
 import { useTheme } from '../hooks/useTheme';
+import { useTopInset } from '../hooks/useTopInset';
 
 /**
  * SplashScreen Component
@@ -14,6 +15,7 @@ import { useTheme } from '../hooks/useTheme';
  */
 export default function SplashScreen() {
   const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
   const { colors } = useTheme();
   return (
     <View
@@ -21,7 +23,7 @@ export default function SplashScreen() {
         styles.container,
         {
           backgroundColor: colors.background,
-          paddingTop: SPACING.xl + insets.top,
+          paddingTop: SPACING.xl + topInset,
           paddingBottom: SPACING.xl + insets.bottom,
         },
       ]}
@@ -59,7 +61,7 @@ const styles = StyleSheet.create({
   },
   wordmark: {
     fontFamily: FONTS.heading,
-    fontSize: 30,
+    fontSize: 28,
     letterSpacing: 2,
   },
   subtitle: {

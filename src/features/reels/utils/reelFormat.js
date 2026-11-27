@@ -70,8 +70,8 @@ export function buildReferral(reel, currentUserId) {
  * rather than inventing a link.
  */
 export function buildShareMessage(reel) {
-  const handle = reel.creatorHandle || 'a Triptape creator';
-  const lines = [`🎥 ${handle} on Triptape${reel.location ? ` — ${reel.location}` : ''}`];
+  const handle = reel.creatorHandle || 'a TripTape creator';
+  const lines = [`🎥 ${handle} on TripTape${reel.location ? ` — ${reel.location}` : ''}`];
   if (reel.caption) lines.push(`“${reel.caption}”`);
   if (reel.agency?.name) {
     const price = reel.agency.startingPrice
@@ -79,6 +79,6 @@ export function buildShareMessage(reel) {
       : '';
     lines.push('', `Trip by ${reel.agency.name}${price}`);
   }
-  lines.push('Watch the full tape and book it on the Triptape app.');
+  lines.push('Watch the full tape and book it on the TripTape app.');
   return lines.join('\n');
 }

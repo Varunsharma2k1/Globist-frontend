@@ -110,7 +110,7 @@ function getStyles(colors) {
     },
     expandAll: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.ink,
       textDecorationLine: 'underline',
     },
@@ -132,11 +132,11 @@ function getStyles(colors) {
     dayTitleWrap: { flex: 1 },
     dayLabel: {
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 1.2,
       color: colors.textMuted,
     },
-    dayTitle: { fontFamily: FONTS.bold, fontSize: 15, color: colors.ink, marginTop: 2 },
+    dayTitle: { fontFamily: FONTS.bold, fontSize: 14, color: colors.ink, marginTop: 2 },
     dayContent: { marginTop: SPACING.sm, gap: SPACING.sm },
     desc: { fontFamily: FONTS.body, fontSize: 14, lineHeight: 21, color: colors.text },
     activities: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
@@ -151,7 +151,7 @@ function getStyles(colors) {
       overflow: 'hidden',
     },
     detailRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    detailLabel: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted, width: 62 },
-    detailValue: { flex: 1, fontFamily: FONTS.semibold, fontSize: 13, color: colors.ink },
+    detailLabel: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted, width: 62 },
+    detailValue: { flex: 1, fontFamily: FONTS.semibold, fontSize: 14, color: colors.ink },
   });
 }

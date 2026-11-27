@@ -4,19 +4,25 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useTripLedger } from '../../../hooks/useTripLedger';
 import { defaultOccupancy, priceForOccupancy } from '../../../data/occupancy';
 import { departureDates, departureInterval, durationDays, tripEndDate } from '../utils/departures';
+import haptics from '../../../utils/haptics';
 
 const SERVICE_FEE_RATE = 0.03;
 const MIN_TRAVELERS = 1;
 const MAX_TRAVELERS = 8;
 // How long the simulated payment "processes" before succeeding.
 const PAYMENT_DELAY_MS = 1200;
+// Trips from our server have Mongo ids; app-only demo packages use "local-…".
+const isServerTrip = (t) => /^[a-f0-9]{24}$/.test(String(t?._id || ''));
 
 /**
  * Owns the booking checkout form's state, derived pricing, and submission.
  *
  * Payment is skipped for now: "Book now" shows a short processing state,
- * then the booking is saved to the on-device ledger (so it appears in My
- * Trips) and treated as paid. Travellers can put their wallet balance
+ * then the booking is created on the server (real trips) and saved to the
+ * on-device ledger (so it appears in My Trips) and treated as paid. If the
+ * server refuses a real trip's booking, the user sees why — no fake
+ * "confirmed". In dev the server marks bookings completed right away
+ * (DEMO_AUTO_COMPLETE_BOOKINGS) and the app follows, so a tape can be posted. Travellers can put their wallet balance
  * (1 point = ₹1) towards the total; only the rest is "paid".
  *
  * @param {Object} trip - the trip being booked (from route params)
@@ -26,7 +32,7 @@ const PAYMENT_DELAY_MS = 1200;
  */
 export function useBookingForm(trip, referral, initialOccupancy) {
   const { user } = useAuth();
-  const { bookTrip, wallet } = useTripLedger();
+  const { bookTrip, markTripCompleted, wallet } = useTripLedger();
 
   const departures = useMemo(() => departureDates(trip), [trip]);
   const [travelers, setTravelers] = useState(1);
@@ -66,17 +72,34 @@ export function useBookingForm(trip, referral, initialOccupancy) {
     try {
       // Mirror to the backend when it can take it (backend trips, real
       // sessions); the on-device ledger stays the source of truth for now.
+      const serverTrip = isServerTrip(trip);
+      let serverError = null;
       const [backendBooking] = await Promise.all([
-        createBooking({
-          tripId: trip?._id,
-          travelersCount: travelers,
-          occupancy: occupancy || undefined,
-          startDate: date,
-          paymentMethod: 'upi',
-          referredBy: referral?.referredBy,
-        }).catch(() => null),
+        serverTrip
+          ? createBooking({
+              tripId: trip._id,
+              travelersCount: travelers,
+              occupancy: occupancy || undefined,
+              startDate: date,
+              paymentMethod: 'upi',
+              referredBy: referral?.referredBy,
+            }).catch((err) => {
+              serverError = err;
+              return null;
+            })
+          : Promise.resolve(null),
         new Promise((resolve) => setTimeout(resolve, PAYMENT_DELAY_MS)),
       ]);
+      if (serverTrip && !backendBooking) {
+        haptics.error();
+        setError(
+          serverError?.response?.data?.message ||
+            (serverError?.response
+              ? 'Booking failed. Please try again.'
+              : 'Could not reach TripTape. Check your connection.')
+        );
+        return;
+      }
 
       const booking = bookTrip({
         user,
@@ -100,6 +123,9 @@ export function useBookingForm(trip, referral, initialOccupancy) {
           : null,
         backendId: backendBooking?._id || null,
       });
+      // Demo: the server completed it already, so tapes can be posted right away.
+      if (backendBooking?.status === 'completed') markTripCompleted(booking._id);
+      haptics.success();
       setConfirmedBooking(booking);
     } finally {
       setLoading(false);

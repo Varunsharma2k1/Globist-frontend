@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, Text, Image, Pressable, Share, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Share2, Flame, Clock, Trophy } from 'lucide-react-native';
 import JoinButton from './JoinButton';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS, LAYOUT } from '../../../theme';
 import { compact } from '../utils/format';
+import haptics from '../../../utils/haptics';
+import { useTopInset } from '../../../hooks/useTopInset';
 
 const SORTS = [
-  { key: 'hot', label: 'Hot', Icon: Flame },
-  { key: 'new', label: 'New', Icon: Clock },
-  { key: 'top', label: 'Top', Icon: Trophy },
+  { key: 'hot', label: 'Hot', Icon: Flame, hint: 'Popular right now' },
+  { key: 'new', label: 'New', Icon: Clock, hint: 'Newest first' },
+  { key: 'top', label: 'Top', Icon: Trophy, hint: 'Most upvoted of all time' },
 ];
 
 /** Top of a community page: banner, name, stats, Join, about and the Hot / New / Top tabs. */
@@ -23,7 +24,7 @@ export default function CommunityHeader({
   onBack,
   onToggleJoin,
 }) {
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
   const { colors } = useTheme();
   const styles = getStyles(colors);
 
@@ -32,7 +33,7 @@ export default function CommunityHeader({
       <View>
         <Image source={community.cover} style={styles.banner} resizeMode="cover" />
         <View style={styles.bannerShade} />
-        <View style={[styles.topBar, { top: insets.top + 8 }]}>
+        <View style={[styles.topBar, { top: topInset + 8 }]}>
           <Pressable style={styles.roundBtn} onPress={onBack} accessibilityLabel="Back">
             <ArrowLeft size={20} color="#FFFFFF" />
           </Pressable>
@@ -40,7 +41,7 @@ export default function CommunityHeader({
             style={styles.roundBtn}
             onPress={() =>
               Share.share({
-                message: `Join c/${community.handle} on Triptape: ${community.tagline}`,
+                message: `Join c/${community.handle} on TripTape: ${community.tagline}`,
               })
             }
             accessibilityLabel="Share community"
@@ -58,33 +59,40 @@ export default function CommunityHeader({
           </View>
         </View>
         <Text style={styles.name}>{community.name}</Text>
-        <Text style={styles.handle}>c/{community.handle}</Text>
         <Text style={styles.stats}>
-          <Text style={styles.statsStrong}>{compact(members)}</Text> members ·{' '}
-          <Text style={styles.statsStrong}>{community.online}</Text> online
+          c/{community.handle} · <Text style={styles.statsStrong}>{compact(members)}</Text> members
+          · <Text style={styles.statsStrong}>{community.online}</Text> online
         </Text>
-        <Text style={styles.about}>{community.about}</Text>
+        <Text style={styles.about} numberOfLines={3}>
+          {community.about}
+        </Text>
       </View>
 
-      <View style={styles.sortRow}>
-        {SORTS.map(({ key, label, Icon }) => {
-          const active = key === sort;
-          return (
-            <Pressable
-              key={key}
-              onPress={() => onSort(key)}
-              style={[
-                styles.sortChip,
-                { backgroundColor: active ? colors.ink : colors.surfaceMuted },
-              ]}
-            >
-              <Icon size={14} color={active ? colors.inkContrast : colors.text} />
-              <Text style={[styles.sortText, { color: active ? colors.inkContrast : colors.text }]}>
-                {label}
-              </Text>
-            </Pressable>
-          );
-        })}
+      {/* iOS-style segmented control; the hint says what the order means. */}
+      <View style={styles.sortWrap}>
+        <View style={styles.segment} accessibilityRole="tablist">
+          {SORTS.map(({ key, label, Icon }) => {
+            const active = key === sort;
+            return (
+              <Pressable
+                key={key}
+                onPress={() => {
+                  if (!active) haptics.select();
+                  onSort(key);
+                }}
+                style={[styles.segmentItem, active && styles.segmentActive]}
+                accessibilityRole="tab"
+                accessibilityState={{ selected: active }}
+              >
+                <Icon size={14} color={active ? colors.ink : colors.textMuted} />
+                <Text style={[styles.sortText, { color: active ? colors.ink : colors.textMuted }]}>
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text style={styles.sortHint}>{SORTS.find((x) => x.key === sort)?.hint}</Text>
       </View>
     </View>
   );
@@ -92,7 +100,7 @@ export default function CommunityHeader({
 
 function getStyles(colors) {
   return StyleSheet.create({
-    banner: { width: '100%', height: 190, backgroundColor: colors.surfaceMuted },
+    banner: { width: '100%', height: 170, backgroundColor: colors.surfaceMuted },
     bannerShade: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.18)' },
     topBar: {
       position: 'absolute',
@@ -119,12 +127,12 @@ function getStyles(colors) {
       flexDirection: 'row',
       alignItems: 'flex-end',
       justifyContent: 'space-between',
-      marginTop: -34,
+      marginTop: -32,
     },
     avatar: {
-      width: 72,
-      height: 72,
-      borderRadius: 22,
+      width: 64,
+      height: 64,
+      borderRadius: 18,
       borderWidth: 3,
       borderColor: colors.background,
       backgroundColor: colors.surfaceMuted,
@@ -132,44 +140,64 @@ function getStyles(colors) {
     joinWrap: { paddingBottom: 4 },
     name: {
       fontFamily: FONTS.bold,
-      fontSize: 22,
-      lineHeight: 28,
+      fontSize: 28,
+      lineHeight: 34,
+      letterSpacing: -0.5,
       color: colors.ink,
       marginTop: SPACING.md,
     },
-    handle: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted, marginTop: 4 },
     stats: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
-      marginTop: SPACING.md - 2,
+      marginTop: SPACING.xs,
     },
-    statsStrong: { fontFamily: FONTS.semibold, color: colors.ink },
+    statsStrong: { fontFamily: FONTS.semibold, color: colors.text },
     about: {
       fontFamily: FONTS.body,
-      fontSize: 14.5,
-      lineHeight: 22,
+      fontSize: 14,
+      lineHeight: 20,
       color: colors.text,
       marginTop: SPACING.md,
-      opacity: 0.8,
     },
-    sortRow: {
-      flexDirection: 'row',
-      gap: SPACING.sm,
+    sortWrap: {
       paddingHorizontal: SPACING.lg,
-      paddingVertical: SPACING.lg - 2,
+      paddingTop: SPACING.lg,
+      paddingBottom: SPACING.sm,
       width: '100%',
       maxWidth: LAYOUT.contentMaxWidth,
       alignSelf: 'center',
     },
-    sortChip: {
+    segment: {
+      flexDirection: 'row',
+      padding: 4,
+      borderRadius: RADIUS.pill,
+      backgroundColor: colors.surfaceMuted,
+    },
+    segmentItem: {
+      flex: 1,
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'center',
       gap: 6,
-      paddingHorizontal: SPACING.md,
-      paddingVertical: 8,
+      paddingVertical: SPACING.sm,
       borderRadius: RADIUS.pill,
     },
-    sortText: { fontFamily: FONTS.semibold, fontSize: 13 },
+    segmentActive: {
+      backgroundColor: colors.surface,
+      shadowColor: '#17271E',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 6,
+      elevation: 1,
+    },
+    sortText: { fontFamily: FONTS.semibold, fontSize: 14 },
+    sortHint: {
+      fontFamily: FONTS.body,
+      fontSize: 12,
+      color: colors.textMuted,
+      marginTop: SPACING.sm,
+      textAlign: 'center',
+    },
   });
 }

@@ -146,7 +146,7 @@ function getStyles(colors) {
     },
     groupLabel: {
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 1.4,
       color: colors.textMuted,
       marginBottom: SPACING.xs,
@@ -170,7 +170,7 @@ function getStyles(colors) {
     },
     rowTitle: {
       fontFamily: FONTS.semibold,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
     },
     rowSubtitle: {

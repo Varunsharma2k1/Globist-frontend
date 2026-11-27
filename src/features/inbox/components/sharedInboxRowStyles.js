@@ -26,13 +26,13 @@ export function getSharedInboxRowStyles(colors) {
     },
     rowText: {
       fontFamily: FONTS.body,
-      fontSize: 13.5,
+      fontSize: 14,
       color: colors.text,
       lineHeight: 18,
     },
     rowTime: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
       marginTop: 2,
     },

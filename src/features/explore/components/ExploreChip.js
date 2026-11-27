@@ -54,7 +54,7 @@ function getStyles(colors) {
     },
     text: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.text,
     },
     textActive: {

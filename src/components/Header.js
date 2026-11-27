@@ -1,20 +1,20 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { SPACING, FONTS } from '../theme';
 import { useTheme } from '../hooks/useTheme';
+import { useTopInset } from '../hooks/useTopInset';
 
 export default function Header({ title, onBack, rightElement }) {
-  const insets = useSafeAreaInsets();
+  const topInset = useTopInset();
   const { colors } = useTheme();
   return (
     <View
       style={[
         styles.header,
         {
-          height: 56 + insets.top,
-          paddingTop: insets.top,
+          height: 56 + topInset,
+          paddingTop: topInset,
           backgroundColor: colors.background,
           borderBottomColor: colors.divider,
         },
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: FONTS.heading,
-    fontSize: 16,
+    fontSize: 18,
     flex: 1,
     textAlign: 'center',
   },

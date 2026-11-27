@@ -8,6 +8,7 @@ import { getAgencyBooking, GST_RATE } from '../../../data/agencyBookings';
 import { OCCUPANCY_LABELS } from '../../../data/occupancy';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../hooks/useTheme';
+import { useTripLedger } from '../../../hooks/useTripLedger';
 import { formatDate, formatINR, STATUS_TAG } from '../utils/format';
 import { SPACING, RADIUS, FONTS, LAYOUT } from '../../../theme';
 
@@ -16,6 +17,7 @@ export default function InvoiceScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const { user } = useAuth();
+  const { myBookings } = useTripLedger();
   const styles = getStyles(colors);
 
   // Agencies open a booking by id; travellers pass the booking they built.
@@ -32,11 +34,16 @@ export default function InvoiceScreen({ navigation, route }) {
   const agencyName = booking.agencyName || user?.name || 'Your Agency';
   const status = STATUS_TAG[booking.status];
 
+  // Travellers: once the trip is completed, post one tape tagged to this agency.
+  const tripId = booking.ledgerBooking?._id;
+  const trip = tripId ? myBookings.find((b) => b._id === tripId) : null;
+  const canPostTape = Boolean(trip && trip.status === 'completed' && !trip.reelId);
+
   const share = () =>
     Share.share({
       title: `Invoice ${booking.invoiceNo}`,
       message: [
-        `Triptape Tax Invoice ${booking.invoiceNo}`,
+        `TripTape Tax Invoice ${booking.invoiceNo}`,
         `Sold by: ${agencyName}`,
         `Billed to: ${traveler.name}${traveler.email ? ` (${traveler.email})` : ''}`,
         `${pkg.name} — ${booking.travelers} traveller(s), ${OCCUPANCY_LABELS[booking.occupancy]}`,
@@ -108,7 +115,19 @@ export default function InvoiceScreen({ navigation, route }) {
           <Row label="Payment status" value={status.label} styles={styles} />
         </View>
 
-        <Button title="Share Invoice" onPress={share} style={{ marginTop: SPACING.md }} />
+        {canPostTape ? (
+          <Button
+            title="Post a tape from this trip"
+            onPress={() => navigation.navigate('PostReel', { bookingId: trip._id })}
+            style={{ marginTop: SPACING.md }}
+          />
+        ) : null}
+        <Button
+          title="Share Invoice"
+          variant={canPostTape ? 'outline' : undefined}
+          onPress={share}
+          style={{ marginTop: SPACING.md }}
+        />
       </ScrollView>
     </View>
   );
@@ -147,28 +166,28 @@ function getStyles(colors) {
       alignItems: 'flex-start',
       marginBottom: SPACING.md,
     },
-    brand: { fontFamily: FONTS.heading, fontSize: 20, letterSpacing: 1, color: colors.ink },
-    docTitle: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted, marginTop: 2 },
+    brand: { fontFamily: FONTS.heading, fontSize: 18, letterSpacing: 1, color: colors.ink },
+    docTitle: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted, marginTop: 2 },
     divider: { height: 1, backgroundColor: colors.divider, marginVertical: SPACING.md },
     sectionLabel: {
       fontFamily: FONTS.bold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 0.8,
       color: colors.textMuted,
       marginBottom: SPACING.xs,
     },
-    strong: { fontFamily: FONTS.heading, fontSize: 15, color: colors.ink },
-    muted: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted, marginTop: 2 },
+    strong: { fontFamily: FONTS.heading, fontSize: 14, color: colors.ink },
+    muted: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted, marginTop: 2 },
     row: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingVertical: 4,
       gap: SPACING.md,
     },
-    rowLabel: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted },
+    rowLabel: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted },
     rowValue: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.ink,
       flexShrink: 1,
       textAlign: 'right',
@@ -181,7 +200,7 @@ function getStyles(colors) {
       borderTopWidth: 1,
       borderTopColor: colors.divider,
     },
-    totalLabel: { fontFamily: FONTS.heading, fontSize: 16, color: colors.ink },
+    totalLabel: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
     totalValue: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
   });
 }

@@ -71,12 +71,12 @@ function getStyles(colors) {
     },
     avatarInitial: {
       fontFamily: FONTS.heading,
-      fontSize: 32,
+      fontSize: 28,
       color: colors.pastel.peach.fg,
     },
     name: {
       fontFamily: FONTS.heading,
-      fontSize: 22,
+      fontSize: 18,
       color: colors.ink,
     },
     tagRow: {
@@ -93,7 +93,7 @@ function getStyles(colors) {
     },
     roleBadgeText: {
       fontFamily: FONTS.heading,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.text,
       letterSpacing: 0.3,
     },

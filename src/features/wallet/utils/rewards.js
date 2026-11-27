@@ -1,5 +1,5 @@
 /**
- * Traveller reward rules (see the commission model: Triptape takes ~10% per
+ * Traveller reward rules (see the commission model: TripTape takes ~10% per
  * booking and shares part of it with travellers).
  *
  * - Reel reward: a traveller who posts a reel tagging the agency of a trip
@@ -9,7 +9,7 @@
  *   the traveller earns 0.5% of that booking once the trip is completed.
  *
  * Both are computed on the trip amount (travellers × per-person price),
- * excluding Triptape's service fee — the same base the agency commission is
+ * excluding TripTape's service fee — the same base the agency commission is
  * charged on.
  */
 export const REEL_REWARD_RATE = 0.02;

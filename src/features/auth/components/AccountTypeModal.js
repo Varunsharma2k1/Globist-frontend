@@ -58,10 +58,10 @@ export default function AccountTypeModal() {
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <Text style={styles.title}>
-            Welcome to Triptape{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
+            Welcome to TripTape{user?.name ? `, ${user.name.split(' ')[0]}` : ''}!
           </Text>
           <Text style={styles.subtitle}>
-            How will you use Triptape? This sets the badge on your profile.
+            How will you use TripTape? This sets the badge on your profile.
           </Text>
 
           {ACCOUNT_TYPES.map(({ key, label, description, Icon }) => {
@@ -115,7 +115,7 @@ function getStyles(colors) {
     },
     title: {
       fontFamily: FONTS.heading,
-      fontSize: 22,
+      fontSize: 18,
       color: colors.text,
     },
     subtitle: {
@@ -155,7 +155,7 @@ function getStyles(colors) {
     },
     optionLabel: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.text,
     },
     optionDesc: {

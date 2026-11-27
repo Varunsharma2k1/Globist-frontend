@@ -6,11 +6,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import {
   useFonts,
-  Inter_300Light,
   Inter_400Regular,
-  Inter_500Medium,
   Inter_600SemiBold,
-  Inter_700Bold,
 } from '@expo-google-fonts/inter';
 
 import { AuthProvider } from './src/context/AuthContext';
@@ -23,10 +20,12 @@ import { useTheme } from './src/hooks/useTheme';
 import { useSettings } from './src/hooks/useSettings';
 import TouchIndicator from './src/components/TouchIndicator';
 import AppNavigator from './src/navigation/AppNavigator';
+import { useImmersiveNavBar } from './src/hooks/useImmersiveNavBar';
 import { COLORS } from './src/theme';
 
 function AppContent() {
   const { colors, resolvedScheme } = useTheme();
+  useImmersiveNavBar(); // hide Android's back/home bar; swipe up to peek
   const { settings } = useSettings();
 
   const navTheme = {
@@ -56,12 +55,9 @@ function AppContent() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Inter_300Light,
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
+      Inter_400Regular,
+      Inter_600SemiBold,
+    });
 
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: COLORS.background }} />;

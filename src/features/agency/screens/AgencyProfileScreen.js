@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { View, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../hooks/useTheme';
 import { useRequireAuth } from '../../../hooks/useRequireAuth';
 import Button from '../../../components/Button';
+import KeyboardAwareScrollView from '../../../components/KeyboardAwareScrollView';
+import { useAuth } from '../../../hooks/useAuth';
 import { SPACING, LAYOUT } from '../../../theme';
 import { useAgencyProfile } from '../hooks/useAgencyProfile';
 import { useAgencyReels } from '../hooks/useAgencyReels';
@@ -11,14 +13,16 @@ import { splitTrips } from '../utils/agencyProfile';
 import AgencyHero from '../components/AgencyHero';
 import AgencyAbout from '../components/AgencyAbout';
 import AgencyTrips from '../components/AgencyTrips';
-import AgencyReels from '../components/AgencyReels';
+import AgencyTabs from '../components/AgencyTabs';
+import AgencyTapesGrid from '../components/AgencyTapesGrid';
 import AgencyComments from '../components/AgencyComments';
 import AgencyEditModal from '../components/AgencyEditModal';
 
 /**
  * Public profile of a travel agency: photo header, verified status, rating,
- * short note, upcoming / organised trips, reels travellers tagged it in and
- * visitor comments. Agencies get an
+ * short note and a Message button, then Instagram-style tabs: Trips
+ * (upcoming + organised), Tapes (grid of traveller tapes from verified
+ * bookings) and Reviews (visitor comments). Agencies get an
  * Edit button to update their own details. Data lives in useAgencyProfile.
  */
 export default function AgencyProfileScreen({ route, navigation }) {
@@ -26,19 +30,30 @@ export default function AgencyProfileScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const { agency: routeAgency } = route.params || {};
   const base = useMemo(() => routeAgency || {}, [routeAgency]);
-  const { agency, trips, loading, comments, canEdit, saveProfile, addComment } =
-    useAgencyProfile(base);
+  const {
+    agency,
+    trips,
+    loading,
+    comments,
+    commentsTotal,
+    canReview,
+    canEdit,
+    saveProfile,
+    addComment,
+    removeComment,
+  } = useAgencyProfile(base);
+  const { user } = useAuth();
   const reels = useAgencyReels(base);
   const [editing, setEditing] = useState(false);
+  const [tab, setTab] = useState('trips');
   const { requireAuth } = useRequireAuth(navigation);
   const { upcoming, others } = useMemo(() => splitTrips(trips), [trips]);
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView
+      <KeyboardAwareScrollView
         contentContainerStyle={{ paddingBottom: SPACING.xl + insets.bottom }}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
       >
         <AgencyHero
           agency={agency}
@@ -46,38 +61,64 @@ export default function AgencyProfileScreen({ route, navigation }) {
           onBack={() => navigation.goBack()}
           onEdit={canEdit ? () => setEditing(true) : undefined}
         />
-        <View style={styles.content}>
-          <AgencyAbout agency={agency} />
+        <View style={[styles.content, styles.headerBody]}>
+          <AgencyAbout agency={agency} tapesCount={reels.length} />
           {agency._id && !canEdit && (
             <Button
               title="Message agency"
               variant="outline"
               onPress={() => {
                 const params = { agencyId: agency._id, title: agency.name };
-                if (requireAuth({ name: 'ChatThread', params })) navigation.navigate('ChatThread', params);
+                if (requireAuth({ name: 'ChatThread', params }))
+                  navigation.navigate('ChatThread', params);
               }}
-              style={{ marginBottom: SPACING.md }}
+              style={{ marginBottom: SPACING.xs }}
             />
           )}
-          {loading ? (
-            <ActivityIndicator color={colors.ink} style={styles.loader} />
-          ) : (
-            <AgencyTrips
-              upcoming={upcoming}
-              others={others}
-              onOpenTrip={(trip) =>
-                navigation.navigate('TripDetail', { tripId: trip._id, title: trip.title })
-              }
-            />
-          )}
-          <AgencyReels
-            agencyName={agency.name}
-            reels={reels}
-            onOpenReel={(startIndex) => navigation.navigate('ReelViewer', { reels, startIndex })}
-          />
-          <AgencyComments comments={comments} onPost={addComment} />
         </View>
-      </ScrollView>
+
+        <AgencyTabs active={tab} onChange={setTab} />
+
+        {tab === 'trips' && (
+          <View style={[styles.content, styles.tabBody]}>
+            {loading ? (
+              <ActivityIndicator color={colors.ink} style={styles.loader} />
+            ) : (
+              <AgencyTrips
+                upcoming={upcoming}
+                others={others}
+                onOpenTrip={(trip) =>
+                  navigation.navigate('TripDetail', { tripId: trip._id, title: trip.title })
+                }
+              />
+            )}
+          </View>
+        )}
+
+        {tab === 'tapes' && (
+          <View style={styles.tabBodyFlush}>
+            <AgencyTapesGrid
+              agencyName={agency.name}
+              reels={reels}
+              onOpenReel={(startIndex) => navigation.navigate('ReelViewer', { reels, startIndex })}
+            />
+          </View>
+        )}
+
+        {tab === 'reviews' && (
+          <View style={[styles.content, styles.tabBody]}>
+            <AgencyComments
+              comments={comments}
+              total={commentsTotal}
+              canReview={canReview}
+              currentUserId={user && !user.isGuest ? user._id : null}
+              onPost={addComment}
+              onDelete={removeComment}
+              ensureSignedIn={() => requireAuth({ name: 'AgencyProfile', params: { agency } })}
+            />
+          </View>
+        )}
+      </KeyboardAwareScrollView>
 
       <AgencyEditModal
         visible={editing}
@@ -98,4 +139,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   loader: { marginVertical: SPACING.lg },
+  headerBody: { paddingTop: SPACING.sm },
+  tabBody: { paddingTop: SPACING.md },
+  tabBodyFlush: { paddingTop: 2 },
 });

@@ -56,7 +56,7 @@ function getStyles(colors) {
     },
     image: { width: '100%', height: 170, backgroundColor: colors.surfaceMuted },
     body: { padding: SPACING.md - 2 },
-    title: { fontFamily: FONTS.heading, fontSize: 15, lineHeight: 19, color: colors.ink },
+    title: { fontFamily: FONTS.heading, fontSize: 14, lineHeight: 19, color: colors.ink },
     place: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted, marginTop: 4 },
     footer: {
       flexDirection: 'row',
@@ -64,8 +64,8 @@ function getStyles(colors) {
       justifyContent: 'space-between',
       marginTop: SPACING.sm + 2,
     },
-    price: { fontFamily: FONTS.heading, fontSize: 15, color: colors.ink },
-    priceUnit: { fontFamily: FONTS.body, fontSize: 11, color: colors.textMuted },
+    price: { fontFamily: FONTS.heading, fontSize: 14, color: colors.ink },
+    priceUnit: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
     rating: {
       flexDirection: 'row',
       alignItems: 'center',

@@ -29,30 +29,38 @@ const SHARED = {
   },
 };
 
+// Minimal brand palette from the TripTape logo, 60/30/10:
+//   60% neutral base (background/surface), 30% deep green ink (text,
+//   primary buttons), 10% gold accent (active states, small highlights).
+// Text hierarchy comes from opacity of the ink, not extra colours.
 export const LIGHT_COLORS = {
   ...SHARED,
   mode: 'light',
   background: '#FFFFFF',
   surface: '#FFFFFF',
-  surfaceMuted: '#F5F4F1',
-  text: '#201E1B',
-  textMuted: 'rgba(32, 30, 27, 0.55)',
-  ink: '#161311',
+  surfaceMuted: '#F7F4EF', // warm cream tint (logo background)
+  text: 'rgba(23, 39, 30, 0.88)',
+  textMuted: 'rgba(23, 39, 30, 0.56)',
+  ink: '#17271E', // TripTape deep green
   inkContrast: '#FFFFFF', // text/icon color to use on top of an `ink`-filled surface
-  divider: 'rgba(32, 30, 27, 0.12)',
+  accent: '#B8955A', // TripTape gold — use sparingly (≈10%)
+  accentSoft: 'rgba(184, 149, 90, 0.12)',
+  divider: 'rgba(23, 39, 30, 0.08)',
 };
 
 export const DARK_COLORS = {
   ...SHARED,
   mode: 'dark',
-  background: '#121110',
-  surface: '#1C1A18',
-  surfaceMuted: '#26231F',
-  text: '#F2EFEA',
-  textMuted: 'rgba(242, 239, 234, 0.6)',
-  ink: '#F2EFEA', // "ink" = primary emphasis fill; inverted in dark mode (light-on-dark)
-  inkContrast: '#161311',
-  divider: 'rgba(242, 239, 234, 0.14)',
+  background: '#0E1411',
+  surface: '#151D18',
+  surfaceMuted: '#1C2620',
+  text: 'rgba(247, 244, 239, 0.88)',
+  textMuted: 'rgba(247, 244, 239, 0.56)',
+  ink: '#F7F4EF', // "ink" = primary emphasis fill; inverted in dark mode (cream-on-green-black)
+  inkContrast: '#0E1411',
+  accent: '#CDAE77',
+  accentSoft: 'rgba(205, 174, 119, 0.14)',
+  divider: 'rgba(247, 244, 239, 0.08)',
 };
 
 // Back-compat static export — anything importing COLORS directly (instead
@@ -72,19 +80,29 @@ export const CATEGORY_PASTEL = {
   Luxury: 'luxury',
 };
 
+// 8-point grid. Related things sit closer; groups are ~2× further apart.
 export const SPACING = {
   xs: 4,
   sm: 8,
   md: 16,
   lg: 24,
   xl: 32,
+  xxl: 48,
 };
 
 export const RADIUS = {
-  sm: 12,
-  md: 20,
-  lg: 28,
+  sm: 8,
+  md: 16,
+  lg: 24,
   pill: 999,
+};
+
+// The ONLY four font sizes in the app (caption / body / title / display).
+export const FONT_SIZE = {
+  caption: 12,
+  body: 14,
+  title: 18,
+  display: 28,
 };
 
 // Named font-family per weight — always paired with the exact matching
@@ -97,13 +115,15 @@ export const RADIUS = {
 // Typeface: Inter — clean geometric sans with big LIGHT headlines and tight
 // tracking (editorial look). `display` is for large titles; the other tokens keep
 // their old roles so every screen picks up the new font automatically.
+// Minimal type: ONE family, TWO weights — Regular (400) and SemiBold (600).
+// Old token names are kept so every screen maps onto the two weights.
 export const FONTS = {
-  display: 'Inter_300Light',     // large titles (h1/h2)
+  display: 'Inter_600SemiBold',  // large titles (h1/h2)
   heading: 'Inter_600SemiBold',  // emphasis: buttons, numbers, card titles
-  bold: 'Inter_700Bold',
-  semibold: 'Inter_500Medium',
+  bold: 'Inter_600SemiBold',
+  semibold: 'Inter_600SemiBold',
   body: 'Inter_400Regular',
-  light: 'Inter_300Light',
+  light: 'Inter_400Regular',
   mono: Platform.select({ ios: 'Courier', android: 'monospace', default: 'monospace' }),
 };
 
@@ -115,21 +135,22 @@ export const LAYOUT = {
 // tokens that bake in colors. Call via useTheme() to get theme-aware
 // versions; the static SHADOW/TYPOGRAPHY exports below remain as light-mode
 // fallbacks for any call site not yet using the hook.
+// Soft, green-tinted shadow (never harsh grey/black on light surfaces).
 export const buildShadow = (colors) => ({
   shadowColor: colors.mode === 'dark' ? '#000000' : colors.ink,
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: colors.mode === 'dark' ? 0.35 : 0.08,
-  shadowRadius: 12,
-  elevation: 3,
+  shadowOffset: { width: 0, height: 8 },
+  shadowOpacity: colors.mode === 'dark' ? 0.3 : 0.06,
+  shadowRadius: 24,
+  elevation: 2,
 });
 
 export const buildTypography = (colors) => ({
-  h1: { fontFamily: FONTS.display, fontSize: 36, lineHeight: 40, letterSpacing: -1, color: colors.ink },
-  h2: { fontFamily: FONTS.display, fontSize: 28, lineHeight: 32, letterSpacing: -0.7, color: colors.ink },
-  h3: { fontFamily: FONTS.semibold, fontSize: 18, letterSpacing: -0.3, color: colors.ink },
-  body: { fontFamily: FONTS.body, fontSize: 15, lineHeight: 21, color: colors.text },
-  caption: { fontFamily: FONTS.body, fontSize: 12, letterSpacing: 0.1, color: colors.textMuted },
-  button: { fontFamily: FONTS.semibold, fontSize: 15, letterSpacing: 0.2, color: colors.inkContrast },
+  h1: { fontFamily: FONTS.display, fontSize: FONT_SIZE.display, lineHeight: 34, letterSpacing: -0.6, color: colors.ink },
+  h2: { fontFamily: FONTS.display, fontSize: FONT_SIZE.display, lineHeight: 34, letterSpacing: -0.6, color: colors.ink },
+  h3: { fontFamily: FONTS.semibold, fontSize: FONT_SIZE.title, lineHeight: 24, letterSpacing: -0.2, color: colors.ink },
+  body: { fontFamily: FONTS.body, fontSize: FONT_SIZE.body, lineHeight: 20, color: colors.text },
+  caption: { fontFamily: FONTS.body, fontSize: FONT_SIZE.caption, lineHeight: 16, color: colors.textMuted },
+  button: { fontFamily: FONTS.semibold, fontSize: FONT_SIZE.body, letterSpacing: 0.1, color: colors.inkContrast },
 });
 
 export const SHADOW = buildShadow(LIGHT_COLORS);

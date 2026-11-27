@@ -1,26 +1,43 @@
 import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { UserCircle2 } from 'lucide-react-native';
+import { View, Text, ScrollView, Pressable, Alert, Linking, StyleSheet } from 'react-native';
+import {
+  UserCircle2,
+  Briefcase,
+  Heart,
+  Clapperboard,
+  Wallet,
+  UserPen,
+  Settings as SettingsIcon,
+  LifeBuoy,
+  Info,
+  LogOut,
+} from 'lucide-react-native';
 import Button from '../../../components/Button';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTheme } from '../../../hooks/useTheme';
 import { useTripLedger } from '../../../hooks/useTripLedger';
 import { useBookedTripsCount } from '../hooks/useBookedTripsCount';
-import { SPACING, LAYOUT, FONTS } from '../../../theme';
+import { useMyReels } from '../hooks/useMyReels';
+import { useAvatarPicker } from '../hooks/useAvatarPicker';
+import { SPACING, LAYOUT, FONTS, RADIUS } from '../../../theme';
 import { getMenuItems } from '../data/menuItems';
 import ProfileHeaderBar from '../components/ProfileHeaderBar';
 import ProfileCard from '../components/ProfileCard';
 import ProfileStatsCard from '../components/ProfileStatsCard';
 import ProfileMenuList from '../components/ProfileMenuList';
+import ProfileHero from '../components/ProfileHero';
+import { SectionTitle, QuickAccessGrid, RowGroup } from '../components/ProfileSections';
+
+const SUPPORT_EMAIL = 'support@triptape.app';
+const APP_VERSION = '1.0.0';
 
 /**
- * ProfileScreen Component
- *
- * Recreated from the "Triptape Profile & Settings" design handoff: large
- * left-aligned "Profile" title with a gear icon (→ Settings) top-right, an
- * avatar + name + role-pill card, stats, and a grouped menu list. Each
- * section is its own component (see ../components) — this file is just the
- * layout. Guests see a sign-in prompt instead.
+ * ProfileScreen — card layout:
+ *   "Profile" title · green greeting card (avatar, Hi <name> 👋, bio, real
+ *   Trips / Tapes counts) · Quick access (My trips, Saved, My tapes, Wallet)
+ *   · Preferences (Edit profile, Settings) · Support (Help, About) · Log out.
+ * Every number is real. Guests see a sign-in prompt; agency accounts keep
+ * their management menu.
  */
 export default function ProfileScreen({ navigation }) {
   const { colors, typography } = useTheme();
@@ -28,6 +45,8 @@ export default function ProfileScreen({ navigation }) {
   const { user, logout } = useAuth();
   const { wallet } = useTripLedger();
   const tripsCount = useBookedTripsCount();
+  const { reels } = useMyReels();
+  const avatar = useAvatarPicker();
 
   if (user?.isGuest) {
     return (
@@ -51,22 +70,134 @@ export default function ProfileScreen({ navigation }) {
     );
   }
 
-  const ledgerCounts = { tripsCount, walletBalance: wallet.balance };
-  const menuItems = getMenuItems(navigation, logout, user?.role, user?._id, ledgerCounts);
+  // Agency accounts keep their management menu (packages, payments, tagged tapes).
+  if (user?.role === 'agency') {
+    const ledgerCounts = { tripsCount, walletBalance: wallet.balance };
+    const menuItems = getMenuItems(navigation, logout, user?.role, user?._id, ledgerCounts);
+    return (
+      <View style={styles.container}>
+        <ProfileHeaderBar onOpenSettings={() => navigation.navigate('Settings')} />
+        <ScrollView contentContainerStyle={styles.agencyContent}>
+          <ProfileCard user={user} />
+          <ProfileStatsCard
+            stats={user?.stats}
+            role={user?.role}
+            userId={user?._id}
+            {...ledgerCounts}
+          />
+          <ProfileMenuList items={menuItems} />
+        </ScrollView>
+      </View>
+    );
+  }
+
+  const go = (name, params) => () => navigation.navigate(name, params);
+
+  const confirmLogout = () =>
+    Alert.alert('Log out?', 'You can sign back in anytime.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Log out', style: 'destructive', onPress: logout },
+    ]);
+
+  const quickAccess = [
+    {
+      id: 'trips',
+      Icon: Briefcase,
+      title: 'My trips',
+      sub: 'Bookings & invoices',
+      badge: tripsCount,
+      onPress: go('ProfileTrips', { kind: 'booked' }),
+    },
+    {
+      id: 'saved',
+      Icon: Heart,
+      title: 'Saved trips',
+      sub: 'Trips you ♡ for later',
+      onPress: go('ProfileTrips', { kind: 'saved' }),
+    },
+    {
+      id: 'tapes',
+      Icon: Clapperboard,
+      title: 'My tapes',
+      sub: 'Everything you posted',
+      badge: reels.length,
+      onPress: go('MyReels'),
+    },
+    {
+      id: 'wallet',
+      Icon: Wallet,
+      title: 'Wallet',
+      sub: 'Rewards from your tapes',
+      badge: `₹${(wallet.balance || 0).toLocaleString('en-IN')}`,
+      onPress: go('Wallet'),
+    },
+  ];
+
+  const preferences = [
+    {
+      id: 'edit',
+      Icon: UserPen,
+      title: 'Edit profile',
+      sub: 'Name, bio and home city',
+      onPress: go('EditProfile'),
+    },
+    {
+      id: 'settings',
+      Icon: SettingsIcon,
+      title: 'Settings',
+      sub: 'Theme, notifications, devices',
+      onPress: go('Settings'),
+    },
+  ];
+
+  const support = [
+    {
+      id: 'help',
+      Icon: LifeBuoy,
+      title: 'Help & support',
+      sub: 'Get help with trips and payments',
+      onPress: () =>
+        Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=TripTape%20help`).catch(() =>
+          Alert.alert('Help & support', `Write to us at ${SUPPORT_EMAIL}`)
+        ),
+    },
+    {
+      id: 'about',
+      Icon: Info,
+      title: 'About TripTape',
+      sub: `Version ${APP_VERSION}`,
+      onPress: () =>
+        Alert.alert('TripTape', `Real travel tapes from real trips.\nVersion ${APP_VERSION}`),
+    },
+  ];
 
   return (
     <View style={styles.container}>
-      <ProfileHeaderBar onOpenSettings={() => navigation.navigate('Settings')} />
-
-      <ScrollView contentContainerStyle={styles.content}>
-        <ProfileCard user={user} />
-        <ProfileStatsCard
-          stats={user?.stats}
-          role={user?.role}
-          userId={user?._id}
-          {...ledgerCounts}
+      <ProfileHeaderBar onOpenSettings={go('Settings')} />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ProfileHero
+          user={user}
+          trips={tripsCount}
+          tapes={reels.length}
+          onPressTrips={go('ProfileTrips', { kind: 'booked' })}
+          onPressTapes={go('MyReels')}
+          onPressAvatar={avatar.open}
+          avatarUploading={avatar.uploading}
         />
-        <ProfileMenuList items={menuItems} />
+
+        <SectionTitle>Quick access</SectionTitle>
+        <QuickAccessGrid items={quickAccess} />
+
+        <SectionTitle>Preferences</SectionTitle>
+        <RowGroup rows={preferences} />
+
+        <SectionTitle>Support</SectionTitle>
+        <RowGroup rows={support} />
+
+        <Pressable onPress={confirmLogout} style={styles.logout} accessibilityRole="button">
+          <LogOut size={18} color={colors.ink} />
+          <Text style={styles.logoutText}>Log out</Text>
+        </Pressable>
       </ScrollView>
     </View>
   );
@@ -79,13 +210,30 @@ function getStyles(colors) {
       backgroundColor: colors.background,
     },
     content: {
-      paddingHorizontal: SPACING.xl,
+      paddingHorizontal: SPACING.lg,
+      paddingTop: SPACING.sm,
+      paddingBottom: SPACING.xxl,
+      width: '100%',
+      maxWidth: LAYOUT.contentMaxWidth,
+      alignSelf: 'center',
+    },
+    agencyContent: {
+      paddingHorizontal: SPACING.lg,
       paddingVertical: SPACING.lg,
       width: '100%',
       maxWidth: LAYOUT.contentMaxWidth,
       alignSelf: 'center',
       gap: SPACING.lg,
     },
+    actions: {
+      flexDirection: 'row',
+      gap: SPACING.sm,
+      marginTop: SPACING.md,
+      marginBottom: SPACING.sm,
+    },
+    actionBtn: { flex: 1, paddingVertical: SPACING.sm + 2 },
+    tabBody: { paddingTop: SPACING.md },
+    flush: { paddingTop: 2 },
     guest: {
       flex: 1,
       alignItems: 'center',

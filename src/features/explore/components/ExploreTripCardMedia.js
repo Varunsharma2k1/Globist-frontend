@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
   pillText: {
     fontFamily: FONTS.semibold,
-    fontSize: 11,
+    fontSize: 12,
     color: '#FFFFFF',
   },
 });

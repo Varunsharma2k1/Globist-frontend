@@ -62,7 +62,7 @@ function getStyles(colors) {
     },
     breakdownTitle: {
       fontFamily: FONTS.heading,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.ink,
       marginBottom: SPACING.md,
     },
@@ -73,12 +73,12 @@ function getStyles(colors) {
     },
     breakdownLabel: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
     },
     breakdownVal: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.text,
     },
     totalRow: {
@@ -89,7 +89,7 @@ function getStyles(colors) {
     },
     totalLabel: {
       fontFamily: FONTS.heading,
-      fontSize: 16,
+      fontSize: 18,
       color: colors.ink,
     },
     totalVal: {

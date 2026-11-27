@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { RADIUS, SPACING, FONTS } from '../theme';
 import { useTheme } from '../hooks/useTheme';
+import haptics from '../utils/haptics';
 
 export default function Button({
   title,
@@ -24,7 +25,10 @@ export default function Button({
         isOutline && { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.ink },
         style,
       ]}
-      onPress={onPress}
+      onPress={(e) => {
+        haptics.tap();
+        onPress?.(e);
+      }}
       disabled={loading}
       activeOpacity={0.8}
     >
@@ -32,7 +36,14 @@ export default function Button({
         <View style={styles.loadingRow}>
           <ActivityIndicator color={isPrimary ? colors.inkContrast : colors.ink} />
           {loadingTitle ? (
-            <Text style={[styles.text, isPrimary && { color: colors.inkContrast }, isOutline && { color: colors.ink }, textStyle]}>
+            <Text
+              style={[
+                styles.text,
+                isPrimary && { color: colors.inkContrast },
+                isOutline && { color: colors.ink },
+                textStyle,
+              ]}
+            >
               {loadingTitle}
             </Text>
           ) : null}
@@ -64,6 +75,6 @@ const styles = StyleSheet.create({
   loadingRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.sm },
   text: {
     fontFamily: FONTS.heading,
-    fontSize: 15,
+    fontSize: 14,
   },
 });

@@ -6,27 +6,40 @@ import {
   signupUser,
   setAccountType,
   getCurrentUser,
+  loginWithGoogleToken,
+  logoutSession,
+  logoutAllSessions,
+  resetPasswordWithCode,
 } from '../api/auth';
+import { getGoogleIdToken, signOutGoogle } from '../api/google';
+import * as tokenStore from '../api/tokenStore';
 
 /**
  * Global Authentication Context & State Provider
  *
- * Manages the active user session (JWT + cached user in AsyncStorage) and the
- * auth actions: email login/signup, one-time account type
- * selection and logout. Screens never touch tokens directly.
+ * Manages the active user session and the auth actions: email login/signup,
+ * Google, one-time account type selection and logout. Tokens live only in
+ * tokenStore (encrypted SecureStore); AsyncStorage keeps just the cached,
+ * non-secret user profile. Screens never touch tokens.
+ *
+ * Users stay signed in for months: the access token is renewed silently and
+ * the session only ends on logout, after ~90 days unused, or when the server
+ * revokes it (logout everywhere, stolen-token detection) — then the app
+ * quietly returns to guest browsing.
  *
  * Nobody has to sign in to open the app: without a session the user is an
  * in-memory guest (`{ isGuest: true }`, never persisted) who can browse
  * everything and is asked to sign in only to book or post (see
  * useRequireAuth). Logging out returns to guest.
  *
- * "Continue with Google" is a placeholder that creates a local mock session
- * — no OAuth or backend account yet (see MOCK_TOKEN_PREFIX in api/client).
+ * "Continue with Google" opens the native Google account sheet, then the
+ * server verifies the ID token and returns our own JWT session.
  */
 export const AuthContext = createContext();
 
 const GUEST_USER = { _id: 'guest', name: 'Guest', role: 'traveler', isGuest: true };
-export const MOCK_GOOGLE_TOKEN = 'mock-google-session';
+// Pre-SecureStore builds kept tokens here in plain text; wiped on launch.
+const LEGACY_TOKEN_KEYS = [STORAGE_KEYS.AUTH_TOKEN, STORAGE_KEYS.REFRESH_TOKEN];
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -34,14 +47,16 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     loadUserSession();
+    // Server ended the session (revoked, expired, signed out elsewhere).
+    return tokenStore.onSessionExpired(() => {
+      AsyncStorage.removeItem(STORAGE_KEYS.USER_INFO).catch(() => {});
+      setUser(GUEST_USER);
+    });
   }, []);
 
   const clearSession = async () => {
-    await AsyncStorage.multiRemove([
-      STORAGE_KEYS.AUTH_TOKEN,
-      STORAGE_KEYS.REFRESH_TOKEN,
-      STORAGE_KEYS.USER_INFO,
-    ]);
+    await tokenStore.clear();
+    await AsyncStorage.multiRemove([...LEGACY_TOKEN_KEYS, STORAGE_KEYS.USER_INFO]);
     setUser(GUEST_USER);
   };
 
@@ -52,16 +67,14 @@ export const AuthProvider = ({ children }) => {
    */
   const loadUserSession = async () => {
     try {
-      const [token, cachedUser] = await Promise.all([
-        AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN),
-        AsyncStorage.getItem(STORAGE_KEYS.USER_INFO),
-      ]);
-      if (token && cachedUser) {
+      AsyncStorage.multiRemove(LEGACY_TOKEN_KEYS).catch(() => {});
+      await tokenStore.load();
+      const cachedUser = await AsyncStorage.getItem(STORAGE_KEYS.USER_INFO);
+      if (tokenStore.hasSession() && cachedUser) {
         setUser(JSON.parse(cachedUser));
-        // Mock Google sessions have no backend account to re-validate against.
-        if (token !== MOCK_GOOGLE_TOKEN) refreshUser();
+        refreshUser();
       } else {
-        setUser(GUEST_USER);
+        await clearSession();
       }
     } catch (error) {
       console.warn('[AuthContext] Session restore failed, clearing session:', error?.message);
@@ -81,18 +94,15 @@ export const AuthProvider = ({ children }) => {
         AsyncStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(next)).catch(() => {});
         return next;
       });
-    } catch (error) {
-      if (error.response?.status === 401) await clearSession();
-      // Network errors: keep the cached session so the app still opens offline.
+    } catch {
+      // Offline: keep the cached session. A dead session is handled by
+      // tokenStore.onSessionExpired, never by a single failed request.
     }
   };
 
   const persistSession = async ({ token, refreshToken, user: userData }) => {
-    await AsyncStorage.multiSet([
-      [STORAGE_KEYS.AUTH_TOKEN, token],
-      [STORAGE_KEYS.REFRESH_TOKEN, refreshToken || ''],
-      [STORAGE_KEYS.USER_INFO, JSON.stringify(userData)],
-    ]);
+    await tokenStore.save({ token, refreshToken });
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(userData));
     setUser(userData);
     return userData;
   };
@@ -103,22 +113,12 @@ export const AuthProvider = ({ children }) => {
     persistSession(await signupUser({ name, email, password }));
 
   /**
-   * Placeholder "Continue with Google": pretends the OAuth round-trip
-   * succeeded and signs in a fixed demo traveller, stored like a real session.
+   * Google sign-in. Resolves to null if the user closed the account sheet.
    */
   const loginWithGoogle = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    return persistSession({
-      token: MOCK_GOOGLE_TOKEN,
-      user: {
-        _id: 'google-demo-traveller',
-        name: 'Aarav Mehta',
-        email: 'aarav.mehta@gmail.com',
-        role: 'traveler',
-        authProvider: 'google',
-        stats: {},
-      },
-    });
+    const idToken = await getGoogleIdToken();
+    if (!idToken) return null;
+    return persistSession(await loginWithGoogleToken(idToken));
   };
 
   /**
@@ -133,7 +133,31 @@ export const AuthProvider = ({ children }) => {
     return next;
   };
 
-  const logout = clearSession;
+  /** Signs out this device: the server revokes the session, then local wipe. */
+  const logout = async () => {
+    const refreshToken = tokenStore.getRefreshToken();
+    if (refreshToken) await logoutSession(refreshToken).catch(() => {}); // offline: still sign out locally
+    await signOutGoogle();
+    await clearSession();
+  };
+
+  /** Merges profile changes into the session (memory + cached user info). */
+  const updateUser = async (partial) => {
+    const next = { ...user, ...partial };
+    setUser(next);
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_INFO, JSON.stringify(next)).catch(() => {});
+  };
+
+  /** Forgot-password: new password + emailed code. Signs this device in. */
+  const resetPassword = async ({ email, code, newPassword }) =>
+    persistSession(await resetPasswordWithCode({ email, code, newPassword }));
+
+  /** Signs out every device (e.g. after a lost phone). */
+  const logoutAllDevices = async () => {
+    await logoutAllSessions();
+    await signOutGoogle();
+    await clearSession();
+  };
 
   return (
     <AuthContext.Provider
@@ -145,6 +169,9 @@ export const AuthProvider = ({ children }) => {
         loginWithGoogle,
         selectAccountType,
         logout,
+        logoutAllDevices,
+        resetPassword,
+        updateUser,
         setUser,
       }}
     >

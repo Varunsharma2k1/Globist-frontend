@@ -80,13 +80,13 @@ function getStyles(colors) {
     body: { padding: SPACING.md },
     region: {
       fontFamily: FONTS.bold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 0.8,
       color: colors.textMuted,
     },
     name: {
       fontFamily: FONTS.heading,
-      fontSize: 17,
+      fontSize: 18,
       color: colors.ink,
       marginTop: 2,
       marginBottom: SPACING.sm,
@@ -102,7 +102,7 @@ function getStyles(colors) {
       borderTopColor: colors.divider,
     },
     season: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
-    price: { fontFamily: FONTS.heading, fontSize: 17, color: colors.ink },
+    price: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
     priceUnit: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
   });
 }

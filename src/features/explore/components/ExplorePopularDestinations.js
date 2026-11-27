@@ -56,7 +56,7 @@ function getStyles(colors) {
     },
     label: {
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       letterSpacing: 1.4,
       color: colors.textMuted,
       marginBottom: SPACING.sm + 4,
@@ -86,7 +86,7 @@ function getStyles(colors) {
     },
     name: {
       fontFamily: FONTS.bold,
-      fontSize: 15,
+      fontSize: 14,
       color: '#FFFFFF',
     },
     count: {

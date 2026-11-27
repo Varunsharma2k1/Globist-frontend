@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Eye, EyeOff } from 'lucide-react-native';
 import Header from '../../../components/Header';
+import KeyboardAwareScrollView from '../../../components/KeyboardAwareScrollView';
 import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import { useTheme } from '../../../hooks/useTheme';
@@ -51,7 +52,7 @@ export default function AuthScreen({ navigation, route }) {
         title={form.isLogin ? 'Sign In' : 'Create Account'}
         onBack={() => navigation.goBack()}
       />
-      <ScrollView
+      <KeyboardAwareScrollView
         contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + insets.bottom }]}
       >
         <Text style={typography.h2}>{form.isLogin ? 'Welcome Back' : 'Create Your Account'}</Text>
@@ -105,6 +106,15 @@ export default function AuthScreen({ navigation, route }) {
           onRightIconPress={() => form.setShowPassword((v) => !v)}
         />
 
+        {form.isLogin && (
+          <TouchableOpacity
+            style={styles.forgot}
+            onPress={() => navigation.navigate('ForgotPassword', { email: form.email.trim() })}
+          >
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity>
+        )}
+
         <Button
           title={form.isLogin ? 'Sign In' : 'Create Account'}
           onPress={form.handleSubmit}
@@ -126,7 +136,7 @@ export default function AuthScreen({ navigation, route }) {
         />
 
         <AuthModeSwitch isLogin={form.isLogin} onToggle={form.toggleMode} />
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
@@ -143,7 +153,9 @@ function getStyles(colors) {
       marginVertical: SPACING.md,
     },
     orLine: { flex: 1, height: 1, backgroundColor: colors.divider },
-    orText: { fontFamily: FONTS.body, fontSize: 13, color: colors.textMuted },
+    orText: { fontFamily: FONTS.body, fontSize: 14, color: colors.textMuted },
+    forgot: { alignSelf: 'flex-end', paddingVertical: SPACING.xs },
+    forgotText: { fontFamily: FONTS.heading, fontSize: 14, color: colors.ink },
     content: {
       padding: SPACING.lg,
       width: '100%',

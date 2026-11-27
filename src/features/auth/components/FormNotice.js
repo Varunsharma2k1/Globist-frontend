@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   text: {
     flex: 1,
     fontFamily: FONTS.body,
-    fontSize: 13,
+    fontSize: 14,
     lineHeight: 18,
   },
 });

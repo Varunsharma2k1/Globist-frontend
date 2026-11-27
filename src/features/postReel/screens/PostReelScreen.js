@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
 import Input from '../../../components/Input';
 import Button from '../../../components/Button';
 import { useTheme } from '../../../hooks/useTheme';
+import KeyboardAwareScrollView from '../../../components/KeyboardAwareScrollView';
 import { SPACING, LAYOUT } from '../../../theme';
 import { usePostReelForm } from '../hooks/usePostReelForm';
 import MediaUploadCard from '../components/MediaUploadCard';
-import LinkedTripPicker from '../components/LinkedTripPicker';
+import TaggedTripCard from '../components/TaggedTripCard';
 import CategoryPicker from '../components/CategoryPicker';
 import ReelPreviewModal from '../components/ReelPreviewModal';
 
@@ -17,9 +18,9 @@ import ReelPreviewModal from '../components/ReelPreviewModal';
  *
  * Form for travellers and agencies to post new travel clips. Only video is
  * accepted (no photos), picked from the device library, with an inline
- * Instagram-style preview once selected. Travellers can tag the agency of
- * a completed trip (one reel per trip, earns wallet credit) or post
- * untagged. Form state/submission lives in
+ * Instagram-style preview once selected. From the + button it's a plain
+ * tape; opened from a booked trip it's tied to that trip's agency (one tape
+ * per trip, earns wallet credit) — see TaggedTripCard. Form state/submission lives in
  * usePostReelForm; each visual section is its own component (see
  * ../components) — this file is just the layout.
  */
@@ -33,56 +34,51 @@ export default function PostReelScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Header title="Post Travel Tape" onBack={() => navigation.goBack()} />
-      <KeyboardAvoidingView
+      <KeyboardAwareScrollView
         style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 56 : 0}
+        contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + insets.bottom }]}
       >
-        <ScrollView
-          contentContainerStyle={[styles.content, { paddingBottom: SPACING.lg + insets.bottom }]}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text style={typography.h2}>Share Your Journey</Text>
-          <Text style={styles.subtitle}>Post short travel videos and inspire fellow explorers.</Text>
+        <Text style={typography.h2}>Share Your Journey</Text>
+        <Text style={styles.subtitle}>
+          {form.linkedBooking
+            ? 'Share a tape from your trip. It will appear on the agency’s profile too.'
+            : 'Post short travel videos and inspire fellow explorers.'}
+        </Text>
 
-          <MediaUploadCard
-            media={form.media}
-            onPick={form.handlePickMedia}
-            onOpenPreview={() => setPreviewVisible(true)}
-          />
+        {form.linkedBooking ? <TaggedTripCard booking={form.linkedBooking} /> : null}
 
-          <Input
-            label="Caption"
-            value={form.caption}
-            onChangeText={form.setCaption}
-            placeholder="e.g. Sunset view from Triund Top"
-            multiline
-          />
+        <MediaUploadCard
+          media={form.media}
+          onPick={form.handlePickMedia}
+          onOpenPreview={() => setPreviewVisible(true)}
+        />
 
-          <Input
-            label="Destination / Location"
-            value={form.location}
-            onChangeText={form.setLocation}
-            placeholder="e.g. Dharamshala, Himachal Pradesh"
-          />
+        <Input
+          label="Caption"
+          value={form.caption}
+          onChangeText={form.setCaption}
+          placeholder="e.g. Sunset view from Triund Top"
+          multiline
+        />
 
-          <LinkedTripPicker
-            bookings={form.bookings}
-            value={form.linkedBookingId}
-            onChange={form.linkBooking}
-          />
+        <Input
+          label="Destination / Location"
+          value={form.location}
+          onChangeText={form.setLocation}
+          placeholder="e.g. Dharamshala, Himachal Pradesh"
+        />
 
-          <CategoryPicker value={form.imageType} onChange={form.setImageType} />
 
-          <Button
-            title="Publish Tape"
-            loadingTitle={form.loadingLabel}
-            onPress={form.handleSubmit}
-            loading={form.loading}
-            style={{ marginTop: SPACING.sm }}
-          />
-        </ScrollView>
-      </KeyboardAvoidingView>
+        <CategoryPicker value={form.imageType} onChange={form.setImageType} />
+
+        <Button
+          title="Publish Tape"
+          loadingTitle={form.loadingLabel}
+          onPress={form.handleSubmit}
+          loading={form.loading}
+          style={{ marginTop: SPACING.sm }}
+        />
+      </KeyboardAwareScrollView>
 
       <ReelPreviewModal
         visible={previewVisible}

@@ -25,7 +25,7 @@ export function getSharedModalStyles(colors) {
     },
     modalBody: {
       fontFamily: FONTS.body,
-      fontSize: 13.5,
+      fontSize: 14,
       color: colors.textMuted,
       lineHeight: 19,
     },

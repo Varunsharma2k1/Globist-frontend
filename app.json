@@ -1,20 +1,24 @@
 {
   "expo": {
-    "name": "Triptape",
+    "name": "TripTape",
     "slug": "triptape",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": [
       "triptape",
-      "com.globist.app"
+      "com.triptape.app"
     ],
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.globist.app"
+      "bundleIdentifier": "com.triptape.app"
     },
     "android": {
-      "package": "com.globist.app"
+      "package": "com.triptape.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#FCF4E9"
+      }
     },
     "plugins": [
       "expo-font",
@@ -22,11 +26,24 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Triptape needs access to your photos so you can post a travel reel.",
-          "videoPermission": "Triptape needs access to your videos so you can post a travel reel."
+          "photosPermission": "TripTape needs access to your photos so you can post a travel reel.",
+          "videoPermission": "TripTape needs access to your videos so you can post a travel reel."
         }
       ],
-      "expo-status-bar"
-    ]
+      "expo-status-bar",
+      "@react-native-google-signin/google-signin",
+      "expo-secure-store",
+      "./plugins/withLargeHeap",
+      [
+        "expo-navigation-bar",
+        {
+          "hidden": true
+        }
+      ]
+    ],
+    "icon": "./assets/images/icon.png",
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    }
   }
 }

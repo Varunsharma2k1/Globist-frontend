@@ -1,4 +1,5 @@
-import { uploadAsync, FileSystemUploadType } from 'expo-file-system/legacy';
+import { uploadAsync, FileSystemUploadType, getInfoAsync } from 'expo-file-system/legacy';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import client from './client';
 
 /**
@@ -17,7 +18,8 @@ const SUPPORTED = ['video/mp4', 'video/quicktime'];
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** iOS picks .mov, Android usually .mp4; anything else is sent as mp4. */
-export const reelContentType = (mimeType) => (SUPPORTED.includes(mimeType) ? mimeType : 'video/mp4');
+export const reelContentType = (mimeType) =>
+  SUPPORTED.includes(mimeType) ? mimeType : 'video/mp4';
 
 async function getUploadUrl(contentType) {
   const { data } = await client.post('/media/upload-url', { contentType });
@@ -48,7 +50,8 @@ async function waitUntilReady(reelId, onStatus) {
     const { data } = await client.get(`/media/reels/${reelId}/status`);
     onStatus?.(data.status);
     if (data.status === 'ready') return data;
-    if (data.status === 'failed') throw new Error('We could not process this video. Try another one.');
+    if (data.status === 'failed')
+      throw new Error('We could not process this video. Try another one.');
     await sleep(POLL_MS);
   }
   // Still processing: the reel appears in the feed by itself once it's done.
@@ -71,4 +74,32 @@ export async function publishReel(file, details, onStage) {
   const status = await waitUntilReady(reel._id);
   if (status.status === 'ready') onStage?.('ready');
   return { ...reel, ...status };
+}
+
+const AVATAR_SIZE = 512;
+
+/**
+ * Profile photo: shrink to 512×512 JPEG on the phone (≈50–100 KB instead of
+ * a 3–5 MB camera photo), upload straight to R2 with a size-locked presigned
+ * URL, and return the public URL to save on the profile.
+ * @param {string} uri - picked (already square-cropped) image
+ * @returns {Promise<string>} public avatar URL
+ */
+export async function uploadAvatar(uri) {
+  const rendered = await ImageManipulator.manipulate(uri)
+    .resize({ width: AVATAR_SIZE })
+    .renderAsync();
+  const small = await rendered.saveAsync({ compress: 0.8, format: SaveFormat.JPEG });
+  const { size } = await getInfoAsync(small.uri);
+  const { data: target } = await client.post('/media/avatar-upload-url', {
+    contentType: 'image/jpeg',
+    size,
+  });
+  const res = await uploadAsync(target.uploadUrl, small.uri, {
+    httpMethod: 'PUT',
+    uploadType: FileSystemUploadType.BINARY_CONTENT,
+    headers: target.headers,
+  });
+  if (res.status < 200 || res.status >= 300) throw new Error(`Upload failed (${res.status})`);
+  return target.publicUrl;
 }

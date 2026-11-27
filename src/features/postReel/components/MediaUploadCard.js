@@ -53,6 +53,7 @@ export default function MediaUploadCard({ media, onPick, onOpenPreview }) {
       <View style={styles.uploadEmpty}>
         <Upload size={24} color={colors.textMuted} strokeWidth={1.75} />
         <Text style={styles.uploadEmptyText}>Tap to upload a video</Text>
+        <Text style={styles.uploadHint}>Vertical 9:16 works best</Text>
       </View>
     </TouchableOpacity>
   );
@@ -60,8 +61,12 @@ export default function MediaUploadCard({ media, onPick, onOpenPreview }) {
 
 function getStyles(colors) {
   return StyleSheet.create({
+    // Same 9:16 shape as a reel on the phone, so what you see is what gets posted.
     uploadCard: {
-      height: 180,
+      width: '62%',
+      maxWidth: 260,
+      aspectRatio: 9 / 16,
+      alignSelf: 'center',
       borderRadius: RADIUS.md,
       backgroundColor: colors.surfaceMuted,
       overflow: 'hidden',
@@ -75,8 +80,14 @@ function getStyles(colors) {
     },
     uploadEmptyText: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
+    },
+    uploadHint: {
+      fontFamily: FONTS.body,
+      fontSize: 12,
+      color: colors.textMuted,
+      opacity: 0.8,
     },
     mediaActionRow: {
       position: 'absolute',

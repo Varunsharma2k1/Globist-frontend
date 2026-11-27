@@ -17,7 +17,7 @@ export function getStyles(colors) {
     day: {
       alignSelf: 'center',
       fontFamily: FONTS.semibold,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
       marginVertical: SPACING.sm,
     },
@@ -32,11 +32,11 @@ export function getStyles(colors) {
     },
     bubbleMine: { backgroundColor: colors.ink, borderBottomRightRadius: 6 },
     bubbleTheirs: { backgroundColor: colors.surfaceMuted, borderBottomLeftRadius: 6 },
-    msgText: { fontFamily: FONTS.body, fontSize: 15, lineHeight: 20, color: colors.text },
+    msgText: { fontFamily: FONTS.body, fontSize: 14, lineHeight: 20, color: colors.text },
     msgTextMine: { color: colors.inkContrast },
     meta: {
       fontFamily: FONTS.body,
-      fontSize: 10.5,
+      fontSize: 12,
       color: colors.textMuted,
       marginTop: 2,
       marginHorizontal: 4,
@@ -62,7 +62,7 @@ export function getStyles(colors) {
       borderRadius: RADIUS.md,
       backgroundColor: colors.surfaceMuted,
       fontFamily: FONTS.body,
-      fontSize: 15,
+      fontSize: 14,
       color: colors.text,
     },
     sendBtn: {

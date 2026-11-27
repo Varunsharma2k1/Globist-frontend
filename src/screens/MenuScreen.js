@@ -46,7 +46,7 @@ export default function MenuScreen({ navigation }) {
         })}
 
         <View style={styles.footer}>
-          <Text style={styles.versionText}>Triptape Mobile v1.0.0 (Production Ready)</Text>
+          <Text style={styles.versionText}>TripTape Mobile v1.0.0 (Production Ready)</Text>
           <Text style={styles.platformText}>iOS & Android Build • Powered by Expo & Node.js</Text>
         </View>
       </ScrollView>
@@ -78,7 +78,7 @@ function getStyles(colors) {
   },
   itemTitle: {
     fontFamily: FONTS.semibold,
-    fontSize: 15,
+    fontSize: 14,
     color: colors.ink,
   },
   footer: {
@@ -92,7 +92,7 @@ function getStyles(colors) {
   },
   platformText: {
     fontFamily: FONTS.body,
-    fontSize: 11,
+    fontSize: 12,
     color: colors.textMuted,
     marginTop: 2,
   },

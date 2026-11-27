@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useReelEngagement } from '../context/ReelEngagementContext';
+import haptics from '../../../utils/haptics';
 
 /**
  * Like/unlike state for a single reel — demo only for now, no API call.
@@ -21,12 +22,14 @@ export function useReelLike(reel) {
   const likes = (reel.likes || 0) + (liked ? 1 : 0);
 
   const handleLike = useCallback(() => {
+    if (!liked) haptics.impact();
     if (shared) engagement.toggleLiked(reelId);
     else setLocalLiked((v) => !v);
-  }, [shared, engagement, reelId]);
+  }, [shared, engagement, reelId, liked]);
 
   // Double-tap only ever likes (never unlikes), matching Instagram.
   const likeOnce = useCallback(() => {
+    haptics.impact();
     if (shared) engagement.setLiked(reelId, true);
     else setLocalLiked(true);
   }, [shared, engagement, reelId]);

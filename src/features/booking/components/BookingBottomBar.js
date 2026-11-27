@@ -52,12 +52,12 @@ function getStyles(colors) {
     },
     priceLabel: {
       fontFamily: FONTS.body,
-      fontSize: 11,
+      fontSize: 12,
       color: colors.textMuted,
     },
     priceVal: {
       fontFamily: FONTS.heading,
-      fontSize: 20,
+      fontSize: 18,
       color: colors.ink,
     },
   });

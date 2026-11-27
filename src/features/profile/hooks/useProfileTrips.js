@@ -1,22 +1,22 @@
 import { useState, useEffect, useMemo } from 'react';
-import { getExploreTrips, getMyBookings } from '../../../api';
+import { getMyBookings } from '../../../api';
+import { getWishlist } from '../../../api/trips';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTripLedger } from '../../../hooks/useTripLedger';
-import { demoCounts, pickDemoTrips } from '../utils/demoCounts';
 import { buildTravelerBooking, otherBackendBookings } from '../utils/travelerBookings';
 
 /**
- * Trips behind the profile's "My Trips" (kind: 'booked') and "Saved Trips"
- * (kind: 'saved') rows. Booked trips are the ones booked in the app (the
- * on-device ledger, newest first, each carrying its `ledgerBooking` for the
- * trip-status / reel actions) followed by any other backend bookings; when
- * there are none (and for saved trips, which have no backend yet) it shows
- * placeholder picks from the catalogue, matching the counts on the profile.
+ * Trips behind the profile's "Trips" (kind: 'booked') and "Saved" (kind:
+ * 'saved') tabs — real data only:
+ * - booked: trips booked in the app (on-device ledger, newest first, each
+ *   carrying its `ledgerBooking` for the trip-status / tape actions) plus any
+ *   other server bookings;
+ * - saved: the user's ♡ wishlist from the server.
  */
 export function useProfileTrips(kind) {
   const { user } = useAuth();
   const { myBookings } = useTripLedger();
-  const [catalogue, setCatalogue] = useState([]);
+  const [saved, setSaved] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,13 +24,13 @@ export function useProfileTrips(kind) {
     let active = true;
     (async () => {
       try {
-        const [explore, list] = await Promise.all([
-          getExploreTrips(),
-          kind === 'booked' ? getMyBookings().catch(() => []) : Promise.resolve([]),
-        ]);
-        if (!active) return;
-        setCatalogue(explore.trips);
-        setBookings(list);
+        if (kind === 'saved') {
+          const list = await getWishlist();
+          if (active) setSaved(list);
+        } else {
+          const list = await getMyBookings().catch(() => []);
+          if (active) setBookings(list);
+        }
       } catch (error) {
         console.warn('[useProfileTrips] Failed to load trips:', error?.message);
       } finally {
@@ -44,22 +44,16 @@ export function useProfileTrips(kind) {
 
   // Saved: plain trips. Booked: each trip with its invoice details.
   const trips = useMemo(() => {
-    const counts = demoCounts(user?._id);
-    if (kind === 'saved') return pickDemoTrips(catalogue, user?._id, kind, counts.saved);
+    if (kind === 'saved') return saved;
     const backend = otherBackendBookings(bookings, myBookings);
-    if (myBookings.length || backend.length) {
-      return [
-        ...myBookings.map((booking, index) => ({
-          ...buildTravelerBooking({ user, booking, index }),
-          ledgerBooking: booking,
-        })),
-        ...backend.map((booking, index) => buildTravelerBooking({ user, booking, index })),
-      ];
-    }
-    return pickDemoTrips(catalogue, user?._id, kind, counts.trips).map((trip, index) =>
-      buildTravelerBooking({ user, trip, index })
-    );
-  }, [bookings, myBookings, catalogue, user, kind]);
+    return [
+      ...myBookings.map((booking, index) => ({
+        ...buildTravelerBooking({ user, booking, index }),
+        ledgerBooking: booking,
+      })),
+      ...backend.map((booking, index) => buildTravelerBooking({ user, booking, index })),
+    ];
+  }, [bookings, myBookings, saved, user, kind]);
 
   return { trips, loading };
 }

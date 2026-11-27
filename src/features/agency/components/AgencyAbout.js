@@ -1,32 +1,37 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Phone, Globe } from 'lucide-react-native';
-import RatingSummary from '../../../components/RatingSummary';
+import { Phone, Globe, Clapperboard } from 'lucide-react-native';
 import VerifiedBadge from '../../../components/VerifiedBadge';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 
-/** Short note, verified status, rating + total reviews and contact lines. */
-export default function AgencyAbout({ agency }) {
+/** Verified status, short note and contact lines. (Star ratings removed: see tape-based trust.) */
+export default function AgencyAbout({ agency, tapesCount = 0 }) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors);
   const note =
     agency.about ||
     (agency.isVerified
-      ? 'Verified by Globist. This agency has been checked and approved to run trips on the app.'
+      ? 'Verified by TripTape. This agency has been checked and approved to run trips on the app.'
       : 'This agency hasn’t added a description yet.');
 
   return (
     <View style={styles.section}>
       <View style={styles.statsRow}>
+        {/* Trust = real customer tapes from verified bookings (no star ratings). */}
         <View style={styles.stat}>
-          <RatingSummary rating={agency.rating} reviewCount={agency.reviewCount} />
-          <Text style={styles.statLabel}>{`${agency.reviewCount || 0} total reviews`}</Text>
+          <View style={styles.tapesValue}>
+            <Clapperboard size={16} color={colors.ink} />
+            <Text style={styles.tapesNumber}>{tapesCount}</Text>
+          </View>
+          <Text style={styles.statLabel}>
+            {tapesCount === 1 ? 'Traveller tape' : 'Traveller tapes'}
+          </Text>
         </View>
         {agency.isVerified ? (
           <View style={styles.stat}>
             <VerifiedBadge size={18} label />
-            <Text style={styles.statLabel}>Checked by Globist</Text>
+            <Text style={styles.statLabel}>Checked by TripTape</Text>
           </View>
         ) : null}
       </View>
@@ -62,7 +67,9 @@ function getStyles(colors) {
       backgroundColor: colors.surfaceMuted,
     },
     stat: { alignItems: 'center', gap: 4 },
-    statLabel: { fontFamily: FONTS.body, fontSize: 11, color: colors.textMuted },
+    tapesValue: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    tapesNumber: { fontFamily: FONTS.bold, fontSize: 18, color: colors.ink },
+    statLabel: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
     note: {
       fontFamily: FONTS.body,
       fontSize: 14,

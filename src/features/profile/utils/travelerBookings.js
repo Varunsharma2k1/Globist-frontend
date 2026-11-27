@@ -37,7 +37,7 @@ export function buildTravelerBooking({ user, trip, booking, index = 0 }) {
       region: pkgTrip?.location || '',
       duration: parseInt(pkgTrip?.duration, 10) || null,
     },
-    agencyName: pkgTrip?.agency?.name || 'Triptape partner agency',
+    agencyName: pkgTrip?.agency?.name || 'TripTape partner agency',
     traveler: {
       name: user?.name || 'Traveller',
       email: user?.email || '',

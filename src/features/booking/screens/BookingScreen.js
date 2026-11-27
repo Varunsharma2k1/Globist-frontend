@@ -159,7 +159,7 @@ function getStyles(colors) {
     },
     hint: {
       fontFamily: FONTS.body,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.textMuted,
       marginTop: 2,
       marginBottom: SPACING.sm,
@@ -187,7 +187,7 @@ function getStyles(colors) {
     dateVal: { fontFamily: FONTS.bold, fontSize: 14, color: colors.ink, marginTop: 2 },
     error: {
       fontFamily: FONTS.semibold,
-      fontSize: 13,
+      fontSize: 14,
       color: colors.error,
       marginBottom: SPACING.md,
     },
