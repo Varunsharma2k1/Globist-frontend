@@ -1,27 +1,19 @@
 import {
   User,
-  Lock,
   Key,
   ShieldCheck,
-  Bookmark,
-  Link as LinkIcon,
-  Eye,
-  UserX,
   Palette,
   Pointer,
   Bell,
-  MessageCircle,
-  Heart,
-  Send,
-  UserPlus,
-  Mail,
   Image as ImageIcon,
-  Database,
   HelpCircle,
   Flag,
   FileText,
   Info,
 } from 'lucide-react-native';
+import Constants from 'expo-constants';
+
+export const APP_VERSION = Constants.expoConfig?.version || '1.0.0';
 
 export const THEME_MODE_LABEL = { light: 'Light', dark: 'Dark', system: 'System Default' };
 
@@ -32,16 +24,9 @@ export const SETTINGS_GROUPS = [
       {
         id: 'editProfile',
         label: 'Edit Profile',
-        sub: 'Name, username, bio, website, avatar',
+        sub: 'Photo, name, username, bio, website',
         icon: User,
         type: 'nav',
-      },
-      {
-        id: 'privacy',
-        label: 'Private Account',
-        sub: 'Only approved followers can see your trips',
-        icon: Lock,
-        type: 'toggle',
       },
       {
         id: 'password',
@@ -53,45 +38,15 @@ export const SETTINGS_GROUPS = [
       {
         id: 'twofa',
         label: 'Two-Factor Authentication',
-        sub: 'Add an extra layer of security',
+        sub: 'Coming soon',
         icon: ShieldCheck,
-        type: 'nav',
-      },
-      {
-        id: 'saved',
-        label: 'Saved & Bookmarks',
-        sub: 'Trips and tapes you’ve saved',
-        icon: Bookmark,
-        type: 'nav',
-      },
-      {
-        id: 'linked',
-        label: 'Linked Accounts',
-        sub: 'Manage connected social logins',
-        icon: LinkIcon,
         type: 'nav',
       },
     ],
   },
   {
-    title: 'Content & Experience',
-    rows: [
-      {
-        id: 'sensitive',
-        label: 'Sensitive Content Control',
-        sub: 'Filter graphic or mature content',
-        icon: Eye,
-        type: 'nav',
-      },
-      {
-        id: 'blocked',
-        label: 'Blocked & Muted Accounts',
-        sub: 'Manage accounts you’ve restricted',
-        icon: UserX,
-        type: 'nav',
-      },
-      { id: 'theme', label: 'App Theme', sub: 'System Default', icon: Palette, type: 'nav' },
-    ],
+    title: 'Appearance',
+    rows: [{ id: 'theme', label: 'App Theme', sub: 'System Default', icon: Palette, type: 'nav' }],
   },
   {
     title: 'Screen Recording',
@@ -111,43 +66,8 @@ export const SETTINGS_GROUPS = [
       {
         id: 'pushAll',
         label: 'Push Notifications',
-        sub: 'Pause all mobile alerts',
+        sub: 'Comments, likes, new followers, messages and bookings',
         icon: Bell,
-        type: 'toggle',
-      },
-      {
-        id: 'notifComments',
-        label: 'Comments',
-        sub: 'When someone comments on your tape',
-        icon: MessageCircle,
-        type: 'toggle',
-      },
-      {
-        id: 'notifLikes',
-        label: 'Likes',
-        sub: 'When someone likes your tape',
-        icon: Heart,
-        type: 'toggle',
-      },
-      {
-        id: 'notifDMs',
-        label: 'Direct Messages',
-        sub: 'New messages from other travellers',
-        icon: Send,
-        type: 'toggle',
-      },
-      {
-        id: 'notifFollowers',
-        label: 'New Followers',
-        sub: 'When someone follows you',
-        icon: UserPlus,
-        type: 'toggle',
-      },
-      {
-        id: 'emailSms',
-        label: 'Email & SMS Notifications',
-        sub: 'Booking updates and receipts',
-        icon: Mail,
         type: 'toggle',
       },
     ],
@@ -162,22 +82,21 @@ export const SETTINGS_GROUPS = [
         icon: ImageIcon,
         type: 'toggle',
       },
-      {
-        id: 'dataSaver',
-        label: 'Data Saver Mode',
-        sub: 'Reduce data usage across the app',
-        icon: Database,
-        type: 'toggle',
-      },
     ],
   },
   {
-    title: 'App Information & Support',
+    title: 'Help & About',
     rows: [
       { id: 'help', label: 'Help Center & Support', icon: HelpCircle, type: 'nav' },
       { id: 'report', label: 'Report a Problem', icon: Flag, type: 'nav' },
       { id: 'terms', label: 'Terms of Service & Privacy Policy', icon: FileText, type: 'nav' },
-      { id: 'about', label: 'About TripTape', sub: 'Version 2.4.1', icon: Info, type: 'nav' },
+      {
+        id: 'about',
+        label: 'About TripTape',
+        sub: `Version ${APP_VERSION}`,
+        icon: Info,
+        type: 'nav',
+      },
     ],
   },
 ];

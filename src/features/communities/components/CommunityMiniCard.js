@@ -2,17 +2,17 @@ import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { Users } from 'lucide-react-native';
 import JoinButton from './JoinButton';
-import { useCommunities, useCommunityData } from '../../../hooks/useCommunities';
+import { useCommunityActions, useCommunityData } from '../../../hooks/useCommunities';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
-import { compact } from '../utils/format';
+import { compact, membersLabel } from '../utils/format';
 
 export const MINI_CARD_WIDTH = 210;
 
 /** Compact community card for the Home row: photo, name, members, Join. */
 export default function CommunityMiniCard({ community, onPress }) {
   const { colors } = useTheme();
-  const { toggleJoin } = useCommunities();
+  const { toggleJoin } = useCommunityActions();
   const { isJoined, memberCount } = useCommunityData();
   const styles = getStyles(colors);
 
@@ -30,7 +30,7 @@ export default function CommunityMiniCard({ community, onPress }) {
         </Text>
         <View style={styles.members}>
           <Users size={13} color={colors.textMuted} />
-          <Text style={styles.membersText}>{compact(memberCount(community))} members</Text>
+          <Text style={styles.membersText}>{membersLabel(memberCount(community))}</Text>
         </View>
         <View style={styles.join}>
           <JoinButton

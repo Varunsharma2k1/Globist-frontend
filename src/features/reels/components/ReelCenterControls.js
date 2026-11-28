@@ -67,7 +67,11 @@ export default function ReelCenterControls({
         accessibilityRole="button"
         accessibilityLabel={muted ? 'Unmute' : 'Mute'}
       >
-        {muted ? <VolumeX size={ICON_SIZE} color="#FFFFFF" /> : <Volume2 size={ICON_SIZE} color="#FFFFFF" />}
+        {muted ? (
+          <VolumeX size={ICON_SIZE} color="#FFFFFF" />
+        ) : (
+          <Volume2 size={ICON_SIZE} color="#FFFFFF" />
+        )}
       </TouchableOpacity>
     </Animated.View>
   );

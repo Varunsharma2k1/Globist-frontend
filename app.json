@@ -17,7 +17,8 @@
       "package": "com.triptape.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FCF4E9"
+        "backgroundImage": "./assets/images/adaptive-background.png",
+        "backgroundColor": "#4A1F7A"
       }
     },
     "plugins": [
@@ -39,7 +40,8 @@
         {
           "hidden": true
         }
-      ]
+      ],
+      "expo-image"
     ],
     "icon": "./assets/images/icon.png",
     "web": {

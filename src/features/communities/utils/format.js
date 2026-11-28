@@ -11,3 +11,6 @@ export const timeAgo = (hours) => {
   if (hours < 24) return `${Math.floor(hours)}h`;
   return `${Math.floor(hours / 24)}d`;
 };
+
+/** "1 member", "12 members", "1.2K members". */
+export const membersLabel = (n) => `${compact(n)} ${n === 1 ? 'member' : 'members'}`;

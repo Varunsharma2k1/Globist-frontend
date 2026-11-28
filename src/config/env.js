@@ -29,8 +29,6 @@ import Constants from 'expo-constants';
  * @property {'env'|'metro'} API_BASE_URL_SOURCE  Where API_BASE_URL came from.
  * @property {number} API_TIMEOUT    Request timeout in milliseconds.
  * @property {string} APP_ENV        'development' | 'production'.
- * @property {string} DEFAULT_DEMO_VIDEO  Fallback reel video URL used when a
- *   post has no uploaded media (e.g. seeded/demo content).
  * @property {string} GOOGLE_WEB_CLIENT_ID  Web OAuth client ID for Google sign-in.
  * @property {string} PLATFORM       'ios' | 'android' | 'web'.
  */
@@ -39,8 +37,6 @@ const DEFAULTS = Object.freeze({
   API_PORT: 5001,
   API_PATH: '/api',
   API_TIMEOUT_MS: 10000,
-  DEMO_VIDEO:
-    'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
 });
 
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
@@ -149,7 +145,6 @@ function buildEnv() {
       DEFAULTS.API_TIMEOUT_MS
     ),
     APP_ENV: appEnv,
-    DEFAULT_DEMO_VIDEO: process.env.EXPO_PUBLIC_DEFAULT_DEMO_VIDEO || DEFAULTS.DEMO_VIDEO,
     // Web OAuth client ID from Google Cloud; the server checks tokens against it.
     GOOGLE_WEB_CLIENT_ID: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim() || '',
     PLATFORM: Platform.OS,

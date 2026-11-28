@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     marginBottom: SPACING.sm,
   },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(23, 39, 30, 0.16)' },
-  dotActive: { width: 18, backgroundColor: 'rgba(23, 39, 30, 0.55)' },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: 'rgba(0, 0, 0, 0.16)' },
+  dotActive: { width: 18, backgroundColor: 'rgba(0, 0, 0, 0.55)' },
 });

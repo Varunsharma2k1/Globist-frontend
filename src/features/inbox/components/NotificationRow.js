@@ -1,15 +1,15 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { getSharedInboxRowStyles } from './sharedInboxRowStyles';
 
-export default function NotificationRow({ notification }) {
+export default function NotificationRow({ notification, onPress }) {
   const { colors } = useTheme();
   const styles = getSharedInboxRowStyles(colors);
   const Icon = notification.icon;
 
   return (
-    <View style={styles.row}>
+    <Pressable style={styles.row} onPress={onPress} disabled={!onPress}>
       <View style={[styles.iconTile, { backgroundColor: `${notification.tone}1A` }]}>
         <Icon size={18} color={notification.tone} strokeWidth={2} />
       </View>
@@ -18,6 +18,6 @@ export default function NotificationRow({ notification }) {
         <Text style={styles.rowTime}>{notification.time} ago</Text>
       </View>
       {notification.unread && <View style={styles.unreadDot} />}
-    </View>
+    </Pressable>
   );
 }

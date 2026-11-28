@@ -1,16 +1,16 @@
 import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import JoinButton from './JoinButton';
-import { useCommunities, useCommunityData } from '../../../hooks/useCommunities';
+import { useCommunityActions, useCommunityData } from '../../../hooks/useCommunities';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
-import { compact } from '../utils/format';
+import { compact, membersLabel } from '../utils/format';
 
 /** A row in the discover list: cover thumbnail, name, tagline, stats, Join. */
 export default function CommunityCard({ community, onPress }) {
   const { colors } = useTheme();
-  const { toggleJoin } = useCommunities();
-  const { isJoined, memberCount } = useCommunityData();
+  const { toggleJoin } = useCommunityActions();
+  const { isJoined, memberCount, onlineCount } = useCommunityData();
   const styles = getStyles(colors);
 
   return (
@@ -29,7 +29,8 @@ export default function CommunityCard({ community, onPress }) {
           {community.tagline}
         </Text>
         <Text style={styles.stats}>
-          {compact(memberCount(community))} members · {community.online} online
+          {membersLabel(memberCount(community))}
+          {onlineCount(community) > 0 ? ` · ${compact(onlineCount(community))} online` : ''}
         </Text>
       </View>
       <JoinButton

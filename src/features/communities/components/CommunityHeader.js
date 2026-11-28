@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text, Image, Pressable, Share, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Image, Pressable, Share, Animated, StyleSheet } from 'react-native';
 import { ArrowLeft, Share2, Flame, Clock, Trophy } from 'lucide-react-native';
 import JoinButton from './JoinButton';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS, LAYOUT } from '../../../theme';
-import { compact } from '../utils/format';
+import { compact, membersLabel } from '../utils/format';
 import haptics from '../../../utils/haptics';
 import { useTopInset } from '../../../hooks/useTopInset';
 
@@ -19,6 +19,7 @@ export default function CommunityHeader({
   community,
   joined,
   members,
+  online = 0,
   sort,
   onSort,
   onBack,
@@ -60,40 +61,91 @@ export default function CommunityHeader({
         </View>
         <Text style={styles.name}>{community.name}</Text>
         <Text style={styles.stats}>
-          c/{community.handle} · <Text style={styles.statsStrong}>{compact(members)}</Text> members
-          · <Text style={styles.statsStrong}>{community.online}</Text> online
+          c/{community.handle} ·{' '}
+          <Text style={styles.statsStrong}>{membersLabel(members)}</Text>
+          {online > 0 ? (
+            <>
+              {' · '}
+              <Text style={styles.statsStrong}>{compact(online)}</Text> online
+            </>
+          ) : null}
         </Text>
         <Text style={styles.about} numberOfLines={3}>
           {community.about}
         </Text>
       </View>
 
-      {/* iOS-style segmented control; the hint says what the order means. */}
+      {/* iOS-style segmented control with a sliding thumb; the hint says what the order means. */}
       <View style={styles.sortWrap}>
-        <View style={styles.segment} accessibilityRole="tablist">
-          {SORTS.map(({ key, label, Icon }) => {
-            const active = key === sort;
-            return (
-              <Pressable
-                key={key}
-                onPress={() => {
-                  if (!active) haptics.select();
-                  onSort(key);
-                }}
-                style={[styles.segmentItem, active && styles.segmentActive]}
-                accessibilityRole="tab"
-                accessibilityState={{ selected: active }}
-              >
-                <Icon size={14} color={active ? colors.ink : colors.textMuted} />
-                <Text style={[styles.sortText, { color: active ? colors.ink : colors.textMuted }]}>
-                  {label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <SortSwitch sort={sort} onSort={onSort} colors={colors} styles={styles} />
         <Text style={styles.sortHint}>{SORTS.find((x) => x.key === sort)?.hint}</Text>
       </View>
+    </View>
+  );
+}
+
+function SortSwitch({ sort, onSort, colors, styles }) {
+  const [width, setWidth] = useState(0);
+  const index = Math.max(0, SORTS.findIndex((x) => x.key === sort));
+  const pos = useRef(new Animated.Value(index)).current;
+  const itemW = width ? (width - 8) / SORTS.length : 0;
+
+  useEffect(() => {
+    Animated.spring(pos, {
+      toValue: index,
+      useNativeDriver: true,
+      stiffness: 280,
+      damping: 26,
+      mass: 0.8,
+    }).start();
+  }, [index, pos]);
+
+  return (
+    <View
+      style={styles.segment}
+      accessibilityRole="tablist"
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+    >
+      {itemW ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.thumb,
+            {
+              width: itemW,
+              transform: [
+                {
+                  translateX: pos.interpolate({
+                    inputRange: [0, SORTS.length - 1],
+                    outputRange: [0, itemW * (SORTS.length - 1)],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+      ) : null}
+      {SORTS.map(({ key, label, Icon }) => {
+        const active = key === sort;
+        return (
+          <Pressable
+            key={key}
+            onPress={() => {
+              if (active) return;
+              haptics.select();
+              onSort(key);
+            }}
+            style={styles.segmentItem}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: active }}
+          >
+            <Icon size={14} color={active ? colors.ink : colors.textMuted} />
+            <Text style={[styles.sortText, { color: active ? colors.ink : colors.textMuted }]}>
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
@@ -183,9 +235,14 @@ function getStyles(colors) {
       paddingVertical: SPACING.sm,
       borderRadius: RADIUS.pill,
     },
-    segmentActive: {
+    thumb: {
+      position: 'absolute',
+      top: 4,
+      bottom: 4,
+      left: 4,
+      borderRadius: RADIUS.pill,
       backgroundColor: colors.surface,
-      shadowColor: '#17271E',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.08,
       shadowRadius: 6,

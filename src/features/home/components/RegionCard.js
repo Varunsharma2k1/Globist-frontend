@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { MapPin } from 'lucide-react-native';
 import Card from '../../../components/Card';
 import { useTheme } from '../../../hooks/useTheme';
@@ -10,18 +11,24 @@ import { SPACING, RADIUS, FONTS } from '../../../theme';
 // rather than blank. Safe even when imageUrl is missing.
 function RegionHero({ region }) {
   // `image` is a bundled photo; `imageUrl` a remote one from the API.
-  const source = region && (region.image || (region.imageUrl ? { uri: region.imageUrl } : null));
+  const source = region && (region.image || region.imageUrl || null);
   const palette =
     (region && region.imageType) === 'desert'
       ? ['#F8E6C2', '#7A5A1E']
       : (region && region.imageType) === 'beach'
         ? ['#DBE6F2', '#2F4D6E']
-        : ['#DFE9DA', '#3F5C3A'];
+        : ['#E9E9EE', '#3A3A3C'];
   return (
     <View style={styles.regionImage}>
       <View style={[styles.regionGradientTop, { backgroundColor: palette[0] }]} />
       <View style={[styles.regionGradientBottom, { backgroundColor: palette[1] }]} />
-      {source ? <Image source={source} style={styles.regionImageAsset} resizeMode="cover" /> : null}
+      {source ? <Image
+          source={source}
+          style={styles.regionImageAsset}
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          transition={200}
+        /> : null}
       <View style={styles.regionImageOverlay} />
     </View>
   );

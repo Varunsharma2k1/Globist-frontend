@@ -111,16 +111,16 @@ const styles = StyleSheet.create({
   frame: {
     flex: 1,
     borderRadius: 18,
-    backgroundColor: '#1B2A18',
-    // Soft, green-tinted lift: the old black 28% / elevation 10 shadow drew a
+    backgroundColor: '#1C1C1E',
+    // Soft, lift: the old black 28% / elevation 10 shadow drew a
     // grey haze around the cards on the white page (esp. on Android).
-    shadowColor: '#17271E',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.12,
     shadowRadius: 16,
     elevation: 3,
   },
-  photo: { flex: 1, borderRadius: 18, overflow: 'hidden', backgroundColor: '#1B2A18' },
+  photo: { flex: 1, borderRadius: 18, overflow: 'hidden', backgroundColor: '#1C1C1E' },
   image: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
   caption: {
     position: 'absolute',

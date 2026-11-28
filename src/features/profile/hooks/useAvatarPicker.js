@@ -30,19 +30,19 @@ export function useAvatarPicker() {
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.5, // keeps the file small even if the app can't resize it
     });
     if (result.canceled || !result.assets?.length) return;
     setUploading(true);
     try {
-      const url = await uploadAvatar(result.assets[0].uri);
+      const url = await uploadAvatar(result.assets[0]);
       await save(url);
       haptics.success();
     } catch (error) {
       haptics.error();
       Alert.alert(
         "Couldn't update photo",
-        error.response?.data?.message || 'Check your connection and try again.'
+        error.response?.data?.message || error.message || 'Check your connection and try again.'
       );
     } finally {
       setUploading(false);

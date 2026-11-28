@@ -12,8 +12,9 @@ const LOOP_REPEATS = 60;
  *
  * @param {Array} reels
  * @param {number} reelHeight
+ * @param {number} [initial] - which reel to open on (profile / agency viewers)
  */
-export function useInfiniteReelPaging(reels, reelHeight) {
+export function useInfiniteReelPaging(reels, reelHeight, initial = 0) {
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef(null);
 
@@ -29,7 +30,9 @@ export function useInfiniteReelPaging(reels, reelHeight) {
     return Array.from({ length: LOOP_REPEATS }, () => reels).flat();
   }, [reels]);
 
-  const startIndex = reels.length ? Math.floor(LOOP_REPEATS / 2) * reels.length : 0;
+  // First item of the middle repeat; `startIndex` is where the viewport opens.
+  const base = reels.length ? Math.floor(LOOP_REPEATS / 2) * reels.length : 0;
+  const startIndex = reels.length ? base + initial : 0;
 
   useEffect(() => {
     if (reels.length) setActiveIndex(startIndex);
@@ -64,14 +67,14 @@ export function useInfiniteReelPaging(reels, reelHeight) {
       const edgeBuffer = reels.length * 3;
       if (index < edgeBuffer || index > loopedReels.length - edgeBuffer) {
         const mod = ((index % reels.length) + reels.length) % reels.length;
-        const recenteredIndex = startIndex + mod;
+        const recenteredIndex = base + mod;
         listRef.current?.scrollToOffset({
           offset: recenteredIndex * reelHeight,
           animated: false,
         });
       }
     },
-    [reels.length, loopedReels.length, startIndex, reelHeight]
+    [reels.length, loopedReels.length, base, reelHeight]
   );
 
   return {

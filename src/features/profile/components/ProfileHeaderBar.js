@@ -13,9 +13,16 @@ export default function ProfileHeaderBar({ onOpenSettings }) {
   return (
     <View style={[styles.header, { paddingTop: topInset + SPACING.sm }]}>
       <Text style={styles.headerTitle}>Profile</Text>
-      <TouchableOpacity style={styles.gearBtn} onPress={onOpenSettings}>
-        <Settings size={22} color={colors.ink} strokeWidth={1.8} />
-      </TouchableOpacity>
+      {/* No gear for guests: Settings is only for signed-in accounts. */}
+      {onOpenSettings ? (
+        <TouchableOpacity
+          style={styles.gearBtn}
+          onPress={onOpenSettings}
+          accessibilityLabel="Settings"
+        >
+          <Settings size={22} color={colors.ink} strokeWidth={1.8} />
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }

@@ -7,7 +7,7 @@ import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, LAYOUT, FONTS } from '../../../theme';
 import { useChat } from '../../../hooks/useChat';
 import { useRequireAuth } from '../../../hooks/useRequireAuth';
-import { getNotifications } from '../data/inboxData';
+import { useNotifications } from '../hooks/useNotifications';
 import InboxHeader from '../components/InboxHeader';
 import NotificationRow from '../components/NotificationRow';
 import ChatRow from '../components/ChatRow';
@@ -20,17 +20,43 @@ import CommunityRow from '../components/CommunityRow';
  * and Communities. Replaces the My Trips tab (moved into Profile) so the tab
  * bar's 4th slot covers the app's social/messaging surface instead.
  */
+// What guests see on each tab (nothing personal is shown until sign-in).
+const GUEST_COPY = {
+  notifications: {
+    title: 'No notifications',
+    body: 'Sign in to see likes, comments, new followers and booking updates.',
+  },
+  chat: {
+    title: 'No chats',
+    body: 'Sign in to chat with creators and agencies about your next trip.',
+  },
+  communities: {
+    title: 'No communities',
+    body: 'Sign in to join travel clubs and see their posts.',
+  },
+};
+
 export default function InboxScreen() {
   const { colors } = useTheme();
   const styles = getStyles(colors);
-  const notifications = getNotifications(colors);
   const navigation = useNavigation();
   const { joinedCommunities } = useCommunityData();
   const [tab, setTab] = useState('notifications');
   const chat = useChat();
   const { isSignedIn, requireAuth } = useRequireAuth(navigation);
+  const { notifications, loading: notifLoading, markRead } = useNotifications(isSignedIn, colors);
+
+  // Looking at the Notifications tab clears its unread dots.
+  React.useEffect(() => {
+    if (tab === 'notifications' && notifications.some((n) => n.unread)) {
+      const t = setTimeout(markRead, 1500);
+      return () => clearTimeout(t);
+    }
+    return undefined;
+  }, [tab, notifications, markRead]);
 
   const unreadCountFor = (key) => {
+    if (!isSignedIn) return 0;
     if (key === 'notifications') return notifications.filter((n) => n.unread).length;
     if (key === 'chat') return chat.unreadTotal;
     return 0;
@@ -41,15 +67,10 @@ export default function InboxScreen() {
       <InboxHeader activeTab={tab} onChangeTab={setTab} unreadCountFor={unreadCountFor} />
 
       <ScrollView contentContainerStyle={styles.content}>
-        {tab === 'notifications' &&
-          notifications.map((n) => <NotificationRow key={n.id} notification={n} />)}
-
-        {tab === 'chat' && !isSignedIn && (
+        {!isSignedIn && (
           <View style={styles.empty}>
-            <Text style={styles.emptyTitle}>Your messages live here</Text>
-            <Text style={styles.emptyBody}>
-              Sign in to chat with creators and agencies about your next trip.
-            </Text>
+            <Text style={styles.emptyTitle}>{GUEST_COPY[tab].title}</Text>
+            <Text style={styles.emptyBody}>{GUEST_COPY[tab].body}</Text>
             <Button
               title="Sign in"
               onPress={() => requireAuth({ name: 'MainTabs' })}
@@ -57,6 +78,33 @@ export default function InboxScreen() {
             />
           </View>
         )}
+
+        {isSignedIn && tab === 'notifications' && notifications.length === 0 && (
+          <View style={styles.empty}>
+            <Text style={styles.emptyTitle}>
+              {notifLoading ? 'Loading…' : 'No notifications yet'}
+            </Text>
+            {!notifLoading && (
+              <Text style={styles.emptyBody}>
+                Likes, comments, new followers and booking updates show up here.
+              </Text>
+            )}
+          </View>
+        )}
+
+        {isSignedIn &&
+          tab === 'notifications' &&
+          notifications.map((n) => (
+            <NotificationRow
+              key={n.id}
+              notification={n}
+              onPress={
+                n.actor?._id
+                  ? () => navigation.navigate('CreatorProfile', { creator: n.actor })
+                  : undefined
+              }
+            />
+          ))}
 
         {tab === 'chat' && isSignedIn && chat.conversations.length === 0 && (
           <View style={styles.empty}>
@@ -84,7 +132,7 @@ export default function InboxScreen() {
             />
           ))}
 
-        {tab === 'communities' && (
+        {isSignedIn && tab === 'communities' && (
           <>
             {joinedCommunities.length === 0 && (
               <View style={styles.empty}>

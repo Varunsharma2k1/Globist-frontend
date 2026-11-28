@@ -7,9 +7,8 @@ import { STORAGE_KEYS } from '../config';
 /**
  * Global Theme Context
  *
- * Drives Light / Dark / System appearance across the app. The app is LIGHT
- * by default (whatever the phone's setting); it only goes dark when the
- * user picks Dark (or System) in Settings → Theme. Persisted so the choice
+ * Drives Light / Dark / System appearance across the app. By default it
+ * follows the phone (System); users can pin Light or Dark in Settings → Theme. Persisted so the choice
  * survives restarts. (Reels stay dark regardless — that's the video UI.)
  */
 export const ThemeContext = createContext();
@@ -18,7 +17,7 @@ const THEME_MODES = ['light', 'dark', 'system'];
 
 export const ThemeProvider = ({ children }) => {
   const systemScheme = useColorScheme(); // 'light' | 'dark' | null
-  const [mode, setModeState] = useState('light');
+  const [mode, setModeState] = useState('system');
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

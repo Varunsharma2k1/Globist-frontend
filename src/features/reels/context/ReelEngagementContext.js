@@ -1,31 +1,77 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { getLikedReelIds, likeReel, unlikeReel } from '../../../api/reels';
+import { useAuth } from '../../../hooks/useAuth';
 
 const ReelEngagementContext = createContext(null);
+const isServerId = (id) => /^[a-f0-9]{24}$/.test(String(id || ''));
 
 /**
- * Session-scoped, frontend-only store for reel likes, locally posted
- * comments, and share counts — all demo data, nothing is persisted.
- *
- * Keyed by reel `_id` (not by list row) because the feed renders each reel
- * many times over for its endless loop and unmounts rows that scroll far
- * away; keeping the state here means a liked reel stays liked when it comes
- * back around or gets re-mounted.
+ * App-wide likes for tapes, backed by the server:
+ *  - which tapes I liked (GET /reels/liked-ids), so hearts are filled everywhere;
+ *  - like / unlike are optimistic, then corrected with the server's count;
+ *  - share counts are kept for this session only.
  */
 export function ReelEngagementProvider({ children }) {
-  const [likedById, setLikedById] = useState({});
-  const [commentsById, setCommentsById] = useState({});
+  const { user } = useAuth();
+  const meId = user && !user.isGuest ? String(user._id) : null;
+  const [likedIds, setLikedIds] = useState(() => new Set());
+  const [likeCounts, setLikeCounts] = useState({}); // reelId -> latest count from server
+  const [commentDelta, setCommentDelta] = useState({}); // reelId -> comments added/removed here
   const [sharesById, setSharesById] = useState({});
 
-  const setLiked = useCallback((reelId, liked) => {
-    setLikedById((prev) => (Boolean(prev[reelId]) === liked ? prev : { ...prev, [reelId]: liked }));
-  }, []);
+  useEffect(() => {
+    setLikedIds(new Set());
+    setLikeCounts({});
+    if (!meId) return undefined;
+    let alive = true;
+    getLikedReelIds()
+      .then((ids) => alive && setLikedIds(new Set(ids)))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [meId]);
 
-  const toggleLiked = useCallback((reelId) => {
-    setLikedById((prev) => ({ ...prev, [reelId]: !prev[reelId] }));
-  }, []);
+  const isLiked = useCallback((reelId) => likedIds.has(String(reelId)), [likedIds]);
 
-  const addComment = useCallback((reelId, comment) => {
-    setCommentsById((prev) => ({ ...prev, [reelId]: [comment, ...(prev[reelId] || [])] }));
+  const likesFor = useCallback(
+    (reel) => likeCounts[String(reel._id)] ?? reel.likes ?? 0,
+    [likeCounts]
+  );
+
+  /** Sets liked on/off. Returns false if it can't (guest / unsaved tape). */
+  const setLiked = useCallback(
+    (reel, on) => {
+      const id = String(reel._id);
+      if (!meId || !isServerId(id)) return false;
+      if (likedIds.has(id) === on) return true;
+      const before = likesFor(reel);
+      setLikedIds((prev) => {
+        const next = new Set(prev);
+        if (on) next.add(id);
+        else next.delete(id);
+        return next;
+      });
+      setLikeCounts((prev) => ({ ...prev, [id]: Math.max(0, before + (on ? 1 : -1)) }));
+      (on ? likeReel(id) : unlikeReel(id))
+        .then(({ likes }) => setLikeCounts((prev) => ({ ...prev, [id]: likes })))
+        .catch(() => {
+          // Roll back.
+          setLikedIds((prev) => {
+            const next = new Set(prev);
+            if (on) next.delete(id);
+            else next.add(id);
+            return next;
+          });
+          setLikeCounts((prev) => ({ ...prev, [id]: before }));
+        });
+      return true;
+    },
+    [meId, likedIds, likesFor]
+  );
+
+  const bumpComments = useCallback((reelId, by) => {
+    setCommentDelta((prev) => ({ ...prev, [reelId]: (prev[reelId] || 0) + by }));
   }, []);
 
   const recordShare = useCallback((reelId) => {
@@ -34,24 +80,22 @@ export function ReelEngagementProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      likedById,
-      commentsById,
-      sharesById,
+      meId,
+      isLiked,
+      likesFor,
       setLiked,
-      toggleLiked,
-      addComment,
+      commentDelta,
+      bumpComments,
+      sharesById,
       recordShare,
     }),
-    [likedById, commentsById, sharesById, setLiked, toggleLiked, addComment, recordShare]
+    [meId, isLiked, likesFor, setLiked, commentDelta, bumpComments, sharesById, recordShare]
   );
 
   return <ReelEngagementContext.Provider value={value}>{children}</ReelEngagementContext.Provider>;
 }
 
-/**
- * Returns the shared engagement store, or null outside a provider (e.g. the
- * Post Reel preview) — callers fall back to their own local state then.
- */
+/** The shared store, or null outside the provider. */
 export function useReelEngagement() {
   return useContext(ReelEngagementContext);
 }

@@ -52,11 +52,12 @@ export function useReelPlayback({ mediaUrl, shouldLoad = true, isActive, muted, 
   useEffect(() => clearHideTimer, []);
 
   // R2/CDN reels are HLS (.m3u8, adaptive 240–720p); older ones are MP4.
-  const source = !hasVideo || !shouldLoad
-    ? null
-    : /\.m3u8(\?|$)/.test(mediaUrl)
-      ? { uri: mediaUrl, contentType: 'hls' }
-      : mediaUrl;
+  const source =
+    !hasVideo || !shouldLoad
+      ? null
+      : /\.m3u8(\?|$)/.test(mediaUrl)
+        ? { uri: mediaUrl, contentType: 'hls' }
+        : mediaUrl;
   const player = useVideoPlayer(source, (p) => {
     p.loop = true;
     p.muted = muted;
@@ -94,7 +95,15 @@ export function useReelPlayback({ mediaUrl, shouldLoad = true, isActive, muted, 
     revealControls();
   };
 
-  return { hasVideo, isLoaded: Boolean(source), player, paused, controlsVisible, handleTogglePlay, handleToggleMute };
+  return {
+    hasVideo,
+    isLoaded: Boolean(source),
+    player,
+    paused,
+    controlsVisible,
+    handleTogglePlay,
+    handleToggleMute,
+  };
 }
 
 export default useReelPlayback;

@@ -11,7 +11,6 @@ import { useInfiniteReelPaging } from '../hooks/useInfiniteReelPaging';
 import { tabBarHeightFor } from '../../../navigation/GlassTabBar';
 import { useReelBooking } from '../hooks/useReelBooking';
 import { useTabSwipe } from '../hooks/useTabSwipe';
-import { ReelEngagementProvider } from '../context/ReelEngagementContext';
 import ReelsHeaderOverlay from '../components/ReelsHeaderOverlay';
 import ReelsEmptyState from '../components/ReelsEmptyState';
 
@@ -133,6 +132,8 @@ export default function ReelsScreen({ navigation }) {
     if (!reelHeight) return null;
     return (
       <FlatList
+        // Remount if the number of reels changes, so the loop's start position stays right.
+        key={reels.length}
         ref={listRef}
         style={{ height: reelHeight }}
         data={loopedReels}
@@ -153,13 +154,12 @@ export default function ReelsScreen({ navigation }) {
         viewabilityConfig={viewabilityConfig}
         windowSize={3}
         maxToRenderPerBatch={2}
-        removeClippedSubviews
       />
     );
   };
 
   return (
-    <ReelEngagementProvider>
+    <>
       <View style={styles.backdrop}>
         <Animated.View
           style={[styles.container, { transform: [{ translateX }] }]}
@@ -172,7 +172,7 @@ export default function ReelsScreen({ navigation }) {
           />
         </Animated.View>
       </View>
-    </ReelEngagementProvider>
+    </>
   );
 }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getExploreTrips, getRegions } from '../../../api';
+import { LayoutAnimation } from 'react-native';
+import * as catalog from '../../../cache/catalog';
 import {
   buildDestinations,
   findDestinationByName,
@@ -46,26 +47,32 @@ const FILTERS_MIN_TRIPS = 6;
  */
 export function useExploreTrips() {
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setCategoryRaw] = useState('All');
+  // Cards that stay slide to their new place; the rest fade — no flash.
+  const setSelectedCategory = useCallback((c) => {
+    LayoutAnimation.configureNext(LayoutAnimation.create(220, 'easeInEaseOut', 'opacity'));
+    setCategoryRaw(c);
+  }, []);
   const [destinationKey, setDestinationKey] = useState(null);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
-  const [trips, setTrips] = useState([]);
-  const [regions, setRegions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // First render uses the launch cache, so a warm Explore opens with no skeleton.
+  const visibleRegions = (list) => (list || []).filter((r) => !isHiddenRegion(r));
+  const [trips, setTrips] = useState(() => catalog.peek('trips') || []);
+  const [regions, setRegions] = useState(() => visibleRegions(catalog.peek('regions')));
+  const [loading, setLoading] = useState(() => !catalog.peek('trips'));
   const [refreshing, setRefreshing] = useState(false);
   const { recents, addRecent } = useRecentDestinations();
 
   const fetchExploreData = useCallback(async ({ isRefresh = false } = {}) => {
     if (isRefresh) setRefreshing(true);
-    else setLoading(true);
     try {
       const [tripData, regionData] = await Promise.all([
-        getExploreTrips(),
+        catalog.load('trips', { force: isRefresh }),
         // Destinations are a nice-to-have; trips still list without them.
-        getRegions().catch(() => []),
+        catalog.load('regions', { force: isRefresh }).catch(() => []),
       ]);
-      setTrips(tripData.trips || []);
-      setRegions((regionData || []).filter((r) => !isHiddenRegion(r)));
+      setTrips(tripData || []);
+      setRegions(visibleRegions(regionData));
     } catch (error) {
       console.warn('[useExploreTrips] Error fetching trips:', error);
     } finally {
@@ -76,6 +83,12 @@ export function useExploreTrips() {
 
   useEffect(() => {
     fetchExploreData();
+    // Background refreshes (launch warm-up, stale refetch) flow in quietly.
+    return catalog.subscribe((key) => {
+      if (key === 'trips') setTrips(catalog.peek('trips') || []);
+      if (key === 'regions') setRegions(visibleRegions(catalog.peek('regions')));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchExploreData]);
 
   const refresh = useCallback(() => fetchExploreData({ isRefresh: true }), [fetchExploreData]);
@@ -116,7 +129,7 @@ export function useExploreTrips() {
     (dest) => {
       setDestinationKey(dest.key);
       setSearch('');
-      setSelectedCategory('All');
+      setCategoryRaw('All');
       setFilters(DEFAULT_FILTERS);
       addRecent(dest);
     },
@@ -139,6 +152,7 @@ export function useExploreTrips() {
   }, []);
 
   const setFilter = useCallback((key, value) => {
+    LayoutAnimation.configureNext(LayoutAnimation.create(220, 'easeInEaseOut', 'opacity'));
     setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
 
@@ -154,7 +168,7 @@ export function useExploreTrips() {
   // From search suggestions: show every trip by this one agency.
   const selectAgency = useCallback((agency) => {
     setSearch('');
-    setSelectedCategory('All');
+    setCategoryRaw('All');
     setDestinationKey(null);
     setFilters({ ...DEFAULT_FILTERS, agencies: [agency._id || agency.name] });
   }, []);
@@ -165,7 +179,7 @@ export function useExploreTrips() {
 
   const resetAll = useCallback(() => {
     setSearch('');
-    setSelectedCategory('All');
+    setCategoryRaw('All');
     setDestinationKey(null);
     setFilters(DEFAULT_FILTERS);
   }, []);

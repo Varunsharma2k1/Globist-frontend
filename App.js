@@ -4,17 +4,15 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import {
-  useFonts,
-  Inter_400Regular,
-  Inter_600SemiBold,
-} from '@expo-google-fonts/inter';
+import { useFonts, Inter_400Regular, Inter_600SemiBold } from '@expo-google-fonts/inter';
 
 import { AuthProvider } from './src/context/AuthContext';
 import { SettingsProvider } from './src/context/SettingsContext';
 import { CommunitiesProvider } from './src/context/CommunitiesContext';
 import { TripLedgerProvider } from './src/context/TripLedgerContext';
 import { ChatProvider } from './src/context/ChatContext';
+import { FollowProvider } from './src/context/FollowContext';
+import { ReelEngagementProvider } from './src/features/reels/context/ReelEngagementContext';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { useTheme } from './src/hooks/useTheme';
 import { useSettings } from './src/hooks/useSettings';
@@ -22,6 +20,11 @@ import TouchIndicator from './src/components/TouchIndicator';
 import AppNavigator from './src/navigation/AppNavigator';
 import { useImmersiveNavBar } from './src/hooks/useImmersiveNavBar';
 import { COLORS } from './src/theme';
+import { warmCatalog } from './src/cache/catalog';
+
+// Start right away, in parallel with font loading: last snapshot from disk,
+// fresh catalogue from the API, and every cover photo into the image cache.
+warmCatalog();
 
 function AppContent() {
   const { colors, resolvedScheme } = useTheme();
@@ -55,9 +58,9 @@ function AppContent() {
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-      Inter_400Regular,
-      Inter_600SemiBold,
-    });
+    Inter_400Regular,
+    Inter_600SemiBold,
+  });
 
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: COLORS.background }} />;
@@ -72,7 +75,11 @@ export default function App() {
               <CommunitiesProvider>
                 <TripLedgerProvider>
                   <ChatProvider>
-                    <AppContent />
+                    <FollowProvider>
+                      <ReelEngagementProvider>
+                        <AppContent />
+                      </ReelEngagementProvider>
+                    </FollowProvider>
                   </ChatProvider>
                 </TripLedgerProvider>
               </CommunitiesProvider>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -15,8 +16,7 @@ import Header from '../../../components/Header';
 import PostCard from '../components/PostCard';
 import CommentRow from '../components/CommentRow';
 import JoinButton from '../components/JoinButton';
-import { useCommunities, useCommunityData } from '../../../hooks/useCommunities';
-import { useAuth } from '../../../hooks/useAuth';
+import { useCommunities, useCommunityActions, useCommunityData } from '../../../hooks/useCommunities';
 import { useTheme } from '../../../hooks/useTheme';
 import { getCommunity } from '../../../data/communities';
 import { SPACING, RADIUS, FONTS, LAYOUT } from '../../../theme';
@@ -25,9 +25,17 @@ import { SPACING, RADIUS, FONTS, LAYOUT } from '../../../theme';
 export default function PostDetailScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const { user } = useAuth();
-  const { toggleJoin, addComment } = useCommunities();
+  const { toggleJoin, addComment } = useCommunityActions();
   const { getPostById, isJoined } = useCommunityData();
+  const { loadPost } = useCommunities();
+  const postId = route.params?.postId;
+  useFocusEffect(
+    useCallback(() => {
+      loadPost(postId);
+      const t = setInterval(() => loadPost(postId), 15000);
+      return () => clearInterval(t);
+    }, [postId, loadPost])
+  );
   const [text, setText] = useState('');
   const styles = getStyles(colors);
 
@@ -38,8 +46,9 @@ export default function PostDetailScreen({ navigation, route }) {
   const joined = isJoined(community.id);
   const send = () => {
     if (!text.trim()) return;
-    addComment(post.id, text.trim(), user);
+    const body = text.trim();
     setText('');
+    addComment(post.id, body);
   };
 
   return (

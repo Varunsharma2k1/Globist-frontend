@@ -66,10 +66,6 @@ Note the result (e.g. `192.168.29.4`).
 cd mobile
 cp .env.example .env.local
 ```
-
-Edit `.env.local` and set `EXPO_PUBLIC_API_URL` to your machine's IP from step 2:
-```
-EXPO_PUBLIC_API_URL=http://192.168.29.4:5001/api
 ```
 
 See [Environment Variables](#-environment-variables) below for what else can be configured.

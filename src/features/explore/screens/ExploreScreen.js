@@ -115,8 +115,9 @@ export default function ExploreScreen({ navigation, route }) {
   } else {
     body = (
       <FlatList
-        // Remount when the scope changes so the cards' entrance stagger replays.
-        key={destination?.key || explore.selectedCategory}
+        // Remount only for a new destination (fresh page); category and filter
+        // changes keep the list so cards glide instead of flashing.
+        key={destination?.key || 'browse'}
         data={filteredTrips}
         keyExtractor={(trip) => trip._id || trip.title}
         renderItem={({ item, index }) => (

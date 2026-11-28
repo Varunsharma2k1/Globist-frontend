@@ -1,38 +1,47 @@
 import { useCallback, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { useReelEngagement } from '../context/ReelEngagementContext';
 import haptics from '../../../utils/haptics';
 
 /**
- * Like/unlike state for a single reel — demo only for now, no API call.
- *
- * The displayed count is derived (`reel.likes` + 1 while liked) rather than
- * incremented, so rapid repeated taps can only flip the liked flag and can
- * never double-count. Saved reels share state through ReelEngagementContext;
- * unsaved preview reels (no `_id`) just keep it locally.
- *
- * @param {{ _id?: string, likes?: number }} reel
+ * Like state for one tape, saved on the server (see ReelEngagementContext).
+ * Guests are sent to sign in. Unsaved previews (no `_id`, e.g. the Post Tape
+ * preview) just toggle locally.
  */
 export function useReelLike(reel) {
   const engagement = useReelEngagement();
-  const [localLiked, setLocalLiked] = useState(false);
-  const reelId = reel._id;
-  const shared = Boolean(engagement && reelId);
+  const navigation = useNavigation();
+  const [previewLiked, setPreviewLiked] = useState(false);
+  const saved = Boolean(engagement && reel._id);
 
-  const liked = shared ? Boolean(engagement.likedById[reelId]) : localLiked;
-  const likes = (reel.likes || 0) + (liked ? 1 : 0);
+  const liked = saved ? engagement.isLiked(reel._id) : previewLiked;
+  const likes = saved ? engagement.likesFor(reel) : (reel.likes || 0) + (previewLiked ? 1 : 0);
+
+  const set = useCallback(
+    (on) => {
+      if (!saved) {
+        setPreviewLiked(on);
+        return true;
+      }
+      if (!engagement.meId) {
+        navigation.navigate('Auth');
+        return false;
+      }
+      return engagement.setLiked(reel, on);
+    },
+    [saved, engagement, navigation, reel]
+  );
 
   const handleLike = useCallback(() => {
     if (!liked) haptics.impact();
-    if (shared) engagement.toggleLiked(reelId);
-    else setLocalLiked((v) => !v);
-  }, [shared, engagement, reelId, liked]);
+    set(!liked);
+  }, [liked, set]);
 
   // Double-tap only ever likes (never unlikes), matching Instagram.
   const likeOnce = useCallback(() => {
     haptics.impact();
-    if (shared) engagement.setLiked(reelId, true);
-    else setLocalLiked(true);
-  }, [shared, engagement, reelId]);
+    return set(true);
+  }, [set]);
 
   return { likes, liked, handleLike, likeOnce };
 }

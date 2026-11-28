@@ -1,12 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, Pressable, Alert, LayoutAnimation, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Plus } from 'lucide-react-native';
 import PostCard from '../components/PostCard';
 import CommunityHeader from '../components/CommunityHeader';
 import PostComposerModal from '../components/PostComposerModal';
-import { useCommunities, useCommunityData } from '../../../hooks/useCommunities';
-import { useAuth } from '../../../hooks/useAuth';
+import { useCommunities, useCommunityActions, useCommunityData } from '../../../hooks/useCommunities';
 import { useTheme } from '../../../hooks/useTheme';
 import { getCommunity } from '../../../data/communities';
 import { SPACING, RADIUS, FONTS, LAYOUT } from '../../../theme';
@@ -16,15 +16,32 @@ export default function CommunityDetailScreen({ navigation, route }) {
   const community = getCommunity(route.params?.communityId);
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
-  const { user } = useAuth();
-  const { toggleJoin, addPost } = useCommunities();
-  const { isJoined, memberCount, getPostsFor } = useCommunityData();
+  const { toggleJoin, addPost } = useCommunityActions();
+  const { isJoined, memberCount, onlineCount, getPostsFor } = useCommunityData();
+  const { loadPosts } = useCommunities();
+  const communityId = community?.id;
+  // Fresh posts from everyone while this page is open (every 15 s).
+  useFocusEffect(
+    useCallback(() => {
+      if (!communityId) return undefined;
+      loadPosts(communityId);
+      const t = setInterval(() => loadPosts(communityId), 15000);
+      return () => clearInterval(t);
+    }, [communityId, loadPosts])
+  );
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadPosts(communityId);
+    setRefreshing(false);
+  };
   const [sort, setSortState] = useState('hot');
   const listRef = useRef(null);
   // Animate the reorder so switching Hot / New / Top is visible.
   const setSort = (next) => {
     if (next === sort) return;
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    // Same soft reflow as Explore's filters: posts glide, nothing flashes.
+    LayoutAnimation.configureNext(LayoutAnimation.create(220, 'easeInEaseOut', 'opacity'));
     setSortState(next);
   };
   const [composing, setComposing] = useState(false);
@@ -41,8 +58,8 @@ export default function CommunityDetailScreen({ navigation, route }) {
       { text: 'Not now', style: 'cancel' },
       {
         text: 'Join & post',
-        onPress: () => {
-          toggleJoin(community.id);
+        onPress: async () => {
+          await toggleJoin(community.id);
           setComposing(true);
         },
       },
@@ -60,6 +77,7 @@ export default function CommunityDetailScreen({ navigation, route }) {
             community={community}
             joined={joined}
             members={memberCount(community)}
+            online={onlineCount(community)}
             sort={sort}
             onSort={setSort}
             onBack={() => navigation.goBack()}
@@ -69,6 +87,8 @@ export default function CommunityDetailScreen({ navigation, route }) {
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={{ paddingBottom: 110 + insets.bottom }}
         showsVerticalScrollIndicator={false}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         renderItem={({ item }) => (
           <View style={styles.postWrap}>
             <PostCard
@@ -97,10 +117,10 @@ export default function CommunityDetailScreen({ navigation, route }) {
         visible={composing}
         community={community}
         onClose={() => setComposing(false)}
-        onSubmit={(draft) => {
-          addPost(community.id, draft, user);
+        onSubmit={async (draft) => {
+          const post = await addPost(community.id, draft);
           // A brand-new post would sink under the popular ones in Hot; show it first.
-          setSort('new');
+          if (post) setSort('new');
         }}
       />
     </View>
@@ -138,7 +158,7 @@ function getStyles(colors) {
       paddingHorizontal: SPACING.lg,
       paddingVertical: 14,
       borderRadius: RADIUS.pill,
-      shadowColor: '#17271E',
+      shadowColor: '#000000',
       shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.18,
       shadowRadius: 16,

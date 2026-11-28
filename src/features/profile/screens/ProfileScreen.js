@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, Pressable, Alert, Linking, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, Alert, StyleSheet } from 'react-native';
 import {
   UserCircle2,
   Briefcase,
@@ -19,6 +19,7 @@ import { useTripLedger } from '../../../hooks/useTripLedger';
 import { useBookedTripsCount } from '../hooks/useBookedTripsCount';
 import { useMyReels } from '../hooks/useMyReels';
 import { useAvatarPicker } from '../hooks/useAvatarPicker';
+import { useMyFollowCounts } from '../hooks/useMyFollowCounts';
 import { SPACING, LAYOUT, FONTS, RADIUS } from '../../../theme';
 import { getMenuItems } from '../data/menuItems';
 import ProfileHeaderBar from '../components/ProfileHeaderBar';
@@ -28,8 +29,7 @@ import ProfileMenuList from '../components/ProfileMenuList';
 import ProfileHero from '../components/ProfileHero';
 import { SectionTitle, QuickAccessGrid, RowGroup } from '../components/ProfileSections';
 
-const SUPPORT_EMAIL = 'support@triptape.app';
-const APP_VERSION = '1.0.0';
+import { APP_VERSION } from '../../settings/data/settingsGroups';
 
 /**
  * ProfileScreen — card layout:
@@ -47,11 +47,12 @@ export default function ProfileScreen({ navigation }) {
   const tripsCount = useBookedTripsCount();
   const { reels } = useMyReels();
   const avatar = useAvatarPicker();
+  const follow = useMyFollowCounts();
 
   if (user?.isGuest) {
     return (
       <View style={styles.container}>
-        <ProfileHeaderBar onOpenSettings={() => navigation.navigate('Settings')} />
+        <ProfileHeaderBar />
         <View style={styles.guest}>
           <UserCircle2 size={56} color={colors.textMuted} strokeWidth={1.25} />
           <Text style={[typography.h3, { marginTop: SPACING.md }]}>
@@ -155,19 +156,15 @@ export default function ProfileScreen({ navigation }) {
       id: 'help',
       Icon: LifeBuoy,
       title: 'Help & support',
-      sub: 'Get help with trips and payments',
-      onPress: () =>
-        Linking.openURL(`mailto:${SUPPORT_EMAIL}?subject=TripTape%20help`).catch(() =>
-          Alert.alert('Help & support', `Write to us at ${SUPPORT_EMAIL}`)
-        ),
+      sub: 'FAQs, contact us, report a problem',
+      onPress: go('HelpCenter'),
     },
     {
       id: 'about',
       Icon: Info,
       title: 'About TripTape',
       sub: `Version ${APP_VERSION}`,
-      onPress: () =>
-        Alert.alert('TripTape', `Real travel tapes from real trips.\nVersion ${APP_VERSION}`),
+      onPress: go('About'),
     },
   ];
 
@@ -181,6 +178,10 @@ export default function ProfileScreen({ navigation }) {
           tapes={reels.length}
           onPressTrips={go('ProfileTrips', { kind: 'booked' })}
           onPressTapes={go('MyReels')}
+          followers={follow.followers}
+          following={follow.following}
+          onPressFollowers={go('FollowList', { userId: user?._id, kind: 'followers' })}
+          onPressFollowing={go('FollowList', { userId: user?._id, kind: 'following' })}
           onPressAvatar={avatar.open}
           avatarUploading={avatar.uploading}
         />
@@ -195,7 +196,7 @@ export default function ProfileScreen({ navigation }) {
         <RowGroup rows={support} />
 
         <Pressable onPress={confirmLogout} style={styles.logout} accessibilityRole="button">
-          <LogOut size={18} color={colors.ink} />
+          <LogOut size={18} color={colors.error} />
           <Text style={styles.logoutText}>Log out</Text>
         </Pressable>
       </ScrollView>
@@ -225,15 +226,25 @@ function getStyles(colors) {
       alignSelf: 'center',
       gap: SPACING.lg,
     },
-    actions: {
+    // Same card shape as the groups above; centred red label, as in iOS Settings.
+    logout: {
       flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
       gap: SPACING.sm,
-      marginTop: SPACING.md,
-      marginBottom: SPACING.sm,
+      marginTop: SPACING.lg,
+      minHeight: 56,
+      borderRadius: RADIUS.lg,
+      backgroundColor: colors.surface,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.divider,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: colors.mode === 'dark' ? 0 : 0.05,
+      shadowRadius: 16,
+      elevation: colors.mode === 'dark' ? 0 : 1,
     },
-    actionBtn: { flex: 1, paddingVertical: SPACING.sm + 2 },
-    tabBody: { paddingTop: SPACING.md },
-    flush: { paddingTop: 2 },
+    logoutText: { fontFamily: FONTS.heading, fontSize: 14, color: colors.error },
     guest: {
       flex: 1,
       alignItems: 'center',

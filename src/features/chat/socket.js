@@ -18,7 +18,10 @@ export function createChatSocket(getToken) {
   return io(getSocketUrl(), {
     path: '/socket.io',
     auth: (cb) => {
-      getToken().then((token) => cb({ token }), () => cb({}));
+      getToken().then(
+        (token) => cb({ token }),
+        () => cb({})
+      );
     },
     // Skip HTTP long-polling: RN supports WebSocket natively and it avoids
     // sticky-session needs behind a load balancer.

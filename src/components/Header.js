@@ -5,7 +5,7 @@ import { SPACING, FONTS } from '../theme';
 import { useTheme } from '../hooks/useTheme';
 import { useTopInset } from '../hooks/useTopInset';
 
-export default function Header({ title, onBack, rightElement }) {
+export default function Header({ title, onBack, rightElement, onPressTitle }) {
   const topInset = useTopInset();
   const { colors } = useTheme();
   return (
@@ -27,9 +27,23 @@ export default function Header({ title, onBack, rightElement }) {
       ) : (
         <View style={styles.placeholder} />
       )}
-      <Text style={[styles.title, { color: colors.ink }]} numberOfLines={1}>
-        {title}
-      </Text>
+      {onPressTitle ? (
+        <TouchableOpacity
+          onPress={onPressTitle}
+          style={styles.titleBtn}
+          activeOpacity={0.6}
+          accessibilityRole="button"
+          accessibilityLabel={`Open ${title}'s profile`}
+        >
+          <Text style={[styles.title, { color: colors.ink }]} numberOfLines={1}>
+            {title}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <Text style={[styles.title, { color: colors.ink }]} numberOfLines={1}>
+          {title}
+        </Text>
+      )}
       <View style={styles.rightContainer}>
         {rightElement || <View style={styles.placeholder} />}
       </View>
@@ -58,6 +72,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
   },
+  titleBtn: { flex: 1, height: 40, justifyContent: 'center' },
   rightContainer: {
     width: 40,
     alignItems: 'flex-end',

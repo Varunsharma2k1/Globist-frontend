@@ -57,13 +57,18 @@ function ReelItem({
   const singleTapTimerRef = useRef(null);
   const surfaceSizeRef = useRef({ width: 0, height: 0 });
 
-  const { hasVideo, isLoaded, player, paused, controlsVisible, handleTogglePlay, handleToggleMute } =
-    useReelPlayback({ mediaUrl: reel.mediaUrl, shouldLoad, isActive, muted, onToggleMute });
+  const {
+    hasVideo,
+    isLoaded,
+    player,
+    paused,
+    controlsVisible,
+    handleTogglePlay,
+    handleToggleMute,
+  } = useReelPlayback({ mediaUrl: reel.mediaUrl, shouldLoad, isActive, muted, onToggleMute });
   const { likes, liked, handleLike, likeOnce } = useReelLike(reel);
-  const { comments, commentText, setCommentText, handlePostComment } = useReelComments(
-    reel,
-    user?.name
-  );
+  const { comments, commentCount, commentText, setCommentText, handlePostComment } =
+    useReelComments(reel, commentsVisible);
   const { shares, handleShare } = useReelShare(reel);
 
   useEffect(() => () => clearTimeout(singleTapTimerRef.current), []);
@@ -103,7 +108,11 @@ function ReelItem({
 
       {/* Thumbnail shows instantly (and for unloaded reels) until video frames arrive. */}
       {reel.thumbnailUrl ? (
-        <Image source={{ uri: reel.thumbnailUrl }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+        <Image
+          source={{ uri: reel.thumbnailUrl }}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
+        />
       ) : null}
 
       {hasVideo && isLoaded && (
@@ -148,7 +157,7 @@ function ReelItem({
           <ReelActionsRail
             liked={liked}
             likes={likes}
-            commentCount={comments.length}
+            commentCount={commentCount}
             shares={shares}
             onLike={handleLike}
             onOpenComments={() => setCommentsVisible(true)}
@@ -157,13 +166,16 @@ function ReelItem({
           />
         </View>
 
-        <ReelBookingBar
-          agency={reel.agency}
-          location={reel.location}
-          onAgencyPress={onAgencyPress ? () => onAgencyPress(reel.agency) : undefined}
-          pending={bookingPending}
-          onPress={onBookPress ? () => onBookPress(reel) : undefined}
-        />
+        {/* Only tapes tagged to an agency get the Book bar. */}
+        {reel.agency ? (
+          <ReelBookingBar
+            agency={reel.agency}
+            location={reel.location}
+            onAgencyPress={onAgencyPress ? () => onAgencyPress(reel.agency) : undefined}
+            pending={bookingPending}
+            onPress={onBookPress ? () => onBookPress(reel) : undefined}
+          />
+        ) : null}
       </View>
 
       <ReelMoreSheet

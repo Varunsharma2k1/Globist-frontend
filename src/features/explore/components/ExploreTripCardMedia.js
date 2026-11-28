@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, Animated, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { BlurView } from 'expo-blur';
 import { Clock, Mountain, Waves, Sun, Trees, Snowflake, Compass } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
@@ -36,19 +37,20 @@ export default function ExploreTripCardMedia({ trip }) {
   const imageUri = getCoverImage(trip);
 
   const [failed, setFailed] = useState(false);
-  const fade = useRef(new Animated.Value(0)).current;
-  const onLoad = () =>
-    Animated.timing(fade, { toValue: 1, duration: 300, useNativeDriver: true }).start();
 
   return (
     <View style={[styles.media, { backgroundColor: pastel.bg }]}>
       <Icon size={88} strokeWidth={1} color={pastel.fg} style={styles.placeholderIcon} />
       {imageUri && !failed ? (
-        <Animated.Image
-          source={{ uri: imageUri }}
-          style={[StyleSheet.absoluteFill, { opacity: fade }]}
-          resizeMode="cover"
-          onLoad={onLoad}
+        // Memory + disk cached: a photo seen once (or prefetched at launch)
+        // appears instantly; only a genuinely new one cross-fades in.
+        <Image
+          source={imageUri}
+          style={StyleSheet.absoluteFill}
+          contentFit="cover"
+          cachePolicy="memory-disk"
+          recyclingKey={String(trip._id || imageUri)}
+          transition={200}
           onError={() => setFailed(true)}
         />
       ) : null}

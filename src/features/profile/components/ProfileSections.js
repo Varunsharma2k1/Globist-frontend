@@ -30,7 +30,7 @@ export function QuickAccessGrid({ items }) {
         >
           <View style={styles.quickTop}>
             <View style={styles.iconCircle}>
-              <Icon size={18} color={colors.pastel.mountain.fg} />
+              <Icon size={18} color={colors.ink} />
             </View>
             {badge != null ? <Text style={styles.badge}>{badge}</Text> : null}
           </View>
@@ -40,7 +40,7 @@ export function QuickAccessGrid({ items }) {
               {sub}
             </Text>
             <View style={styles.chevronCircle}>
-              <ChevronRight size={14} color={colors.pastel.mountain.fg} strokeWidth={2.6} />
+              <ChevronRight size={14} color={colors.ink} strokeWidth={2.6} />
             </View>
           </View>
         </Pressable>
@@ -63,7 +63,7 @@ export function RowGroup({ rows }) {
           accessibilityLabel={title}
         >
           <View style={styles.iconCircle}>
-            <Icon size={18} color={colors.pastel.mountain.fg} />
+            <Icon size={18} color={colors.ink} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.rowTitle}>{title}</Text>
@@ -83,7 +83,7 @@ function getStyles(colors) {
     borderRadius: RADIUS.lg,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.divider,
-    shadowColor: '#17271E',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: dark ? 0 : 0.05,
     shadowRadius: 16,
@@ -119,7 +119,7 @@ function getStyles(colors) {
       width: 26,
       height: 26,
       borderRadius: 13,
-      backgroundColor: dark ? colors.surfaceMuted : colors.pastel.mountain.bg,
+      backgroundColor: colors.surfaceMuted,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -127,7 +127,7 @@ function getStyles(colors) {
       width: 36,
       height: 36,
       borderRadius: 18,
-      backgroundColor: dark ? colors.surfaceMuted : colors.pastel.mountain.bg,
+      backgroundColor: colors.surfaceMuted,
       alignItems: 'center',
       justifyContent: 'center',
     },

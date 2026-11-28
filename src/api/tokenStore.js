@@ -35,7 +35,9 @@ const raw = axios.create({ baseURL: CONFIG.API_BASE_URL, timeout: CONFIG.API_TIM
 function decodeExpMs(jwt) {
   try {
     const part = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    const json = JSON.parse(global.atob(part.padEnd(part.length + ((4 - (part.length % 4)) % 4), '=')));
+    const json = JSON.parse(
+      global.atob(part.padEnd(part.length + ((4 - (part.length % 4)) % 4), '='))
+    );
     return json.exp ? json.exp * 1000 : 0;
   } catch {
     return 0;

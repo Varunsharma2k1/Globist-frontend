@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView, StyleSheet, Alert } from 'react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { useSettings } from '../../../hooks/useSettings';
+import { useAuth } from '../../../hooks/useAuth';
 import { SPACING, LAYOUT } from '../../../theme';
 import { SETTINGS_GROUPS, THEME_MODE_LABEL } from '../data/settingsGroups';
 import SettingsHeader from '../components/SettingsHeader';
 import SettingsSectionLabel from '../components/SettingsSectionLabel';
 import SettingsRow from '../components/SettingsRow';
-import FeedPreferencesCard from '../components/FeedPreferencesCard';
 import StorageUsageRow from '../components/StorageUsageRow';
 import AccountActionsSection from '../components/AccountActionsSection';
 import ThemePickerModal from '../components/ThemePickerModal';
@@ -28,6 +28,29 @@ export default function SettingsScreen({ navigation }) {
   const { settings, toggleSetting } = useSettings();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const { user } = useAuth();
+  const guest = !user || user.isGuest;
+
+  // Settings are for signed-in accounts only; if we end up here signed out
+  // (e.g. after deleting the account or logging out), leave.
+  useEffect(() => {
+    if (guest) navigation.goBack();
+  }, [guest, navigation]);
+
+  // Rows that open something. Others (toggles) handle themselves.
+  const ROW_ACTIONS = {
+    editProfile: () => navigation.navigate('EditProfile'),
+    password: () => navigation.navigate('ChangePassword'),
+    twofa: () => Alert.alert('Two-factor authentication', 'Coming soon.'),
+    theme: () => setShowThemePicker(true),
+    help: () => navigation.navigate('HelpCenter'),
+    report: () => navigation.navigate('ReportProblem'),
+    terms: () => navigation.navigate('Legal'),
+    about: () => navigation.navigate('About'),
+  };
+  const rowPress = (id) => ROW_ACTIONS[id];
+
+  if (guest) return <View style={styles.container} />;
 
   return (
     <View style={styles.container}>
@@ -44,15 +67,14 @@ export default function SettingsScreen({ navigation }) {
                   row={row.id === 'theme' ? { ...row, sub: THEME_MODE_LABEL[mode] } : row}
                   on={!!settings.toggles[row.id]}
                   onToggle={() => toggleSetting(row.id)}
-                  onPress={row.id === 'theme' ? () => setShowThemePicker(true) : undefined}
+                  onPress={rowPress(row.id)}
                 />
               ))}
+              {group.title === 'Data & Media' ? <StorageUsageRow /> : null}
             </View>
           </View>
         ))}
 
-        <FeedPreferencesCard />
-        <StorageUsageRow />
         <AccountActionsSection onRequestDeleteAccount={() => setShowDeleteConfirm(true)} />
       </ScrollView>
 

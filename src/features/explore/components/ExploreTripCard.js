@@ -18,7 +18,7 @@ export default function ExploreTripCard({ trip, onPress, onAgencyPress, index = 
     Animated.timing(appear, {
       toValue: 1,
       duration: 320,
-      delay: Math.min(index, 6) * 60,
+      delay: Math.min(index, 5) * 45,
       useNativeDriver: true,
     }).start();
   }, [appear, index]);

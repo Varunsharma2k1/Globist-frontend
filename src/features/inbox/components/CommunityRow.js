@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useCommunityData } from '../../../hooks/useCommunities';
 import { useTheme } from '../../../hooks/useTheme';
 import { getSharedInboxRowStyles } from './sharedInboxRowStyles';
-import { compact } from '../../communities/utils/format';
+import { compact, membersLabel } from '../../communities/utils/format';
 
 /** A joined community in the Inbox; opens its page. */
 export default function CommunityRow({ community, onPress }) {
@@ -19,7 +19,7 @@ export default function CommunityRow({ community, onPress }) {
       />
       <View style={{ flex: 1 }}>
         <Text style={styles.chatName}>{community.name}</Text>
-        <Text style={styles.rowText}>{compact(memberCount(community))} members</Text>
+        <Text style={styles.rowText}>{membersLabel(memberCount(community))}</Text>
       </View>
     </TouchableOpacity>
   );

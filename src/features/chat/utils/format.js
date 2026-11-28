@@ -24,5 +24,4 @@ export function dayLabel(date) {
   return d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
-export const initialOf = (name = '') =>
-  (name.replace(/^@/, '').charAt(0) || '?').toUpperCase();
+export const initialOf = (name = '') => (name.replace(/^@/, '').charAt(0) || '?').toUpperCase();

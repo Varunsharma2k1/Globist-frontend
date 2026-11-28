@@ -7,6 +7,8 @@ import {
   FlatList,
   ActivityIndicator,
   KeyboardAvoidingView,
+  Keyboard,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SendHorizontal, BadgeCheck } from 'lucide-react-native';
@@ -17,7 +19,6 @@ import { SPACING } from '../../../theme';
 import { getStyles } from '../styles';
 import MessageBubble from '../components/MessageBubble';
 import { getMessages, startConversation } from '../../../api/chat';
-import { useTopInset } from '../../../hooks/useTopInset';
 
 const PAGE = 30;
 const sameId = (a, b) => String(a) === String(b);
@@ -36,7 +37,6 @@ export default function ChatThreadScreen({ route, navigation }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const insets = useSafeAreaInsets();
-  const topInset = useTopInset();
   const chat = useChat();
   const { userId, subscribe, sendMessage, markRead, sendTyping, typing, online, connected } = chat;
 
@@ -50,6 +50,21 @@ export default function ChatThreadScreen({ route, navigation }) {
   const [text, setText] = useState('');
   const typingSent = useRef(false);
   const typingTimer = useRef(null);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    const ios = Platform.OS === 'ios';
+    const show = Keyboard.addListener(ios ? 'keyboardWillShow' : 'keyboardDidShow', () =>
+      setKeyboardOpen(true)
+    );
+    const hide = Keyboard.addListener(ios ? 'keyboardWillHide' : 'keyboardDidHide', () =>
+      setKeyboardOpen(false)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
 
   const conversationId = conversation?._id ? String(conversation._id) : null;
   const live = chat.conversations.find((c) => sameId(c._id, conversationId));
@@ -231,11 +246,20 @@ export default function ChatThreadScreen({ route, navigation }) {
 
   const title = other?.name || params.title || 'Chat';
 
+  // Tap the name -> their profile (agency page for agency chats).
+  const agencyRef = live?.agency || conversation?.agency;
+  const openProfile = agencyRef?._id
+    ? () => navigation.push('AgencyProfile', { agency: agencyRef })
+    : other?._id
+      ? () => navigation.push('CreatorProfile', { creator: other })
+      : undefined;
+
   return (
     <View style={styles.container}>
       <Header
         title={title}
         onBack={() => navigation.goBack()}
+        onPressTitle={openProfile}
         rightElement={other?.isVerified ? <BadgeCheck size={18} color={colors.verified} /> : null}
       />
       {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
@@ -248,13 +272,19 @@ export default function ChatThreadScreen({ route, navigation }) {
         <KeyboardAvoidingView
           style={{ flex: 1 }}
           // Android is always edge-to-edge on this SDK, so the window no longer
-          // resizes for the keyboard; pad on both platforms.
+          // resizes for the keyboard; pad on both platforms. No vertical offset: this
+          // view's own position already includes the header, so adding one left a
+          // header-sized gap above the keyboard.
           behavior="padding"
-          keyboardVerticalOffset={56 + topInset}
         >
           {loading || !conversationId ? (
             <View style={styles.center}>
               <ActivityIndicator color={colors.ink} />
+            </View>
+          ) : !messages.length ? (
+            // Outside the inverted list, so it can't render upside down.
+            <View style={styles.center}>
+              <Text style={styles.empty}>Say hi to {title} 👋</Text>
             </View>
           ) : (
             <FlatList
@@ -271,15 +301,20 @@ export default function ChatThreadScreen({ route, navigation }) {
                   <ActivityIndicator style={{ margin: SPACING.md }} color={colors.ink} />
                 ) : null
               }
-              ListEmptyComponent={
-                <View style={[styles.center, { transform: [{ scaleY: -1 }] }]}>
-                  <Text style={styles.empty}>Say hi to {title} 👋</Text>
-                </View>
-              }
             />
           )}
 
-          <View style={[styles.composer, { paddingBottom: Math.max(insets.bottom, SPACING.sm) }]}>
+          <View
+            style={[
+              styles.composer,
+              // Breathing room above the home indicator / screen edge; tighter with the keyboard up.
+              {
+                paddingBottom: keyboardOpen
+                  ? SPACING.sm
+                  : Math.max(insets.bottom + SPACING.sm, SPACING.lg),
+              },
+            ]}
+          >
             <TextInput
               style={styles.input}
               value={text}
@@ -295,7 +330,7 @@ export default function ChatThreadScreen({ route, navigation }) {
               style={[styles.sendBtn, (!text.trim() || !conversationId) && { opacity: 0.4 }]}
               accessibilityLabel="Send message"
             >
-              <SendHorizontal size={18} color={colors.inkContrast} />
+              <SendHorizontal size={18} color={colors.ink} />
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>

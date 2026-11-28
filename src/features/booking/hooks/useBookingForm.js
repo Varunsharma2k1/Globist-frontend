@@ -21,8 +21,8 @@ const isServerTrip = (t) => /^[a-f0-9]{24}$/.test(String(t?._id || ''));
  * then the booking is created on the server (real trips) and saved to the
  * on-device ledger (so it appears in My Trips) and treated as paid. If the
  * server refuses a real trip's booking, the user sees why — no fake
- * "confirmed". In dev the server marks bookings completed right away
- * (DEMO_AUTO_COMPLETE_BOOKINGS) and the app follows, so a tape can be posted. Travellers can put their wallet balance
+ * "confirmed". The trip completes the day after it ends, which is when a
+ * tagged tape (and its reward) unlocks. Travellers can put their wallet balance
  * (1 point = ₹1) towards the total; only the rest is "paid".
  *
  * @param {Object} trip - the trip being booked (from route params)
@@ -32,7 +32,7 @@ const isServerTrip = (t) => /^[a-f0-9]{24}$/.test(String(t?._id || ''));
  */
 export function useBookingForm(trip, referral, initialOccupancy) {
   const { user } = useAuth();
-  const { bookTrip, markTripCompleted, wallet } = useTripLedger();
+  const { bookTrip, wallet } = useTripLedger();
 
   const departures = useMemo(() => departureDates(trip), [trip]);
   const [travelers, setTravelers] = useState(1);
@@ -123,8 +123,6 @@ export function useBookingForm(trip, referral, initialOccupancy) {
           : null,
         backendId: backendBooking?._id || null,
       });
-      // Demo: the server completed it already, so tapes can be posted right away.
-      if (backendBooking?.status === 'completed') markTripCompleted(booking._id);
       haptics.success();
       setConfirmedBooking(booking);
     } finally {

@@ -1,47 +1,37 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getTripById, getExploreTrips } from '../../../api';
-
-const FALLBACK_TRIP = {
-  title: 'Spiti Valley Winter Expedition',
-  duration: '7 Days / 6 Nights',
-  price: 24500,
-  location: 'Spiti, Himachal Pradesh',
-  agency: { name: 'Highland Travellers', rating: 4.9 },
-  description:
-    'Experience sub-zero temperatures, frozen waterfalls, and ancient monasteries in high altitude Spiti.',
-  inclusions: ['4x4 Vehicle Transfers', 'Stays in Homestays', 'Permits & Taxes', 'All Meals'],
-};
+import { getTripById } from '../../../api';
 
 /**
- * Fetches a trip by id, or falls back to the first explore-trips result (or
- * a static demo trip) if no id was passed — matches the original screen's
- * behavior of always having something to render.
+ * Loads one trip from the server. No made-up fallback: if it can't load,
+ * the screen shows an error with Retry.
  */
 export function useTripDetail(tripId) {
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const fetchTripDetails = useCallback(async () => {
+  const load = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      if (tripId) {
-        const data = await getTripById(tripId);
-        setTrip(data);
-      } else {
-        const data = await getExploreTrips();
-        setTrip(data.trips?.[0] || null);
-      }
-    } catch (error) {
-      console.warn('[useTripDetail] Fetch error:', error);
+      if (!tripId) throw new Error('missing trip');
+      setTrip(await getTripById(tripId));
+    } catch (e) {
+      setError(
+        e.response?.status === 404 || e.message === 'missing trip'
+          ? 'This trip is no longer available.'
+          : 'Could not load this trip. Check your connection.'
+      );
     } finally {
       setLoading(false);
     }
   }, [tripId]);
 
   useEffect(() => {
-    fetchTripDetails();
-  }, [fetchTripDetails]);
+    load();
+  }, [load]);
 
-  return { trip: trip || FALLBACK_TRIP, loading };
+  return { trip, loading, error, retry: load };
 }
 
 export default useTripDetail;

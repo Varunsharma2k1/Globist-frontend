@@ -8,6 +8,7 @@ import { SPACING, FONTS, RADIUS } from '../../../theme';
 import { getSharedRowStyles } from './sharedRowStyles';
 import SettingsSectionLabel from './SettingsSectionLabel';
 
+/** Not shown in Settings any more; kept because ThemePickerModal reuses its option styles. */
 /**
  * The "Feed Preferences" segmented card — For You / Chronological, selected
  * option filled solid ink with a checkmark.

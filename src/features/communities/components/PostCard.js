@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Image, Pressable, Share, StyleSheet } from 'react-native';
 import { MessageCircle, Share2 } from 'lucide-react-native';
 import VotePill from './VotePill';
-import { useCommunities } from '../../../hooks/useCommunities';
+import { useCommunityActions } from '../../../hooks/useCommunities';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 import { compact, timeAgo } from '../utils/format';
@@ -18,7 +18,7 @@ const toneFor = (flair = '') =>
  */
 export default function PostCard({ post, community, full, onPress, onComment }) {
   const { colors } = useTheme();
-  const { vote } = useCommunities();
+  const { vote } = useCommunityActions();
   const styles = getStyles(colors);
   const tone = colors.pastel[toneFor(post.flair)];
 

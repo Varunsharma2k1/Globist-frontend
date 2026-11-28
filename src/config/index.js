@@ -12,7 +12,7 @@ export const CONFIG = {
   API_BASE_URL: ENV.API_BASE_URL,
   API_TIMEOUT: ENV.API_TIMEOUT,
   APP_NAME: 'TripTape',
-  DEFAULT_DEMO_VIDEO: ENV.DEFAULT_DEMO_VIDEO,
+  APP_ENV: ENV.APP_ENV, // 'development' | 'production'
 };
 
 /**

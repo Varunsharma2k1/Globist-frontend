@@ -20,7 +20,9 @@ import { CONFIG } from '../config';
 export const getReels = async () => {
   const response = await client.get('/reels', { params: { limit: 30 } });
   const reels = response.data.reels || response.data || [];
-  return reels.filter((r) => Boolean(r.mediaUrl)).map((r) => ({ ...r, mediaUrl: resolveMediaUrl(r.mediaUrl) }));
+  return reels
+    .filter((r) => Boolean(r.mediaUrl))
+    .map((r) => ({ ...r, mediaUrl: resolveMediaUrl(r.mediaUrl) }));
 };
 
 /**
@@ -36,47 +38,18 @@ function resolveMediaUrl(mediaUrl) {
   return `${origin}${mediaUrl}`;
 }
 
-/**
- * Submits a new travel reel.
- * @param {Object} reelData - ({ caption, location, mediaUrl, imageType, tags, agencyId, isAffiliate })
- * @returns {Promise<Object>}
- */
-export const createReel = async (reelData) => {
-  const payload = {
-    ...reelData,
-    mediaUrl: reelData.mediaUrl || CONFIG.DEFAULT_DEMO_VIDEO,
-    tags: reelData.tags?.length ? reelData.tags : ['Travel', 'Exploration'],
-  };
-  const response = await client.post('/reels', payload);
-  return response.data;
-};
+/** Like / unlike (both safe to repeat). @returns {Promise<{liked, likes}>} */
+export const likeReel = async (reelId) => (await client.put(`/reels/${reelId}/like`)).data;
+export const unlikeReel = async (reelId) => (await client.delete(`/reels/${reelId}/like`)).data;
+/** Ids of tapes I liked. */
+export const getLikedReelIds = async () => (await client.get('/reels/liked-ids')).data;
 
-/**
- * Uploads a picked video/photo file for a reel and returns its absolute URL.
- * @param {{ uri: string, name: string, type: string }} file
- * @returns {Promise<string>} absolute mediaUrl
- */
-export const uploadReelMedia = async (file) => {
-  const form = new FormData();
-  form.append('file', file);
-
-  const response = await client.post('/reels/upload', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
-
-  return resolveMediaUrl(response.data.url);
-};
-
-/**
- * Toggles like on a travel reel.
- * @param {string} reelId
- * @returns {Promise<Object>}
- */
-export const likeReel = async (reelId) => {
-  const response = await client.post(`/reels/${reelId}/like`);
-  return response.data;
-};
-
+/** Comments on a tape, newest first. */
+export const getReelComments = async (reelId) =>
+  (await client.get(`/reels/${reelId}/comments`)).data;
+export const postReelComment = async (reelId, text) =>
+  (await client.post(`/reels/${reelId}/comments`, { text })).data;
+export const deleteReelComment = (commentId) => client.delete(`/reels/comments/${commentId}`);
 /**
  * Tapes tagged to an agency (verified bookings only), newest first.
  * @param {string} agencyId - backend agency _id
@@ -91,4 +64,14 @@ export const getTapeStats = async () => (await client.get('/reels/stats')).data;
 
 /** The signed-in user's own tapes, newest first (incl. still processing). */
 export const getMyReels = async () =>
-  ((await client.get('/reels/mine')).data || []).map((r) => ({ ...r, mediaUrl: resolveMediaUrl(r.mediaUrl) }));
+  ((await client.get('/reels/mine')).data || []).map((r) => ({
+    ...r,
+    mediaUrl: resolveMediaUrl(r.mediaUrl),
+  }));
+
+/** Someone's public tapes, newest first (their profile grid). */
+export const getUserReels = async (userId) =>
+  ((await client.get(`/reels/user/${userId}`)).data || []).map((r) => ({
+    ...r,
+    mediaUrl: resolveMediaUrl(r.mediaUrl),
+  }));

@@ -1,6 +1,5 @@
 import client from './client';
 import { normalizeTrip, normalizeBooking } from './normalize';
-import { mergeLocalTrips, getLocalTrip } from '../data/trips';
 import { isHiddenTrip } from '../data/hiddenRegions';
 
 /**
@@ -18,9 +17,8 @@ export const getExploreTrips = async () => {
   // The API defaults to 20 trips; Explore filters client-side, so ask for
   // the whole catalogue.
   const response = await client.get('/trips', { params: { limit: 100 } });
-  // Plus the app's frontend-only reference packages (see src/data/trips),
-  // minus regions the app isn't listing right now.
-  const trips = mergeLocalTrips(response.data || []).map(normalizeTrip);
+  // Real trips only (MongoDB), minus regions the app isn't listing right now.
+  const trips = (response.data || []).map(normalizeTrip);
   return { trips: trips.filter((t) => !isHiddenTrip(t)) };
 };
 
@@ -32,10 +30,6 @@ export const getExploreTrips = async () => {
  * @returns {Promise<Object>}
  */
 export const getTripById = async (tripId) => {
-  // Frontend-only reference packages aren't in the backend.
-  const localTrip = getLocalTrip(tripId);
-  if (localTrip) return { ...normalizeTrip(localTrip), relatedTrips: [] };
-
   const response = await client.get(`/trips/${tripId}`);
   return {
     ...normalizeTrip(response.data.trip),
@@ -82,3 +76,7 @@ export const getWishlist = async () =>
 /** Saves / un-saves a trip. @returns {Promise<boolean>} saved now? */
 export const toggleWishlist = async (tripId) =>
   Boolean((await client.post(`/users/wishlist/${tripId}`)).data?.wishlisted);
+
+/** DEMO ONLY (server refuses in production): ends one of my trips now. */
+export const demoCompleteBooking = async (bookingId) =>
+  (await client.post(`/bookings/${bookingId}/demo-complete`)).data;

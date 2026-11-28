@@ -10,6 +10,7 @@ import {
   logoutSession,
   logoutAllSessions,
   resetPasswordWithCode,
+  deleteMyAccount,
 } from '../api/auth';
 import { getGoogleIdToken, signOutGoogle } from '../api/google';
 import * as tokenStore from '../api/tokenStore';
@@ -152,6 +153,13 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async ({ email, code, newPassword }) =>
     persistSession(await resetPasswordWithCode({ email, code, newPassword }));
 
+  /** Permanently deletes the account on the server, then clears this device. */
+  const deleteAccount = async (body) => {
+    await deleteMyAccount(body); // the server also ends every session
+    await signOutGoogle();
+    await clearSession();
+  };
+
   /** Signs out every device (e.g. after a lost phone). */
   const logoutAllDevices = async () => {
     await logoutAllSessions();
@@ -172,6 +180,7 @@ export const AuthProvider = ({ children }) => {
         logoutAllDevices,
         resetPassword,
         updateUser,
+        deleteAccount,
         setUser,
       }}
     >

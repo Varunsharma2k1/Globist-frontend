@@ -76,11 +76,18 @@ export const requestPasswordReset = async (email) =>
 
 /** Sets a new password with the emailed code; signs out all devices and starts a new session. */
 export const resetPasswordWithCode = async ({ email, code, newPassword }) =>
-  toSession((await client.post('/auth/password/reset', { email, code, newPassword }, { skipAuth: true })).data);
+  toSession(
+    (await client.post('/auth/password/reset', { email, code, newPassword }, { skipAuth: true }))
+      .data
+  );
 
 /** Signed-in password change; other devices are signed out. */
 export const changePassword = async ({ currentPassword, newPassword }) =>
   (await client.post('/auth/password/change', { currentPassword, newPassword })).data;
 
 /** Updates name / bio / location (server validates lengths). */
-export const updateProfile = async (fields) => normalizeUser((await client.put('/users/profile', fields)).data);
+export const updateProfile = async (fields) =>
+  normalizeUser((await client.put('/users/profile', fields)).data);
+
+/** Permanently deletes the account. Re-auth: { password } or, for Google-only accounts, { confirm: 'DELETE' }. */
+export const deleteMyAccount = (body) => client.delete('/users/me', { data: body });

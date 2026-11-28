@@ -1,23 +1,7 @@
 /**
- * Frontend-only trip data layered over the API (the backend has no fields
- * for these yet):
- * - TRIP_EXTRAS: richer detail (itinerary stays/meals, highlights,
- *   inclusions, place tags) for trips the API returns, keyed by name.
- * - Room-sharing prices for every multi-day trip, derived from its listed
- *   price unless a trip defines its own.
- * - LOCAL_TRIPS: reference packages that exist only in the app. They show
- *   in Explore and open a trip page, but the backend can't book them.
+ * Room-sharing prices for multi-day trips, derived from the listed price.
+ * (Trip content itself lives in MongoDB; this file used to hold demo trips.)
  */
-import spiti from './tripExtras';
-import moto from './motoExtras';
-import manaliSnowEscape from './manaliSnowEscape';
-import manaliKasolBackpacking from './manaliKasolBackpacking';
-import placePackages from './places';
-
-const TRIP_EXTRAS = { ...spiti, ...moto };
-
-export const LOCAL_TRIPS = [manaliSnowEscape, manaliKasolBackpacking, ...placePackages];
-
 // The listed price is the cheapest (quad sharing) rate — the one the
 // backend charges — and fewer people per room cost more.
 const OCCUPANCY_MULTIPLIERS = { quad: 1, triple: 1.08, double: 1.18, single: 1.65 };
@@ -32,28 +16,12 @@ function deriveOccupancyPricing(trip) {
   }));
 }
 
-/** Raw API trip → raw trip with frontend extras + room-sharing prices. */
-export function withTripExtras(trip) {
-  const merged = { ...trip, ...TRIP_EXTRAS[trip.name] };
-  if (!merged.occupancyPricing?.length) merged.occupancyPricing = deriveOccupancyPricing(merged);
-  return merged;
-}
-
-export const getLocalTrip = (id) => LOCAL_TRIPS.find((t) => t._id === id) || null;
-
 /**
- * Appends the app-only demo packages AFTER the API's list (real, bookable
- * trips — featured agency first — always lead), swapping their
- * agency/region snapshots for the live objects (real _ids, categories) when
- * the API returned another trip by the same agency / in the same region.
+ * Adds room-sharing prices to a trip from the server (all trip details —
+ * itinerary, highlights, inclusions — now come from MongoDB).
  */
-export function mergeLocalTrips(apiTrips) {
-  const agencies = new Map(apiTrips.map((t) => [t.agency?.name, t.agency]));
-  const regions = new Map(apiTrips.map((t) => [t.region?.name, t.region]));
-  const local = LOCAL_TRIPS.map((t) => ({
-    ...t,
-    agency: agencies.get(t.agency.name) || t.agency,
-    region: regions.get(t.region.name) || t.region,
-  }));
-  return [...apiTrips, ...local];
+export function withTripExtras(trip) {
+  if (trip.occupancyPricing?.length) return trip;
+  return { ...trip, occupancyPricing: deriveOccupancyPricing(trip) };
 }
+

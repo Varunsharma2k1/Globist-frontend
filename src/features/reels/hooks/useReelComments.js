@@ -1,74 +1,98 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { getReelComments, postReelComment, deleteReelComment } from '../../../api/reels';
 import { useReelEngagement } from '../context/ReelEngagementContext';
+import haptics from '../../../utils/haptics';
 
-const MINUTE = 60 * 1000;
-const NO_COMMENTS = [];
+const isServerId = (id) => /^[a-f0-9]{24}$/.test(String(id || ''));
 
-// Demo comments shown on real (saved) reels so the feed doesn't look empty.
-// Preview reels with no `_id` yet (e.g. Post Reel's template preview) get
-// none, so "zero values" there are genuinely zero, not seeded.
-function seedComments(reel) {
-  const place = reel.location || 'this trip';
-  const now = Date.now();
-  return [
-    {
-      id: 'c1',
-      author: '@wanderlust_kate',
-      text: `This looks incredible! Adding ${place} to my list 😍`,
-      createdAt: now - 42 * MINUTE,
-    },
-    {
-      id: 'c2',
-      author: '@travel_with_sam',
-      text: 'How much did this trip cost roughly?',
-      createdAt: now - 3 * 60 * MINUTE,
-    },
-    {
-      id: 'c3',
-      author: '@nomad.riya',
-      text: 'Saving this for my next long weekend 🙌',
-      createdAt: now - 26 * 60 * MINUTE,
-    },
-  ];
-}
+/** Server comment -> the shape the comment rows render. */
+const toRow = (c, meId) => ({
+  id: c._id,
+  author: c.user?.username ? `@${c.user.username}` : c.user?.name || 'Traveller',
+  text: c.text,
+  createdAt: new Date(c.createdAt).getTime(),
+  isOwn: Boolean(meId && String(c.user?._id) === meId),
+});
 
 /**
- * Owns a single reel's comment thread — the seeded demo comments plus any
- * the current user posts locally during this session (newest first). Demo
- * only: nothing is sent to the backend.
- *
- * @param {{ _id?: string, location?: string }} reel
- * @param {string} [authorName]
+ * A tape's comments from the server. Loads when the sheet opens (`open`);
+ * posting needs sign-in. Count = the tape's saved count + changes made here.
  */
-export function useReelComments(reel, authorName) {
+export function useReelComments(reel, open) {
   const engagement = useReelEngagement();
-  const [localComments, setLocalComments] = useState([]);
-  const [commentText, setCommentText] = useState('');
+  const navigation = useNavigation();
+  const meId = engagement?.meId;
   const reelId = reel._id;
-  const shared = Boolean(engagement && reelId);
+  const real = isServerId(reelId);
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [posting, setPosting] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const seeded = useMemo(() => (reelId ? seedComments(reel) : []), [reelId]);
-  const posted = shared ? engagement.commentsById[reelId] || NO_COMMENTS : localComments;
-  const comments = useMemo(() => [...posted, ...seeded], [posted, seeded]);
-
-  const handlePostComment = useCallback(() => {
-    const text = commentText.trim();
-    if (!text) return false;
-    const comment = {
-      id: `local-${Date.now()}`,
-      author: authorName || 'You',
-      text,
-      createdAt: Date.now(),
-      isOwn: true,
+  useEffect(() => {
+    if (!open || !real) return undefined;
+    let alive = true;
+    setLoading(true);
+    getReelComments(reelId)
+      .then((list) => alive && setComments(list.map((c) => toRow(c, meId))))
+      .catch(() => {})
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
     };
-    if (shared) engagement.addComment(reelId, comment);
-    else setLocalComments((prev) => [comment, ...prev]);
-    setCommentText('');
-    return true;
-  }, [commentText, authorName, shared, engagement, reelId]);
+  }, [open, real, reelId, meId]);
 
-  return { comments, commentText, setCommentText, handlePostComment };
+  const commentCount = (reel.comments || 0) + ((real && engagement?.commentDelta[reelId]) || 0);
+
+  const handlePostComment = useCallback(async () => {
+    const text = commentText.trim();
+    if (!text || posting || !real) return false;
+    if (!meId) {
+      navigation.navigate('Auth');
+      return false;
+    }
+    setPosting(true);
+    try {
+      const saved = await postReelComment(reelId, text);
+      setComments((prev) => [toRow(saved, meId), ...prev]);
+      engagement?.bumpComments(reelId, 1);
+      setCommentText('');
+      haptics.success();
+      return true;
+    } catch (error) {
+      haptics.error();
+      Alert.alert("Couldn't post", error.response?.data?.message || 'Check your connection.');
+      return false;
+    } finally {
+      setPosting(false);
+    }
+  }, [commentText, posting, real, meId, navigation, reelId, engagement]);
+
+  const handleDeleteComment = useCallback(
+    async (commentId) => {
+      try {
+        await deleteReelComment(commentId);
+        setComments((prev) => prev.filter((c) => c.id !== commentId));
+        engagement?.bumpComments(reelId, -1);
+      } catch {
+        Alert.alert("Couldn't delete", 'Try again.');
+      }
+    },
+    [engagement, reelId]
+  );
+
+  return {
+    comments,
+    commentCount,
+    loading,
+    commentText,
+    setCommentText,
+    handlePostComment,
+    handleDeleteComment,
+    posting,
+  };
 }
 
 export default useReelComments;

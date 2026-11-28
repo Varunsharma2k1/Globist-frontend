@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
+import Button from '../../../components/Button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
 import { useTheme } from '../../../hooks/useTheme';
 import { useRequireAuth } from '../../../hooks/useRequireAuth';
-import { SPACING, LAYOUT } from '../../../theme';
+import { SPACING, LAYOUT, FONTS } from '../../../theme';
 import { OCCUPANCY_LABELS, defaultOccupancy, priceForOccupancy } from '../../../data/occupancy';
 import { useTripDetail } from '../hooks/useTripDetail';
 import { useSavedTrip } from '../hooks/useSavedTrip';
@@ -31,7 +32,7 @@ export default function TripDetailScreen({ route, navigation }) {
   // `referral` is only present when the user arrived from a reel's Book
   // button; it's passed through untouched so Booking can attribute it.
   const { tripId, referral } = route.params || {};
-  const { trip: item, loading } = useTripDetail(tripId);
+  const { trip: item, loading, error, retry } = useTripDetail(tripId);
   const [pickedOccupancy, setPickedOccupancy] = useState(null);
   const { requireAuth } = useRequireAuth(navigation);
   const { saved, canSave, toggle: toggleSave } = useSavedTrip(tripId);
@@ -41,6 +42,23 @@ export default function TripDetailScreen({ route, navigation }) {
       <View style={styles.container}>
         <Header title="Trip Itinerary" onBack={() => navigation.goBack()} />
         <ActivityIndicator color={colors.ink} style={{ flex: 1 }} />
+      </View>
+    );
+  }
+
+  if (!item) {
+    return (
+      <View style={styles.container}>
+        <Header title="Trip" onBack={() => navigation.goBack()} />
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{error || 'This trip is no longer available.'}</Text>
+          <Button
+            title="Try again"
+            variant="outline"
+            onPress={retry}
+            style={{ marginTop: SPACING.md }}
+          />
+        </View>
       </View>
     );
   }
@@ -96,6 +114,13 @@ export default function TripDetailScreen({ route, navigation }) {
 
 function getStyles(colors) {
   return StyleSheet.create({
+    errorBox: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: SPACING.xl },
+    errorText: {
+      fontFamily: FONTS.body,
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: 'center',
+    },
     container: {
       flex: 1,
       backgroundColor: colors.background,

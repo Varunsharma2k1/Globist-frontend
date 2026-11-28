@@ -15,7 +15,7 @@ import { SPACING, LAYOUT, FONTS } from '../../../theme';
 
 const BIO_MAX = 160;
 
-/** Name, bio and home location, saved to MongoDB (PUT /users/profile). */
+/** Photo, name, username, bio, home city and website — saved to MongoDB (PUT /users/profile). */
 export default function EditProfileScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const { colors } = useTheme();
@@ -24,6 +24,8 @@ export default function EditProfileScreen({ navigation }) {
   const [name, setName] = useState(user?.name || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [location, setLocation] = useState(user?.location || '');
+  const [username, setUsername] = useState(user?.username || '');
+  const [website, setWebsite] = useState(user?.website || '');
   const [saving, setSaving] = useState(false);
   const avatar = useAvatarPicker();
 
@@ -69,6 +71,18 @@ export default function EditProfileScreen({ navigation }) {
           maxLength={80}
         />
         <Input
+          label="Username"
+          value={username}
+          onChangeText={(t) => setUsername(t.replace(/[^A-Za-z0-9._]/g, '').toLowerCase())}
+          placeholder="e.g. riya.travels"
+          autoCapitalize="none"
+          autoCorrect={false}
+          maxLength={30}
+        />
+        <Text style={styles.hint}>
+          {username ? `triptape.app/@${username}` : '3–30 letters, numbers, "." or "_"'}
+        </Text>
+        <Input
           label="Bio"
           value={bio}
           onChangeText={(t) => setBio(t.slice(0, BIO_MAX))}
@@ -84,6 +98,16 @@ export default function EditProfileScreen({ navigation }) {
           onChangeText={setLocation}
           placeholder="e.g. Pune, Maharashtra"
           maxLength={80}
+        />
+        <Input
+          label="Website"
+          value={website}
+          onChangeText={setWebsite}
+          placeholder="yoursite.com"
+          keyboardType="url"
+          autoCapitalize="none"
+          autoCorrect={false}
+          maxLength={100}
         />
         <Button title="Save" loading={saving} onPress={save} style={{ marginTop: SPACING.md }} />
       </KeyboardAwareScrollView>
@@ -122,6 +146,13 @@ function getStyles(colors) {
       fontSize: 14,
       color: colors.ink,
       marginTop: SPACING.sm,
+    },
+    hint: {
+      fontFamily: FONTS.body,
+      fontSize: 12,
+      color: colors.textMuted,
+      marginTop: -SPACING.sm,
+      marginBottom: SPACING.sm,
     },
     counter: {
       fontFamily: FONTS.body,

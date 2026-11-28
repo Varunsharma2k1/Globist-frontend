@@ -5,6 +5,12 @@ import SplashScreen from '../screens/SplashScreen';
 import AuthScreen from '../screens/AuthScreen';
 import ForgotPasswordScreen from '../features/auth/screens/ForgotPasswordScreen';
 import EditProfileScreen from '../features/profile/screens/EditProfileScreen';
+import FollowListScreen from '../features/profile/screens/FollowListScreen';
+import ChangePasswordScreen from '../features/settings/screens/ChangePasswordScreen';
+import HelpCenterScreen from '../features/support/screens/HelpCenterScreen';
+import ReportProblemScreen from '../features/support/screens/ReportProblemScreen';
+import LegalScreen from '../features/support/screens/LegalScreen';
+import AboutScreen from '../features/support/screens/AboutScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import TripDetailScreen from '../screens/TripDetailScreen';
 import BookingScreen from '../screens/BookingScreen';
@@ -73,6 +79,12 @@ export default function AppNavigator() {
             <Stack.Screen name="IndiaMap" component={IndiaMapScreen} />
             <Stack.Screen name="ChatThread" component={ChatThreadScreen} />
             <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="FollowList" component={FollowListScreen} />
+            <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+            <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
+            <Stack.Screen name="ReportProblem" component={ReportProblemScreen} />
+            <Stack.Screen name="Legal" component={LegalScreen} />
+            <Stack.Screen name="About" component={AboutScreen} />
             {/* Sign-in sheet for guests (see useRequireAuth). */}
             <Stack.Screen
               name="Auth"

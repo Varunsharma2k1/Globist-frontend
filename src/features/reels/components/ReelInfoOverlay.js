@@ -5,6 +5,9 @@ import { SPACING, RADIUS, FONTS } from '../../../theme';
 import { initialsOf } from '../utils/reelFormat';
 import CreatorTierBadge from './CreatorTierBadge';
 import ReelFadingName from './ReelFadingName';
+import { useNavigation } from '@react-navigation/native';
+import { useFollow, isServerUserId } from '../../../context/FollowContext';
+import { useRequireAuth } from '../../../hooks/useRequireAuth';
 
 /**
  * Bottom-left caption block: creator row (avatar, handle, tier, follow),
@@ -13,7 +16,14 @@ import ReelFadingName from './ReelFadingName';
  * ReelBookingBar underneath.
  */
 export default function ReelInfoOverlay({ reel, onCreatorPress }) {
-  const [following, setFollowing] = useState(false);
+  const navigation = useNavigation();
+  const { meId, isFollowing, toggle } = useFollow();
+  const { requireAuth } = useRequireAuth(navigation);
+  const creatorId = reel.user?._id;
+  // Only real accounts can be followed, and never yourself.
+  const canFollow = isServerUserId(creatorId) && String(creatorId) !== meId;
+  const following = canFollow && isFollowing(creatorId);
+  const onFollow = () => requireAuth({ name: 'MainTabs' }) && toggle(creatorId);
   const [expanded, setExpanded] = useState(false);
   const handle = reel.creatorHandle || '@explorer';
   const avatarUri = reel.user?.avatar;
@@ -41,15 +51,17 @@ export default function ReelInfoOverlay({ reel, onCreatorPress }) {
         <View style={styles.tierBadgeWrap}>
           <CreatorTierBadge tier={reel.creatorTier} />
         </View>
-        <TouchableOpacity
-          style={[styles.followBtn, following && styles.followingBtn]}
-          onPress={() => setFollowing((v) => !v)}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.followText, following && styles.followingText]}>
-            {following ? 'Following' : 'Follow'}
-          </Text>
-        </TouchableOpacity>
+        {canFollow ? (
+          <TouchableOpacity
+            style={[styles.followBtn, following && styles.followingBtn]}
+            onPress={onFollow}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.followText, following && styles.followingText]}>
+              {following ? 'Following' : 'Follow'}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
       <TouchableOpacity activeOpacity={0.9} onPress={() => setExpanded((v) => !v)}>

@@ -13,7 +13,7 @@ import { withTripExtras } from '../data/trips';
 export function normalizeTrip(rawTrip) {
   if (!rawTrip) return rawTrip;
   // Frontend-only detail (room-sharing prices, richer itinerary, ...) — see
-  // src/data/trips.
+  // src/data/trips (room-sharing prices).
   const trip = withTripExtras(rawTrip);
   // Cheapest room-sharing option first; `price` is the "starting from" rate.
   const occupancyPricing = [...(trip.occupancyPricing || [])].sort(

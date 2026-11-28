@@ -1,5 +1,5 @@
 import { uploadAsync, FileSystemUploadType, getInfoAsync } from 'expo-file-system/legacy';
-import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import { requireOptionalNativeModule } from 'expo';
 import client from './client';
 
 /**
@@ -77,25 +77,44 @@ export async function publishReel(file, details, onStage) {
 }
 
 const AVATAR_SIZE = 512;
+const AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
 
 /**
- * Profile photo: shrink to 512×512 JPEG on the phone (≈50–100 KB instead of
- * a 3–5 MB camera photo), upload straight to R2 with a size-locked presigned
- * URL, and return the public URL to save on the profile.
- * @param {string} uri - picked (already square-cropped) image
- * @returns {Promise<string>} public avatar URL
+ * Shrinks the photo to 512 px JPEG (≈50–100 KB) when the app build includes
+ * expo-image-manipulator. A build made before that package was added doesn't,
+ * and importing it there throws — so check first and fall back to the picked
+ * (already cropped and compressed) file.
  */
-export async function uploadAvatar(uri) {
+async function shrinkAvatar({ uri, mimeType }) {
+  if (!requireOptionalNativeModule('ExpoImageManipulator')) {
+    return { uri, contentType: mimeType || 'image/jpeg' };
+  }
+  const { ImageManipulator, SaveFormat } = require('expo-image-manipulator');
   const rendered = await ImageManipulator.manipulate(uri)
     .resize({ width: AVATAR_SIZE })
     .renderAsync();
   const small = await rendered.saveAsync({ compress: 0.8, format: SaveFormat.JPEG });
-  const { size } = await getInfoAsync(small.uri);
+  return { uri: small.uri, contentType: 'image/jpeg' };
+}
+
+/**
+ * Profile photo: upload straight to R2 with a size-locked presigned URL and
+ * return the public URL to save on the profile.
+ * @param {{ uri: string, mimeType?: string }} asset - picked, square-cropped image
+ * @returns {Promise<string>} public avatar URL
+ */
+export async function uploadAvatar(asset) {
+  const file = await shrinkAvatar(asset);
+  const { size } = await getInfoAsync(file.uri);
+  if (!AVATAR_TYPES.includes(file.contentType) || size > AVATAR_MAX_BYTES) {
+    throw new Error('Pick a JPEG or PNG photo under 5 MB.');
+  }
   const { data: target } = await client.post('/media/avatar-upload-url', {
-    contentType: 'image/jpeg',
+    contentType: file.contentType,
     size,
   });
-  const res = await uploadAsync(target.uploadUrl, small.uri, {
+  const res = await uploadAsync(target.uploadUrl, file.uri, {
     httpMethod: 'PUT',
     uploadType: FileSystemUploadType.BINARY_CONTENT,
     headers: target.headers,

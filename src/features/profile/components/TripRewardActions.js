@@ -10,12 +10,12 @@ import { formatDay } from '../../booking/utils/departures';
 /**
  * Bottom of a booked trip's card in My Trips — where the trip stands in the
  * reel-reward flow:
- * - upcoming: reel rewards unlock after the return date (plus a demo-only
- *   "mark completed", since real trips complete on their own once over);
+ * - upcoming: a tagged tape (and its reward) unlocks the day after the trip
+ *   ends, once it can no longer be cancelled;
  * - completed, no reel yet: post a reel tagging the agency to earn;
  * - completed with a reel: the reward was credited.
  */
-export default function TripRewardActions({ booking, onPostReel, onMarkCompleted }) {
+export default function TripRewardActions({ booking, onPostReel, onDemoComplete }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const reward = `₹${reelReward(booking).toLocaleString('en-IN')}`;
@@ -26,13 +26,15 @@ export default function TripRewardActions({ booking, onPostReel, onMarkCompleted
         <View style={styles.row}>
           <Clock size={14} color={colors.textMuted} />
           <Text style={styles.note}>
-            Returns {formatDay(booking.endDate, { weekday: false })}. Post a reel after your trip to
-            earn {reward}.
+            Returns {formatDay(booking.endDate, { weekday: false })}. The day after, you can post a
+            tape from this trip and earn {reward}.
           </Text>
         </View>
-        <TouchableOpacity onPress={onMarkCompleted} style={styles.demoLink}>
-          <Text style={styles.demoText}>Mark trip as completed (demo)</Text>
-        </TouchableOpacity>
+        {onDemoComplete ? (
+          <TouchableOpacity onPress={onDemoComplete} style={styles.demoLink}>
+            <Text style={styles.demoText}>Mark trip as completed (demo)</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
     );
   }
@@ -71,13 +73,13 @@ function getStyles(colors) {
     },
     row: { flexDirection: 'row', alignItems: 'center', gap: 6 },
     note: { flex: 1, fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
-    btn: { marginTop: SPACING.sm, paddingVertical: SPACING.sm + 2 },
     demoLink: { marginTop: SPACING.xs, alignSelf: 'flex-start', paddingVertical: 4 },
     demoText: {
-      fontFamily: FONTS.semibold,
+      fontFamily: FONTS.body,
       fontSize: 12,
-      color: colors.ink,
+      color: colors.textMuted,
       textDecorationLine: 'underline',
     },
+    btn: { marginTop: SPACING.sm, paddingVertical: SPACING.sm + 2 },
   });
 }

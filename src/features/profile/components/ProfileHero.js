@@ -1,22 +1,29 @@
 import React from 'react';
 import { View, Text, Image, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
-import { Briefcase, Clapperboard, Camera } from 'lucide-react-native';
+import { Camera } from 'lucide-react-native';
 import { absoluteMediaUrl } from '../../../utils/mediaUrl';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 
 /**
- * Soft green greeting card: avatar, "Hi, <first name> 👋", the user's bio
- * (or a default line) and two white stat cards with real counts.
+ * Greeting card (neutral, iOS grouped style): avatar, "Hi, <first name> 👋",
+ * bio, and four real counts: Trips · Tapes · Followers · Following.
  */
 export default function ProfileHero({
   user,
   trips,
   tapes,
+  followers,
+  following,
   onPressTrips,
   onPressTapes,
+  onPressFollowers,
+  onPressFollowing,
   onPressAvatar,
   avatarUploading,
+  title, // overrides "Hi, <first> 👋" (e.g. someone else's name)
+  tagline,
+  items, // overrides the four stats: [{ label, value, onPress }]
 }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
@@ -28,6 +35,7 @@ export default function ProfileHero({
       <View style={styles.top}>
         <Pressable
           onPress={onPressAvatar}
+          disabled={!onPressAvatar}
           style={styles.avatarWrap}
           accessibilityRole="button"
           accessibilityLabel="Change profile photo"
@@ -55,69 +63,61 @@ export default function ProfileHero({
         </Pressable>
         <View style={styles.greeting}>
           <Text style={styles.hi} numberOfLines={1}>
-            Hi, {first} 👋
+            {title || `Hi, ${first} 👋`}
           </Text>
           <Text style={styles.tagline} numberOfLines={2}>
-            {user?.bio || 'Travel more, scroll less.'}
+            {tagline ?? (user?.bio || 'Travel more, scroll less.')}
           </Text>
         </View>
       </View>
 
       <View style={styles.stats}>
-        <StatCard
-          Icon={Briefcase}
-          value={trips}
-          label={trips === 1 ? 'Trip' : 'Trips'}
-          onPress={onPressTrips}
-          styles={styles}
-          colors={colors}
-        />
-        <StatCard
-          Icon={Clapperboard}
-          value={tapes}
-          label={tapes === 1 ? 'Tape' : 'Tapes'}
-          onPress={onPressTapes}
-          styles={styles}
-          colors={colors}
-        />
+        {(
+          items || [
+            { label: 'Trips', value: trips, onPress: onPressTrips },
+            { label: 'Tapes', value: tapes, onPress: onPressTapes },
+            { label: 'Followers', value: followers, onPress: onPressFollowers },
+            { label: 'Following', value: following, onPress: onPressFollowing },
+          ]
+        ).map((item, i) => (
+          <Pressable
+            key={item.label}
+            onPress={item.onPress}
+            style={[styles.stat, i > 0 && styles.statDivider]}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.value ?? 0} ${item.label}`}
+          >
+            <Text style={styles.statValue}>{item.value ?? '–'}</Text>
+            <Text style={styles.statLabel} numberOfLines={1}>
+              {item.label}
+            </Text>
+          </Pressable>
+        ))}
       </View>
     </View>
   );
 }
 
-function StatCard({ Icon, value, label, onPress, styles, colors }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={styles.stat}
-      accessibilityRole="button"
-      accessibilityLabel={`${value} ${label}`}
-    >
-      <View style={styles.statIcon}>
-        <Icon size={18} color={colors.pastel.mountain.fg} />
-      </View>
-      <View>
-        <Text style={styles.statValue}>{value}</Text>
-        <Text style={styles.statLabel}>{label}</Text>
-      </View>
-    </Pressable>
-  );
-}
-
 function getStyles(colors) {
   const dark = colors.mode === 'dark';
+  // iOS layering. Light: grey card, white parts inside. Dark: black page ->
+  // card one step up (#1C1C1E) -> parts inside one more step (#2C2C2E), so
+  // each layer is lighter than the one under it.
+  const cardBg = dark ? colors.surface : colors.surfaceMuted;
+  const innerBg = dark ? colors.surfaceMuted : colors.surface;
   return StyleSheet.create({
     card: {
       borderRadius: RADIUS.lg,
       padding: SPACING.md,
-      backgroundColor: dark ? colors.surfaceMuted : colors.pastel.mountain.bg,
+      backgroundColor: cardBg,
+      ...(dark ? { borderWidth: StyleSheet.hairlineWidth, borderColor: colors.divider } : null),
     },
     top: { flexDirection: 'row', alignItems: 'center', gap: SPACING.md, padding: SPACING.xs },
     avatar: {
       width: 76,
       height: 76,
       borderRadius: 38,
-      backgroundColor: colors.surface,
+      backgroundColor: innerBg,
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
@@ -139,7 +139,7 @@ function getStyles(colors) {
       borderRadius: 13,
       backgroundColor: colors.ink,
       borderWidth: 2,
-      borderColor: dark ? colors.surfaceMuted : colors.pastel.mountain.bg,
+      borderColor: cardBg,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -152,26 +152,16 @@ function getStyles(colors) {
       color: colors.text,
       marginTop: 2,
     },
-    stats: { flexDirection: 'row', gap: SPACING.sm, marginTop: SPACING.md },
-    stat: {
-      flex: 1,
+    stats: {
       flexDirection: 'row',
-      alignItems: 'center',
-      gap: SPACING.sm + 4,
-      backgroundColor: colors.surface,
+      backgroundColor: innerBg,
       borderRadius: RADIUS.md,
       paddingVertical: SPACING.sm + 4,
-      paddingHorizontal: SPACING.md,
+      marginTop: SPACING.md,
     },
-    statIcon: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      backgroundColor: dark ? colors.surfaceMuted : colors.pastel.mountain.bg,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
+    stat: { flex: 1, alignItems: 'center', paddingHorizontal: 2 },
+    statDivider: { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: colors.divider },
     statValue: { fontFamily: FONTS.heading, fontSize: 18, color: colors.ink },
-    statLabel: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted },
+    statLabel: { fontFamily: FONTS.body, fontSize: 12, color: colors.textMuted, marginTop: 2 },
   });
 }

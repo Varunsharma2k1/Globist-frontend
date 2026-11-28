@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as tokenStore from '../../../api/tokenStore';
 import { useAuth } from '../../../hooks/useAuth';
 import { useTripLedger } from '../../../hooks/useTripLedger';
-import { createReel, uploadReelMedia, publishReel } from '../../../api';
+import { publishReel } from '../../../api';
 import haptics from '../../../utils/haptics';
 
 const STAGE_LABEL = {
@@ -116,14 +116,10 @@ export function usePostReelForm(navigation, initialBookingId) {
       let mediaUrl;
       let backendReel = null;
 
-      if (await hasRealSession()) {
-        // R2 pipeline: direct upload -> transcode -> HLS on the CDN.
-        backendReel = await publishReel(media, details, setStage);
-        mediaUrl = backendReel.mediaUrl || media.uri;
-      } else {
-        mediaUrl = await uploadReelMedia(media).catch(() => media.uri);
-        backendReel = await createReel({ ...details, mediaUrl }).catch(() => null);
-      }
+      if (!(await hasRealSession())) throw new Error('Please sign in again to post.');
+      // R2 pipeline: direct upload -> transcode -> HLS on the CDN.
+      backendReel = await publishReel(media, details, setStage);
+      mediaUrl = backendReel.mediaUrl || media.uri;
 
       const { reward } = postReel({
         user,

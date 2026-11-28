@@ -22,10 +22,14 @@ export class GoogleSignInError extends Error {}
 export async function getGoogleIdToken() {
   const mod = loadModule();
   if (!mod?.GoogleSignin) {
-    throw new GoogleSignInError('Google sign-in needs the development build (it does not work in Expo Go).');
+    throw new GoogleSignInError(
+      'Google sign-in needs the development build (it does not work in Expo Go).'
+    );
   }
   if (!ENV.GOOGLE_WEB_CLIENT_ID) {
-    throw new GoogleSignInError('Google sign-in is not configured (EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID).');
+    throw new GoogleSignInError(
+      'Google sign-in is not configured (EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID).'
+    );
   }
   const { GoogleSignin, isSuccessResponse, isErrorWithCode, statusCodes } = mod;
   if (!configured) {

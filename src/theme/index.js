@@ -14,14 +14,14 @@ const SHARED = {
   errorBg: 'rgba(226, 75, 74, 0.12)',
   verified: '#1D9BF0', // blue tick for verified agencies
   pastel: {
-    mountain: { bg: '#DFE9DA', fg: '#3F5C3A' },
+    mountain: { bg: '#E9E9EE', fg: '#3A3A3C' },
     beach: { bg: '#DBE6F2', fg: '#2F4D6E' },
     desert: { bg: '#F8E6C2', fg: '#7A5A1E' },
     luxury: { bg: '#F0EAE0', fg: '#6B5A3E' },
     peach: { bg: '#FBE9DD', fg: '#8A4A26' },
   },
   reelTone: {
-    mountain: '#1B2A18',
+    mountain: '#1C1C1E',
     beach: '#141F2B',
     desert: '#2B2013',
     luxury: '#211C16',
@@ -29,38 +29,37 @@ const SHARED = {
   },
 };
 
-// Minimal brand palette from the TripTape logo, 60/30/10:
-//   60% neutral base (background/surface), 30% deep green ink (text,
-//   primary buttons), 10% gold accent (active states, small highlights).
-// Text hierarchy comes from opacity of the ink, not extra colours.
+// Apple-style neutral system: white and iOS system grays carry the UI,
+// near-black is the primary (text, buttons, icons), and the brand gold is the
+// only accent, used sparingly. Colour comes from the travel photos and tapes.
 export const LIGHT_COLORS = {
   ...SHARED,
   mode: 'light',
   background: '#FFFFFF',
   surface: '#FFFFFF',
-  surfaceMuted: '#F7F4EF', // warm cream tint (logo background)
-  text: 'rgba(23, 39, 30, 0.88)',
-  textMuted: 'rgba(23, 39, 30, 0.56)',
-  ink: '#17271E', // TripTape deep green
+  surfaceMuted: '#F2F2F7', // iOS systemGray6
+  text: 'rgba(0, 0, 0, 0.85)',
+  textMuted: 'rgba(60, 60, 67, 0.6)', // iOS secondaryLabel
+  ink: '#1C1C1E',
   inkContrast: '#FFFFFF', // text/icon color to use on top of an `ink`-filled surface
-  accent: '#B8955A', // TripTape gold — use sparingly (≈10%)
+  accent: '#B8955A',
   accentSoft: 'rgba(184, 149, 90, 0.12)',
-  divider: 'rgba(23, 39, 30, 0.08)',
+  divider: 'rgba(60, 60, 67, 0.12)',
 };
 
 export const DARK_COLORS = {
   ...SHARED,
   mode: 'dark',
-  background: '#0E1411',
-  surface: '#151D18',
-  surfaceMuted: '#1C2620',
-  text: 'rgba(247, 244, 239, 0.88)',
-  textMuted: 'rgba(247, 244, 239, 0.56)',
-  ink: '#F7F4EF', // "ink" = primary emphasis fill; inverted in dark mode (cream-on-green-black)
-  inkContrast: '#0E1411',
+  background: '#000000',
+  surface: '#1C1C1E',
+  surfaceMuted: '#2C2C2E',
+  text: 'rgba(255, 255, 255, 0.9)',
+  textMuted: 'rgba(235, 235, 245, 0.6)',
+  ink: '#FFFFFF', // inverted in dark mode (light-on-dark)
+  inkContrast: '#000000',
   accent: '#CDAE77',
   accentSoft: 'rgba(205, 174, 119, 0.14)',
-  divider: 'rgba(247, 244, 239, 0.08)',
+  divider: 'rgba(235, 235, 245, 0.12)',
 };
 
 // Back-compat static export — anything importing COLORS directly (instead
@@ -135,7 +134,7 @@ export const LAYOUT = {
 // tokens that bake in colors. Call via useTheme() to get theme-aware
 // versions; the static SHADOW/TYPOGRAPHY exports below remain as light-mode
 // fallbacks for any call site not yet using the hook.
-// Soft, green-tinted shadow (never harsh grey/black on light surfaces).
+// Soft, wide, very light shadow.
 export const buildShadow = (colors) => ({
   shadowColor: colors.mode === 'dark' ? '#000000' : colors.ink,
   shadowOffset: { width: 0, height: 8 },

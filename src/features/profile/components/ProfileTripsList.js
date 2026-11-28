@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+import { useTripLedger } from '../../../hooks/useTripLedger';
+import { demoCompleteBooking } from '../../../api/trips';
+import { CONFIG } from '../../../config';
 import { Briefcase, Heart } from 'lucide-react-native';
 import ExploreTripCard from '../../explore/components/ExploreTripCard';
 import BookedTripCard from './BookedTripCard';
 import TripRewardActions from './TripRewardActions';
 import Button from '../../../components/Button';
-import { useTripLedger } from '../../../hooks/useTripLedger';
 import { useTheme } from '../../../hooks/useTheme';
 import { SPACING, FONTS } from '../../../theme';
 
@@ -32,6 +34,31 @@ export default function ProfileTripsList({ kind, trips, loading, navigation }) {
   const { colors } = useTheme();
   const styles = getStyles(colors);
   const { markTripCompleted } = useTripLedger();
+  // Demo shortcut for showcasing; hidden in production builds (and the server refuses it there).
+  const demoTools = CONFIG.APP_ENV !== 'production';
+
+  const demoComplete = (booking) =>
+    Alert.alert(
+      'Mark trip as completed?',
+      'Demo only: real trips complete by themselves the day after they end. This lets you post a tape for this trip now.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Mark completed',
+          onPress: async () => {
+            try {
+              if (booking.backendId) await demoCompleteBooking(booking.backendId);
+              markTripCompleted(booking._id);
+            } catch (e) {
+              Alert.alert(
+                'Could not complete',
+                e.response?.data?.message || 'Check your connection.'
+              );
+            }
+          },
+        },
+      ]
+    );
 
   if (loading) return <ActivityIndicator color={colors.ink} style={styles.loader} />;
 
@@ -51,18 +78,6 @@ export default function ProfileTripsList({ kind, trips, loading, navigation }) {
       </View>
     );
   }
-
-  // Real trips complete on their own once the return date passes; this lets
-  // the tape-reward flow be tried without waiting for the trip.
-  const confirmCompleted = (booking) =>
-    Alert.alert(
-      'Mark trip as completed?',
-      'Demo only: trips complete automatically after their return date. This unlocks posting a tape for this trip.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Mark completed', onPress: () => markTripCompleted(booking._id) },
-      ]
-    );
 
   if (kind === 'saved') {
     return (
@@ -92,7 +107,7 @@ export default function ProfileTripsList({ kind, trips, loading, navigation }) {
           {booking.ledgerBooking ? (
             <TripRewardActions
               booking={booking.ledgerBooking}
-              onMarkCompleted={() => confirmCompleted(booking.ledgerBooking)}
+              onDemoComplete={demoTools ? () => demoComplete(booking.ledgerBooking) : undefined}
               onPostReel={() =>
                 navigation.navigate('PostReel', { bookingId: booking.ledgerBooking._id })
               }

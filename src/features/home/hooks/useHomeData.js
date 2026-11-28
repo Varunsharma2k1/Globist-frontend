@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getFeaturedRegions, getExploreTrips } from '../../../api';
+import * as catalog from '../../../cache/catalog';
 import { pickFeaturedRegions } from '../../../data/featuredRegions';
 
 /**
@@ -9,20 +9,20 @@ import { pickFeaturedRegions } from '../../../data/featuredRegions';
  * screen.
  */
 export function useHomeData() {
-  const [regions, setRegions] = useState([]);
-  const [trendingTrips, setTrendingTrips] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [regions, setRegions] = useState(() => pickFeaturedRegions(catalog.peek('featured') || []));
+  const [trendingTrips, setTrendingTrips] = useState(() => catalog.peek('trips') || []);
+  const [loading, setLoading] = useState(() => !catalog.peek('featured'));
 
   const fetchHomeData = useCallback(async () => {
     try {
       const [regionsData, exploreData] = await Promise.all([
         // Dedicated endpoint that the backend already restricts to the
         // curated two regions with their imageUrl + tagline attached.
-        getFeaturedRegions().catch(() => []),
-        getExploreTrips().catch(() => ({ trips: [] })),
+        catalog.load('featured').catch(() => []),
+        catalog.load('trips').catch(() => []),
       ]);
-      setRegions(pickFeaturedRegions(regionsData));
-      setTrendingTrips(exploreData.trips || []);
+      setRegions(pickFeaturedRegions(regionsData || []));
+      setTrendingTrips(exploreData || []);
     } catch (error) {
       console.warn('[useHomeData] Error fetching dashboard data:', error);
     } finally {
@@ -32,6 +32,10 @@ export function useHomeData() {
 
   useEffect(() => {
     fetchHomeData();
+    return catalog.subscribe((key) => {
+      if (key === 'featured') setRegions(pickFeaturedRegions(catalog.peek('featured') || []));
+      if (key === 'trips') setTrendingTrips(catalog.peek('trips') || []);
+    });
   }, [fetchHomeData]);
 
   return { regions, trendingTrips, loading, refetch: fetchHomeData };

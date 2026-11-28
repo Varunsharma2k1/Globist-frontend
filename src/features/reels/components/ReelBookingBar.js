@@ -4,10 +4,9 @@ import { Plane, Star, Compass } from 'lucide-react-native';
 import { SPACING, RADIUS, FONTS } from '../../../theme';
 
 /**
- * Full-width "Book Trip" bar pinned to the bottom of every reel: the agency
- * running the trip, its location + starting price, and the CTA. Reels with
- * no agency attached get an "Explore" variant instead, so every reel still
- * has a booking path.
+ * Full-width "Book Trip" bar at the bottom of a tape tagged to an agency:
+ * the agency, its location + starting price, and the CTA. Untagged tapes
+ * don't show it (see ReelItem).
  */
 export default function ReelBookingBar({ agency, location, pending, onPress, onAgencyPress }) {
   const hasAgency = Boolean(agency);

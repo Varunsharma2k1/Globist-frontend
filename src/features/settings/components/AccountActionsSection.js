@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { UserRoundPlus, ChevronRight } from 'lucide-react-native';
 import { useTheme } from '../../../hooks/useTheme';
 import { useAuth } from '../../../hooks/useAuth';
+import { useNavigation } from '@react-navigation/native';
 import { SPACING, FONTS, RADIUS } from '../../../theme';
 import { getSharedRowStyles } from './sharedRowStyles';
 import SettingsSectionLabel from './SettingsSectionLabel';
@@ -12,6 +13,24 @@ export default function AccountActionsSection({ onRequestDeleteAccount }) {
   const rowStyles = getSharedRowStyles(colors);
   const styles = getStyles(colors);
   const { user, logout, logoutAllDevices } = useAuth();
+  const navigation = useNavigation();
+
+  // One account per phone for now: switching = sign out, then sign in as someone else.
+  const switchAccount = () =>
+    Alert.alert(
+      'Add or switch account',
+      `You'll be signed out of ${user?.name || 'this account'} and can sign in with another one.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Continue',
+          onPress: async () => {
+            await logout();
+            navigation.navigate('Auth');
+          },
+        },
+      ]
+    );
 
   const confirmLogoutAll = () =>
     Alert.alert(
@@ -37,11 +56,11 @@ export default function AccountActionsSection({ onRequestDeleteAccount }) {
     <View>
       <SettingsSectionLabel>Account Actions</SettingsSectionLabel>
       <View style={{ gap: SPACING.sm }}>
-        <View style={rowStyles.row}>
+        <TouchableOpacity style={rowStyles.row} onPress={switchAccount} activeOpacity={0.7}>
           <UserRoundPlus size={19} color={colors.text} strokeWidth={2} />
-          <Text style={[rowStyles.rowLabel, { flex: 1 }]}>Add Account / Switch Account</Text>
+          <Text style={[rowStyles.rowLabel, { flex: 1 }]}>Add or Switch Account</Text>
           <ChevronRight size={16} color={colors.textMuted} />
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.actionBtn} onPress={logout}>
           <Text style={styles.actionBtnText}>Log Out</Text>
         </TouchableOpacity>
